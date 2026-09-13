@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <title>Калькулятор окупності знижок</title>
+  <style>
+    
+    input { padding: 6px; width: 100%; margin: 5px 0; }
+    label { display: block; margin-top: 10px; }
+    .highlight { background-color: #e6ffe6; border-left: 5px solid #4CAF50; padding-left: 10px; margin-top: 15px; }
+    .warning { color: #b71c1c; font-weight: bold; }
+    .result { background: #f9f9f9; padding: 15px; border-radius: 5px; margin-top: 20px; }
+    canvas { margin-top: 30px; }
+  </style>
+  <LSink rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@700&family=Roboto:wght@400;500;700;900&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/modern-normalize/1.1.0/modern-normalize.css"
+    integrity="sha512-Y0MM+V6ymRKN2zStTqzQ227DWhhp4Mzdo6gnlRnuaNCbc+YN/ZH0sBCLTM4M0oSy9c9VKiCvd4Jk44aCLrNS5Q=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="./css/main.css" />
+  <link rel="stylesheet" href="./css/styles.css">
+
+<!-- Google tag (gtag.js) -->
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-5BZZCV5DRK"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag("js", new Date());
+  gtag("config", "G-5BZZCV5DRK");
+</script>
+<script>
+  const email = localStorage.getItem("allowedEmail");
+  if (email) {
+    gtag("set", "user_properties", {
+      user_id: email
+    });
+  }
+</script>
+<script>
+  function sha256(input) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(input);
+    return crypto.subtle.digest("SHA-256", data).then(hash => {
+      return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
+    });
+  }
+</script>
+</head>
+<body>
+  <header class="header">
+    <div class="container header__container">
+      <a class="logo" href="./index.html"><img src="./images/logo.svg" alt="logo" width="160"></a>
+      <!--<ul class="nav">
+        <li class="nav__referent"><a class="nav__link" href="./index.html">Головна</a></li>
+        <li class="nav__referent"><a class="nav__link nav__link--active" href="./portfolio.html">Курси</a></li>
+        <li class="nav__referent"><a class="nav__link" href="https://pharmasco.com/contacts" target="_blank" rel="noopener noreferrer">Контакти</a></li>
+      </ul>-->
+      <ul class="contacts">
+        <li class="contacts__contact">
+          <a class="contacts__contact-mail " href="mailto:contact@pharmasco.com">
+            <svg class="contacts__contact-icon" width="20px" height="20px">
+              <use href="./images/sprite.svg#icon-envelope"></use>
+            </svg>contact@pharmasco.com</a>
+          </a>
+        </li>
+       <li class="contacts__contact">
+          <a class="contacts__contact-phone " href="tel:+38 (044) 537-08-04">
+            <svg class="contacts__contact-icon" width="20px" height="20px">
+              <use href="./images/sprite.svg#icon-phone"></use>
+            </svg>+38 (044) 537-08-04</a>
+            <a class="contacts__contact-phone" style="margin-top: 8px;" href="tel:+38 (067) 500-82-74">
+            <svg class="contacts__contact-icon" width="20px" height="20px">
+              <use href="./images/sprite.svg#icon-phone"></use>
+            </svg>+38 (067) 500-82-74</a>
+        </li>
+      </ul>
+    </div>
+    <button class="mobile-menu-btn" type="button" data-menu-button>
+      <svg class="mobile-menu-icon" width="24" height="16">
+        <use class="mobile-menu-burger" href="./images/sprite.svg#24-menu"></use>
+        <use class="mobile-menu-close" href="./images/sprite.svg#icon-X"></use>
+      </svg>
+    </button>
+    <div class="mobile-menu" data-menu>
+      <!--<ul class="mobile-menu-nav">
+        <li class="mobile-menu-nav-item">
+          <a class="link " href="./index.html">Головна</a>
+        </li>
+        <li class="mobile-menu-nav-item">
+          <a class="link current" href="./portfolio.html">Курси</a>
+        </li>
+        <li class="mobile-menu-nav-item">
+          <a class="link" href="/contact">Контакти</a>
+        </li>
+      </ul>-->
+      <ul class="mobile-menu-contacts">
+        <li class="contacts__contact">
+          <a class="contacts__contact-phone " href="tel:+38 (044) 537-08-04">
+            <svg class="contacts__contact-icon" width="20px" height="20px">
+              <use href="./images/sprite.svg#icon-phone"></use>
+            </svg>+38 (044) 537-08-04</a>
+            <a class="contacts__contact-phone" style="margin-top: 8px;" href="tel:+38 (067) 500-82-74">
+            <svg class="contacts__contact-icon" width="20px" height="20px">
+              <use href="./images/sprite.svg#icon-phone"></use>
+            </svg>+38 (067) 500-82-74</a>
+        </li>
+        <li class="mobile-menu-contacts-item">
+          <a class="link" href="mailto:contact@pharmasco.com">contact@pharmasco.com</a>
+        </li>
+      </ul>
+      <ul class="mobile-menu-socials">
+        <li class="mobile-menu-socials-item">
+          <a class="mobile-menu-socials-link link" href="https://www.instagram.com/pharmascocom/" target="_blank" rel="noopener noreferrer">Instagram</a>
+        </li>
+        <li class="mobile-menu-socials-item">
+          <a class="mobile-menu-socials-link link" href="https://www.youtube.com/@Pharmasco" target="_blank" rel="noopener noreferrer">Youtube</a>
+        </li>
+        <li class="mobile-menu-socials-item">
+          <a class="mobile-menu-socials-link link" href="https://www.facebook.com/Pharmasco/" target="_blank" rel="noopener noreferrer">Facebook</a>
+        </li>
+      </ul>
+    </div>
+  </header>
+  <main>
+    <section class="works">
+      <div class="container">
+  <h2 style="text-align: center;">📊 Калькулятор окупності стратегій знижок</h2>
+
+  <label>Собівартість одиниці (₴):</label>
+  <input type="number" id="cost" placeholder="Напр. 5000" />
+  <label>Базова ціна продажу (₴):</label>
+  <input type="number" id="basePrice" placeholder="Напр. 8500" />
+  <label>Поточний обсяг продажів (шт):</label>
+  <input type="number" id="volume" placeholder="Напр. 10" />
+  <label>Очікуване зростання при знижці 0%:</label>
+  <input type="number" id="growth0" placeholder="Напр. 0" />
+  <label>Очікуване зростання при знижці 10%:</label>
+  <input type="number" id="growth10" placeholder="Напр. 15" />
+  <label>Очікуване зростання при знижці 20%:</label>
+  <input type="number" id="growth20" placeholder="Напр. 30" />
+  <label>Очікуване зростання при знижці 30%:</label>
+  <input type="number" id="growth30" placeholder="Напр. 50" />
+
+  <button style="margin-top: 10px;" class="btn" onclick="calculate()">🔍 Порівняти</button>
+   <button class="btn" onclick="window.location.href='./trening17.html'">Назад</button>
+  <div class="result" id="output"></div>
+  <canvas id="chart" height="230"></canvas>
+      </div>
+</section>
+  </main>
+  <footer class="footer">
+    <div class="container">
+      <div class="find-us">
+        <div class="find">
+          <a class="logo footer__logo" href="/"><img src="./images/logo.svg" alt="logo" width="160"></a>
+          <ul class="contacts contacts--footer">
+            <li class="contacts__contact contacts__contact--footer">
+              <address class="contacts__post"><p>Україна, Київська обл.,</p> <p>м. Вишгород,</p> <p>вул. Шолуденка, 15г</p></address>
+            </li>
+            <li class="contacts__contact contacts__contact--footer">
+              <a class="contacts__contact-mail contacts__contact-mail--footer"
+                href="mailto:contact@pharmasco.com">contact@pharmasco.com</a>
+            </li>
+            <li class="contacts__contact contacts__contact--footer">
+              <a class="contacts__contact-phone contacts__contact-phone--footer" href="tel:+38 (044) 537-08-04">+38 (044) 537-08-04</a>
+              <a class="contacts__contact-phone contacts__contact-phone--footer" href="tel:+38 (067) 500-82-74">+38 (067) 500-82-74</a>
+            </li>
+          </ul>
+        </div>
+        <div class="social social--footer">
+          <h2 class="social__title">приєднуйтесь</h2>
+          <ul class="social__list social__list--footer">
+            <li class="social__item social__item--footer">
+              <a class="social__link social__link--footer link" href="https://www.instagram.com/pharmascocom/" target="_blank" rel="noopener noreferrer"
+                aria-label="инстаграм иконка">
+                <svg class="social__icon social__icon--footer" width="20px" height="20px">
+                  <use href="./images/sprite.svg#icon-instagram"></use>
+                </svg></a>
+            </li>
+            <li class="social__item social__item--footer">
+              <a class="social__link social__link--footer link" href="https://www.youtube.com/@Pharmasco" target="_blank" rel="noopener noreferrer"
+                aria-label="твиттер иконка">
+                <svg class="social__icon social__icon--footer" width="20px" height="20px">
+                  <use href="./images/uoytube.svg"></use>
+                </svg></a>
+            </li>
+            <li class="social__item social__item--footer">
+              <a class="social__link social__link--footer link" href="https://www.facebook.com/Pharmasco/" target="_blank" rel="noopener noreferrer"
+                aria-label="фейсбук иконка">
+                <svg class="social__icon social__icon--footer" width="20px" height="20px">
+                  <use href="./images/sprite.svg#icon-facebook"></use>
+                </svg></a> 
+            </li>       
+          </ul>
+        </div>
+        <div class="spam">
+          <h2 class="spam__title" style="line-height: 2;">ТОВ «НВК «Фармаско» – провідний постачальник засобів діагностики для українських закладів охорони здоров’я, лікарів та пацієнтів.</h2>
+          <!--<form class="spam__form">
+            <label class="spam__label">
+              <input class="spam__input" type="email" name="email" placeholder="E-mail" />
+            </label>
+            <button class="btn btn--spam" type="submit">Підписатися<a class="spam-link link" href="" target="_blank"
+                rel="noopener noreferrer" aria-label="инстаграм иконка">
+                <svg class="spam__icon" width="24px" height="24px">
+                  <use href="./images/sprite.svg#icon-send"></use>
+                </svg></a></button>
+          </form>-->
+        </div>
+      </div>
+    </div>
+        <p id="currentUser" style="font-size: smaller; color: #666; text-align: center;"></p>
+  </footer>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    let chartInstance = null;
+
+    function format(num) {
+      return num.toLocaleString('uk-UA', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function calculateRecovery(baseProfit, marginPerUnit) {
+      if (marginPerUnit <= 0) return Infinity;
+      return Math.ceil(baseProfit / marginPerUnit);
+    }
+
+    function calculate() {
+      const cost = parseFloat(document.getElementById('cost').value);
+      const basePrice = parseFloat(document.getElementById('basePrice').value);
+      const volume = parseFloat(document.getElementById('volume').value);
+      const growths = [
+        parseFloat(document.getElementById('growth0').value),
+        parseFloat(document.getElementById('growth10').value),
+        parseFloat(document.getElementById('growth20').value),
+        parseFloat(document.getElementById('growth30').value)
+      ];
+
+      if ([cost, basePrice, volume, ...growths].some(isNaN)) {
+        document.getElementById('output').innerHTML = "❗ Заповніть усі поля.";
+        return;
+      }
+
+      const discounts = [0, 10, 20, 30];
+      const baseProfit = (basePrice - cost) * volume;
+      let strategies = [];
+
+      discounts.forEach((discount, i) => {
+        const price = basePrice * (1 - discount / 100);
+        const growth = growths[i];
+        const vol = Math.floor(volume * (1 + growth / 100));
+        const margin = price - cost;
+        const marginPercent = (margin / price) * 100;
+        const profit = margin * vol;
+        const recoveryVolume = calculateRecovery(baseProfit, margin);
+        const isRecovered = profit >= baseProfit;
+
+        strategies.push({
+          name: `${discount}%`,
+          discount,
+          price,
+          volume: vol,
+          margin,
+          marginPercent,
+          profit,
+          recoveryVolume,
+          isRecovered
+        });
+      });
+
+      document.getElementById('output').innerHTML = strategies.map(s => {
+        let extra = "";
+        if (!s.isRecovered) {
+          extra += `<div class="warning">⚠️ Прибуток нижчий за базовий (${format(s.profit)} < ${format(baseProfit)})</div>`;
+        } else {
+          extra += `<div><b>✅ Окупність досягнута</b></div>`;
+        }
+
+        return `
+          <div class="${s.isRecovered ? 'highlight' : ''}">
+            <b>Стратегія знижки ${s.name}</b><br/>
+            ➤ Ціна: ₴${format(s.price)}<br/>
+            ➤ Маржа: ₴${format(s.margin)} (${s.marginPercent.toFixed(1)}%)<br/>
+            ➤ Очікуваний обсяг: ${s.volume.toLocaleString('uk-UA')} шт<br/>
+            ➤ Прибуток: ₴${format(s.profit)}<br/>
+            ➤ Для окупності потрібно: ${s.recoveryVolume.toLocaleString('uk-UA')} шт<br/>
+            ${extra}
+          </div>
+        `;
+      }).join('');
+
+      const ctx = document.getElementById('chart').getContext('2d');
+      if (chartInstance) chartInstance.destroy();
+
+      chartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: strategies.map(s => s.name),
+          datasets: [
+            {
+              label: 'Прибуток (₴)',
+              data: strategies.map(s => s.profit),
+              backgroundColor: strategies.map(s => s.isRecovered ? '#4CAF50' : '#ccc')
+            },
+            {
+              label: 'Окупність знижки (шт)',
+              data: strategies.map(s => s.recoveryVolume),
+              backgroundColor: '#E91E63'
+            },
+            {
+              label: 'Очікуваний обсяг продажів (шт)',
+              data: strategies.map(s => s.volume),
+              backgroundColor: '#2196F3'
+            }
+          ]
+        },
+        options: {
+          scales: {
+            y: { beginAtZero: true }
+          },
+          plugins: {
+            tooltip: {
+              callbacks: {
+                label: ctx => `${ctx.dataset.label}: ${ctx.raw.toLocaleString('uk-UA')}`
+              }
+            },
+            legend: { position: 'top' }
+          }
+        }
+      });
+    }
+  </script>
+</body>
+</html>

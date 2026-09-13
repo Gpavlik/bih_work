@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="ua">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Головна</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@700&family=Roboto:wght@400;500;700;900&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/modern-normalize/1.1.0/modern-normalize.css"
+    integrity="sha512-Y0MM+V6ymRKN2zStTqzQ227DWhhp4Mzdo6gnlRnuaNCbc+YN/ZH0sBCLTM4M0oSy9c9VKiCvd4Jk44aCLrNS5Q=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="./css/main.css" />
+  <link rel="stylesheet" href="./css/styles.css" />
+
+<!-- Google tag (gtag.js) -->
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-5BZZCV5DRK"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag("js", new Date());
+  gtag("config", "G-5BZZCV5DRK");
+</script>
+<script>
+  const email = localStorage.getItem("allowedEmail");
+  if (email) {
+    gtag("set", "user_properties", {
+      user_id: email
+    });
+  }
+</script>
+<script>
+  function sha256(input) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(input);
+    return crypto.subtle.digest("SHA-256", data).then(hash => {
+      return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
+    });
+  }
+</script>
+
+</head>
+<body>
+  
+
+  <header class="header">
+    
+    <div class="container header__container">
+      <h2 id="greetingMessage"></h2>
+      <a class="logo" href="./index.html"><img src="./images/logo.svg" alt="logo" width="160"></a>
+      <!--<ul class="nav">
+        <li class="nav__referent"><a class="nav__link nav__link--active" href="./index.html">Головна</a></li>
+        <li class="nav__referent"><a class="nav__link" href="./portfolio.html">Курси</a></li>
+        <li class="nav__referent"><a class="nav__link" href="https://pharmasco.com/contacts" target="_blank" rel="noopener noreferrer">Контакти</a></li>
+      </ul>-->
+      <ul class="contacts">
+        <li class="contacts__contact">
+          <a class="contacts__contact-mail " href="mailto:contact@pharmasco.com">
+            <svg class="contacts__contact-icon" width="20px" height="20px">
+              <use href="./images/sprite.svg#icon-envelope"></use>
+            </svg>contact@pharmasco.com</a>
+          </a>
+        </li>
+    <li class="contacts__contact">
+          <a class="contacts__contact-phone " href="tel:+38 (044) 537-08-04">
+            <svg class="contacts__contact-icon" width="20px" height="20px">
+              <use href="./images/sprite.svg#icon-phone"></use>
+            </svg>+38 (044) 537-08-04</a>
+            <a class="contacts__contact-phone" style="margin-top: 8px;" href="tel:+38 (067) 500-82-74">
+            <svg class="contacts__contact-icon" width="20px" height="20px">
+              <use href="./images/sprite.svg#icon-phone"></use>
+            </svg>+38 (067) 500-82-74</a>
+        </li>
+      </ul>
+      <button style="margin-top: 0.5%; margin-right: 5%; font-size: smaller;" class="btn" onclick="toggleDarkMode()">Tема</button>
+      <button style="margin-top: 0.5%; font-size: smaller;" class="btn"><a href="./ccal2.html" style="text-decoration: none; color: inherit;">Календар</a></button>
+    </div>
+    <button class="mobile-menu-btn" type="button" data-menu-button>
+      <svg class="mobile-menu-icon" width="24" height="16">
+        <use class="mobile-menu-burger" href="./images/sprite.svg#24-menu"></use>
+        <use class="mobile-menu-close" href="./images/sprite.svg#icon-X"></use>
+      </svg>
+    </button>
+    <div class="mobile-menu" data-menu>
+      <ul class="mobile-menu-nav">
+        <li class="mobile-menu-nav-item">
+          <a class="link current" href="./index.html">Головна</a>
+        </li>
+        <li class="mobile-menu-nav-item">
+          <a class="link" href="./portfolio.html">Курси</a>
+        </li>
+        <li class="mobile-menu-nav-item">
+          <a class="link" href="/contact">Контакти</a>
+        </li>
+      </ul>
+      <ul class="mobile-menu-contacts">
+        <li class="contacts__contact">
+          <a class="contacts__contact-phone " href="tel:+38 (044) 537-08-04">
+            <svg class="contacts__contact-icon" width="20px" height="20px">
+              <use href="./images/sprite.svg#icon-phone"></use>
+            </svg>+38 (044) 537-08-04</a>
+            <a class="contacts__contact-phone" style="margin-top: 8px;" href="tel:+38 (067) 500-82-74">
+            <svg class="contacts__contact-icon" width="20px" height="20px">
+              <use href="./images/sprite.svg#icon-phone"></use>
+            </svg>+38 (067) 500-82-74</a>
+        </li>
+        <li class="mobile-menu-contacts-item">
+          <a class="link" href="mailto:contact@pharmasco.com">contact@pharmasco.com</a>
+        </li>
+      </ul>
+      <ul class="mobile-menu-socials">
+        <li class="mobile-menu-socials-item">
+          <a class="mobile-menu-socials-link link" href="https://www.instagram.com/pharmascocom/" target="_blank" rel="noopener noreferrer">Instagram</a>
+        </li>
+        <li class="mobile-menu-socials-item">
+          <a class="mobile-menu-socials-link link" href="https://www.youtube.com/@Pharmasco" target="_blank" rel="noopener noreferrer">Youtube</a>
+        </li>
+        <li class="mobile-menu-socials-item">
+          <a class="mobile-menu-socials-link link" href="https://www.facebook.com/Pharmasco/" target="_blank" rel="noopener noreferrer">Facebook</a>
+        </li>
+        
+      </ul>
+    
+    </div>
+
+    </header>
+  <main>
+    <section class="hero">
+      <div class="container">
+        <h1 class="hero-title">Навчаючись розвиваємось і стаємо кращими!</h1>
+        <button class="hero__btn hero__btn--select" type="button" data-modal-open>Розпочати</button>
+    <!--</section>
+    <section style="margin-left: 25%; margin-top: 50px;">
+    <h2 style="color: azure;">Завдання на поточний тиждень</h2><br>
+
+<label for="employeeSelect" style="color: azure;">Оберіть співробітника:</label><br><br>
+<select id="employeeSelect" style="padding: 5px; border-radius: 10px;">
+<option value="">-- Обрати --</option>
+<option value="Лузан Інга Василівна">Лузан Інга Василівна</option>
+<option value="Присяжнюк Людмила Ігорівна">Присяжнюк Людмила Ігорівна</option>
+<option value="Білоус Вадим Володимирович">Білоус Вадим Володимирович</option>
+<option value="Красніков Олександр Юрійович">Красніков Олександр Юрійович</option>
+<option value="Онищук Антоніна Іванівна">Онищук Антоніна Іванівна</option>
+<option value="Погрібна Марина Миколаївна">Погрібна Марина Миколаївна</option>
+<option value="Пилипчук Наталія Юріївна">Пилипчук Наталія Юріївна</option>
+<option value="Гаєвська Анна Володимировна">Гаєвська Анна Володимировна</option>
+<option value="Богуславець Ірина Сергіївна">Богуславець Ірина Сергіївна</option>
+<option value="Криштальян Мілена Вікторівна">Криштальян Мілена Вікторівна</option>
+<option value="Скрябіна Катерина Вячеславівна">Скрябіна Катерина Вячеславівна</option>
+<option value="Алєксєєнко Антон Андрійович">Алєксєєнко Антон Андрійович</option>
+<option value="Прядко Анастасія Сергіївна">Прядко Анастасія Сергіївна</option>
+<option value="Говоруха Олена Олександрівна">Говоруха Олена Олександрівна</option>
+<option value="Демус Тетяна Володимирівна">Демус Тетяна Володимирівна</option>
+<option value="Райнов Валерій Іванович">Райнов Валерій Іванович</option>
+<option value="Білоусова Ганна Павлівна">Білоусова Ганна Павлівна</option>
+<option value="Леонова Ольга Сергіївна">Леонова Ольга Сергіївна</option>
+<option value="Сазонова Тетяна Ігорівна">Сазонова Тетяна Ігорівна</option>
+<option value="Бабенко Ілона Ігорівна">Бабенко Ілона Ігорівна</option>
+<option value="Мельничук Ірина Миколаївна">Мельничук Ірина Миколаївна</option>
+<option value="Клименко Тетяна Володимирівна">Клименко Тетяна Володимирівна</option>
+<option value="Приходько Ірина Валеріївна">Приходько Ірина Валеріївна</option>
+<option value="Загородний Дем`ян Ігорович">Загородний Дем`ян Ігорович</option>
+<option value="Видерко Катерина Іванівна">Видерко Катерина Іванівна</option>
+<option value="Кулинська Мар'яна Іванівна">Кулинська Мар'яна Іванівна</option>
+
+  </select><br><br>
+
+  <div class="task-output" style="color: azure;" id="taskOutput"></div>
+
+  <div id="historyBlock" style="display:none;">
+    <h3>Історія виконаних завдань:</h3>
+    <table id="historyTable">
+      <thead>
+        <tr>
+          <th>Тиждень</th>
+          <th>Сторінка для відгуку</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+    <button class="btn" id="emailButton" style="margin-top: 10px;">Надіслати листа</button>-->
+
+  </div>
+ </section>
+
+    <section class="properties">
+        <div class="container">
+          <h1 class="title" style="font-size: 36px; margin-bottom: 50px; text-align: center">Наші цінності</h1>
+            <ul class="list">
+          <li class="item">
+            <h3 class="title" style="text-align: center;">ПОВАГА ДО ПАРТНЕРІВ</h3>
+            <p class="subtitle">
+              Ми створюємо довірчі відносини з партнерами, постачальниками та співробітниками. Взаєморозуміння та чесність є основою довготривалого партнерства.
+            </p>
+          </li>
+          <li class="item">
+            <h3 class="title" style="text-align: center;">ЕТИЧНІСТЬ ТА ВІДПОВІДАЛЬНІСТЬ</h3>
+            <p class="subtitle">
+              Ми приймаємо моральні рішення, проявляємо прозорість у діях і дбаємо про суспільство, що гарантує довіру з боку партнерів.
+            </p>
+          </li>
+          <li class="item">
+            <h3 class="title" style="text-align: center;">Гнучкість та інноваційність</h3>
+            <p class="subtitle">
+              Ми швидко адаптуємося до змін, оперативно реагуємо на виклики ринку та впроваджуємо передові технології для покращення продуктів і послуг.
+            </p>
+          </li>
+          <li class="item">
+            <h3 class="title" style="text-align: center;">ПРОФЕСІОНАЛІЗМ І РОЗВИТОК</h3>
+            <p class="subtitle">
+              Ми постійно вдосконалюємо наші знання та навички, дотримуємося високих стандартів роботи та прагнемо до саморозвитку.
+            </p>
+          </li>
+        </ul>
+      </div>
+    </section>
+    
+    <section class="about-us">
+      <div class="container">
+        <h2 class="title">Для чого створена ця платформа?</h2>
+        <ul class="card-list">
+          <li class="card">
+            <picture>
+
+              <source media="(min-width: 1200px)"
+                srcset="./images2/about-us/info.jpg"
+                type="image/webp" />
+              <source media="(min-width: 1200px)"
+                srcset="./images2/about-us/info.jpg" type="image/jpg" />
+              <img src="./images2/about-us/info.jpg" alt="Комп" width="370" height="294" class="rounded"/>
+            </picture>
+
+            <!--<div class="work-image-description">
+              <P class="work-image-description-text">Корисна інформація</P>
+            </div>-->
+          </li>
+          <li class="card">
+            <picture>
+
+              <source media="(min-width: 1200px)"
+                srcset="./images2/about-us/prakt.jpg"
+                type="image/webp" />
+              <source media="(min-width: 1200px)"
+                srcset="./images2/about-us/prakt.jpg" />
+              <img src="./images2/about-us/prakt.jpg" alt="смарт" width="370" height="294" class="rounded"/>
+            </picture>
+
+            <!--<div class="work-image-description">
+              <P class="work-image-description-text">Корисна інформація</P>
+            </div>-->
+          </li>
+          <li class="card">
+            <picture>
+
+              <source media="(min-width: 1200px)"
+                srcset="./images2/about-us/test.jpg"
+                type="image/webp" />
+              <source media="(min-width: 1200px)"
+                srcset="./images2/about-us/test.jpg" type="image/jpg" />
+              <img src="./images2/about-us/test.jpg" alt="планшет" width="370" height="294" class="rounded"/>
+            </picture>
+
+            <!--<div class="work-image-description">
+              <P class="work-image-description-text">Корисна інформація</P>
+            </div>-->
+          </li>
+        </ul>
+      </div>
+    </section>
+    <section class="team">
+      <div class="container">
+        <h2 class="title">Команда навчального порталу</h2>
+        <ul class="team-cards">
+          <li class="card-description">
+            <picture>
+
+              <source media="(min-width: 1200px)"
+                srcset="./PHARM/vol.bmp" type="image/jpg" />
+              <source media="(min-width: 1200px)"
+                srcset="./PHARM/vol.bmp" type="image/jpg" />
+
+              <source media="(min-width: 768px)"
+                srcset="./PHARM/vol.bmp" type="image/jpg" />
+              <source media="(min-width: 768px)"
+                srcset="./PHARM/vol.bmp" type="image/jpg" />
+
+              <source media="(max-width: 767px)"
+                srcset="./PHARM/vol.bmp" type="image/jpg" />
+              <source media="(max-width: 767px)"
+                srcset="./PHARM/vol.bmp" type="image/jpg" />
+              <img src="./PHARM/vol.bmp" alt="igor" width="450" height="460" />
+            </picture>
+
+            <div class="content">
+              <h3 class="name">Олександр Волянюк</h3>
+              <p class="position"><span lang="en">Head of laboratory equipment</span></p>
+              <div Style="display: flex; justify-content: center;">
+                <!--<button class="btn" style="margin-top: 5%;" onclick="location.href='mailto:a.volaniuk@pharmasco.com?subject=Звернення з сайту&body=Шановний Олександре!'">Надіслати листа</button></div>-->
+              <div class="social">
+                <!--<ul class="social__list">
+                  <li class="social__item">
+                    <a class="social__link link" href="" target="_blank" rel="noopener noreferrer"
+                      aria-label="инстаграм иконка">
+                      <svg class="social__icon" width="20px" height="20px">
+                        <use href="./images/sprite.svg#icon-instagram"></use>
+                      </svg></a>
+                  </li>
+                  <li class="social__item">
+                    <a class="social__link link" href="" target="_blank" rel="noopener noreferrer"
+                      aria-label="твиттер иконка">
+                      <svg class="social__icon" width="20px" height="20px">
+                        <use href="./images/sprite.svg#icon-twitter"></use>
+                      </svg></a>
+                  </li>
+                  <li class="social__item">
+                    <a class="social__link link" href="" target="_blank" rel="noopener noreferrer"
+                      aria-label="фейсбук иконка">
+                      <svg class="social__icon" width="20px" height="20px">
+                        <use href="./images/sprite.svg#icon-facebook"></use>
+                      </svg></a>
+                  </li>
+                  <li class="social__item">
+                    <a class="social__link link" href="" target="_blank" rel="noopener noreferrer"
+                      aria-label="линкедин иконка">
+                      <svg class="social__icon" width="20px" height="20px">
+                        <use href="./images/sprite.svg#icon-linkedin"></use>
+                      </svg></a>
+                  </li>
+                </ul>-->
+              </div>
+            </div>
+          </li>
+          <li class="card-description">
+       <picture>
+
+              <source media="(min-width: 1200px)"
+                srcset="./PHARM/pol.bmp" type="image/jpg" />
+              <source media="(min-width: 1200px)"
+                srcset="./PHARM/pol.bmp" type="image/jpg" />
+
+
+              <source media="(min-width: 768px)"
+                srcset="./PHARM/pol.bmp" type="image/jpg" />
+              <source media="(min-width: 768px)"
+                srcset="./PHARM/pol.bmp" type="image/jpg" />
+
+
+              <source media="(max-width: 767px)"
+                srcset="./PHARM/pol.bmp" type="image/jpg" />
+              <source media="(max-width: 767px)"
+                srcset="./PHARM/pol.bmp" type="image/jpg" />
+              <img src="./PHARM/pol.bmp" alt="igor" width="450" height="460" />
+            </picture>
+
+            <div class="content">
+              <h3 class="name">Олена Поліщук</h3>
+              <p class="position"><span lang="en">Head of pharmacy department</span></p>
+              <div Style="display: flex; justify-content: center;">
+                <!--<button class="btn" style="margin-top: 5%;" onclick="location.href='mailto:o.polishchuk@pharmasco.com?subject=Звернення з сайту&body=Шановна Олено!'">Надіслати листа</button></div>-->
+              <div class="social">
+                <!--<ul class="social__list">
+                  <li class="social__item">
+                    <a class="social__link link" href="" target="_blank" rel="noopener noreferrer"
+                      aria-label="инстаграм иконка">
+                      <svg class="social__icon" width="20px" height="20px">
+                        <use href="./images/sprite.svg#icon-instagram"></use>
+                      </svg></a>
+                  </li>
+                  <li class="social__item">
+                    <a class="social__link link" href="" target="_blank" rel="noopener noreferrer"
+                      aria-label="твиттер иконка">
+                      <svg class="social__icon" width="20px" height="20px">
+                        <use href="./images/sprite.svg#icon-twitter"></use>
+                      </svg></a>
+                  </li>
+                  <li class="social__item">
+                    <a class="social__link link" href="" target="_blank" rel="noopener noreferrer"
+                      aria-label="фейсбук иконка">
+                      <svg class="social__icon" width="20px" height="20px">
+                        <use href="./images/sprite.svg#icon-facebook"></use>
+                      </svg></a>
+                  </li>
+                  <li class="social__item">
+                    <a class="social__link link" href="" target="_blank" rel="noopener noreferrer"
+                      aria-label="линкедин иконка">
+                      <svg class="social__icon" width="20px" height="20px">
+                        <use href="./images/sprite.svg#icon-linkedin"></use>
+                      </svg></a>
+                  </li>
+                </ul>-->
+              </div>
+            </div>
+          </li>
+          <li class="card-description">
+            <picture>
+
+              <source media="(min-width: 1200px)"
+                srcset="./PHARM/pri.bmp" type="image/jpg" />
+              <source media="(min-width: 1200px)"
+                srcset="./PHARM/pri.bmp" type="image/jpg" />
+
+
+              <source media="(min-width: 768px)"
+                srcset="./PHARM/pri.bmp" type="image/jpg" />
+              <source media="(min-width: 768px)"
+                srcset="./PHARM/pri.bmp" type="image/jpg" />
+
+
+              <source media="(max-width: 767px)"
+                srcset="./PHARM/pri.bmp" type="image/jpg" />
+              <source media="(max-width: 767px)"
+                srcset="./PHARM/pri.bmp" type="image/jpg" />
+              <img src="./PHARM/pri.bmp" alt="igor" width="450" height="460" />
+            </picture>
+            <div class="content">
+              <h3 class="name">Дмитро Приходько</h3>
+              <p class="position"><span lang="en">Product manager</span></p>
+              <div Style="display: flex; justify-content: center;">
+                <!--<button class="btn" style="margin-top: 5%;" onclick="location.href='mailto:d.prykhodko@pharmasco.com?subject=Звернення з сайту&body=Шановний Дмитро!'">Надіслати листа</button></div>-->
+              <div class="social">
+                <!--<ul class="social__list">
+                  <li class="social__item">
+                    <a class="social__link link" href="" target="_blank" rel="noopener noreferrer"
+                      aria-label="инстаграм иконка">
+                      <svg class="social__icon" width="20px" height="20px">
+                        <use href="./images/sprite.svg#icon-instagram"></use>
+                      </svg></a>
+                  </li>
+                  <li class="social__item">
+                    <a class="social__link link" href="" target="_blank" rel="noopener noreferrer"
+                      aria-label="твиттер иконка">
+                      <svg class="social__icon" width="20px" height="20px">
+                        <use href="./images/sprite.svg#icon-twitter"></use>
+                      </svg></a>
+                  </li>
+                  <li class="social__item">
+                    <a class="social__link link" href="" target="_blank" rel="noopener noreferrer"
+                      aria-label="фейсбук иконка">
+                      <svg class="social__icon" width="20px" height="20px">
+                        <use href="./images/sprite.svg#icon-facebook"></use>
+                      </svg></a>
+                  </li>
+                  <li class="social__item">
+                    <a class="social__link link" href="" target="_blank" rel="noopener noreferrer"
+                      aria-label="линкедин иконка">
+                      <svg class="social__icon" width="20px" height="20px">
+                        <use href="./images/sprite.svg#icon-linkedin"></use>
+                      </svg></a>
+                  </li>
+                </ul>-->
+              </div>
+            </div>
+          </li>
+          <!--<li class="card-description">
+            <picture>
+
+              <source media="(min-width: 1200px)"
+                srcset="./PHARM/Kom.bmp" type="image/jpg" />
+              <source media="(min-width: 1200px)"
+                srcset="./PHARM/Kom.bmp" type="image/jpg" />
+
+
+              <source media="(min-width: 768px)"
+                srcset="./PHARM/Kom.bmp" type="image/jpg" />
+              <source media="(min-width: 768px)"
+                srcset="./PHARM/Kom.bmp" type="image/jpg" />
+
+
+              <source media="(max-width: 767px)"
+                srcset="./PHARM/Kom.bmp" type="image/jpg" />
+              <source media="(max-width: 767px)"
+                srcset="./PHARM/Kom.bmp" type="image/jpg" />
+              <img src="./PHARM/Kom.bmp" alt="igor" width="450" height="460" />
+            </picture>
+
+            <div class="content">
+              <h3 class="name">Сергій Комашко</h3>
+              <p class="position"><span lang="en">Head of medical device department</span></p>
+              <div Style="display: flex; justify-content: center;">-->
+                <!--<button class="btn" style="margin-top: 5%;" onclick="location.href='mailto:s.komashko@pharmasco.com?subject=Звернення з сайту&body=Шановний Сергій!'">Надіслати листа</button></div>--> 
+              <!--<div class="social">-->
+                <!--<ul class="social__list">
+                  <li class="social__item">
+                    <a class="social__link link" href="" target="_blank" rel="noopener noreferrer"
+                      aria-label="инстаграм иконка">
+                      <svg class="social__icon" width="20px" height="20px">
+                        <use href="./images/sprite.svg#icon-instagram"></use>
+                      </svg></a>
+                  </li>
+                  <li class="social__item">
+                    <a class="social__link link" href="" target="_blank" rel="noopener noreferrer"
+                      aria-label="твиттер иконка">
+                      <svg class="social__icon" width="20px" height="20px">
+                        <use href="./images/sprite.svg#icon-twitter"></use>
+                      </svg></a>
+                  </li>
+                  <li class="social__item">
+                    <a class="social__link link" href="" target="_blank" rel="noopener noreferrer"
+                      aria-label="фейсбук иконка">
+                      <svg class="social__icon" width="20px" height="20px">
+                        <use href="./images/sprite.svg#icon-facebook"></use>
+                      </svg></a>
+                  </li>
+                  <li class="social__item">
+                    <a class="social__link link" href="" target="_blank" rel="noopener noreferrer"
+                      aria-label="линкедин иконка">
+                      <svg class="social__icon" width="20px" height="20px">
+                        <use href="./images/sprite.svg#icon-linkedin"></use>
+                      </svg></a>
+                  </li>
+                </ul>
+                </div>
+            </div>
+          </li>-->
+          <li class="card-description">
+            <picture>
+
+              <source media="(min-width: 1200px)"
+                srcset="./PHARM/uol.bmp" type="image/jpg" />
+              <source media="(min-width: 1200px)"
+                srcset="./PHARM/uol.bmp" type="image/jpg" />
+
+
+              <source media="(min-width: 768px)"
+                srcset="./PHARM/uol.bmp" type="image/jpg" />
+              <source media="(min-width: 768px)"
+                srcset="./PHARM/uol.bmp" type="image/jpg" />
+
+
+              <source media="(max-width: 767px)"
+                srcset="./PHARM/uol.bmp" type="image/jpg" />
+              <source media="(max-width: 767px)"
+                srcset="./PHARM/uol.bmp" type="image/jpg" />
+              <img src="./PHARM/uol.bmp" alt="igor" width="450" height="460" />
+            </picture>
+
+            <div class="content">
+              <h3 class="name">Юлія Олійник</h3>
+              <p class="position"><span lang="en">Advertising Manager</span></p>
+              <div Style="display: flex; justify-content: center;">
+                <!--<button class="btn" style="margin-top: 5%;" onclick="location.href='mailto:u.oleynik@pharmasco.com?subject=Звернення з сайту&body=Шановна Юлія!'">Надіслати листа</button></div>-->
+              <div class="social">
+                <!--<ul class="social__list">
+                  <li class="social__item">
+                    <a class="social__link link" href="" target="_blank" rel="noopener noreferrer"
+                      aria-label="инстаграм иконка">
+                      <svg class="social__icon" width="20px" height="20px">
+                        <use href="./images/sprite.svg#icon-instagram"></use>
+                      </svg></a>
+                  </li>
+                  <li class="social__item">
+                    <a class="social__link link" href="" target="_blank" rel="noopener noreferrer"
+                      aria-label="твиттер иконка">
+                      <svg class="social__icon" width="20px" height="20px">
+                        <use href="./images/sprite.svg#icon-twitter"></use>
+                      </svg></a>
+                  </li>
+                  <li class="social__item">
+                    <a class="social__link link" href="" target="_blank" rel="noopener noreferrer"
+                      aria-label="фейсбук иконка">
+                      <svg class="social__icon" width="20px" height="20px">
+                        <use href="./images/sprite.svg#icon-facebook"></use>
+                      </svg></a>
+                  </li>
+                  <li class="social__item">
+                    <a class="social__link link" href="" target="_blank" rel="noopener noreferrer"
+                      aria-label="линкедин иконка">
+                      <svg class="social__icon" width="20px" height="20px">
+                        <use href="./images/sprite.svg#icon-linkedin"></use>
+                      </svg></a>
+                  </li>
+                </ul>-->
+                </div>
+            </div>
+          </li>
+          <li class="card-description">
+            <picture>
+
+              <source media="(min-width: 1200px)"
+                srcset="./PHARM/gp.jpg" type="image/jpg" />
+              <source media="(min-width: 1200px)"
+                srcset="./PHARM/gp.jpg" type="image/jpg" />
+
+
+              <source media="(min-width: 768px)"
+                srcset="./PHARM/gp.jpg" type="image/jpg" />
+              <source media="(min-width: 768px)"
+                srcset="./PHARM/gp.jpg" type="image/jpg" />
+
+
+              <source media="(max-width: 767px)"
+                srcset="./PHARM/gp.jpg" type="image/jpg" />
+              <source media="(max-width: 767px)"
+                srcset="./PHARM/gp.jpg" type="image/jpg" />
+              <img src="./PHARM/gp.jpg" alt="igor" width="450" height="460" />
+            </picture>
+
+            <div class="content">
+              <h3 class="name">Павло Гриценко</h3>
+              <p class="position"><span lang="en">HR development manager</span></p>
+              <div Style="display: flex; justify-content: center;">
+                <!--<button class="btn" style="margin-top: 5%;" onclick="location.href='mailto:p.hrytsenko@pharmasco.com?subject=Звернення з сайту&body=Шановий Павло!'">Надіслати листа</button></div>-->
+              <div class="social">
+                <!--<ul class="social__list">
+                  <li class="social__item">
+                    <a class="social__link link" href="" target="_blank" rel="noopener noreferrer"
+                      aria-label="инстаграм иконка">
+                      <svg class="social__icon" width="20px" height="20px">
+                        <use href="./images/sprite.svg#icon-instagram"></use>
+                      </svg></a>
+                  </li>
+                  <li class="social__item">
+                    <a class="social__link link" href="" target="_blank" rel="noopener noreferrer"
+                      aria-label="твиттер иконка">
+                      <svg class="social__icon" width="20px" height="20px">
+                        <use href="./images/sprite.svg#icon-twitter"></use>
+                      </svg></a>
+                  </li>
+                  <li class="social__item">
+                    <a class="social__link link" href="" target="_blank" rel="noopener noreferrer"
+                      aria-label="фейсбук иконка">
+                      <svg class="social__icon" width="20px" height="20px">
+                        <use href="./images/sprite.svg#icon-facebook"></use>
+                      </svg></a>
+                  </li>
+                  <li class="social__item">
+                    <a class="social__link link" href="" target="_blank" rel="noopener noreferrer"
+                      aria-label="линкедин иконка">
+                      <svg class="social__icon" width="20px" height="20px">
+                        <use href="./images/sprite.svg#icon-linkedin"></use>
+                      </svg></a>
+                  </li>
+                </ul>-->
+              </div>
+              <li class="card-description">
+                
+            <picture>
+              
+                  
+              <source media="(min-width: 1200px)"
+                srcset="./PHARM/wer1.jpg" type="image/jpg" />
+              <source media="(min-width: 1200px)"
+                srcset="./PHARM/wer1.jpg" type="image/jpg" />
+
+
+              <source media="(min-width: 768px)"
+                srcset="./PHARM/wer1.jpg" type="image/jpg" />
+              <source media="(min-width: 768px)"
+                srcset="./PHARM/wer1.jpg" type="image/jpg" />
+
+
+              <source media="(max-width: 767px)"
+                srcset="./PHARM/wer1.jpg" type="image/jpg" />
+              <source media="(max-width: 767px)"
+                srcset="./PHARM/wer1.jpg" type="image/jpg" />
+              <img src="./PHARM/wer1.jpg" alt="igor" width="450" height="460" /><span id="tooltip" style="font-size: 22px;"></span>
+            </picture>
+
+            <div class="content">
+              <h3 class="name">Вероніка Тулученко</h3>
+              <p class="position"><span lang="en">Head of service</span></p>
+              <div Style="display: flex; justify-content: center;">
+                <!--<button class="btn" style="margin-top: 5%;" onclick="location.href='mailto:v.tuluchenko@pharmasco.com?subject=Звернення з сайту&body=Шановна Вероніко!'">Надіслати листа</button></div>-->
+              <div class="social">
+                <!--<ul class="social__list">
+                  <li class="social__item">
+                    <a class="social__link link" href="" target="_blank" rel="noopener noreferrer"
+                      aria-label="инстаграм иконка">
+                      <svg class="social__icon" width="20px" height="20px">
+                        <use href="./images/sprite.svg#icon-instagram"></use>
+                      </svg></a>
+                  </li>
+                  <li class="social__item">
+                    <a class="social__link link" href="" target="_blank" rel="noopener noreferrer"
+                      aria-label="твиттер иконка">
+                      <svg class="social__icon" width="20px" height="20px">
+                        <use href="./images/sprite.svg#icon-twitter"></use>
+                      </svg></a>
+                  </li>
+                  <li class="social__item">
+                    <a class="social__link link" href="" target="_blank" rel="noopener noreferrer"
+                      aria-label="фейсбук иконка">
+                      <svg class="social__icon" width="20px" height="20px">
+                        <use href="./images/sprite.svg#icon-facebook"></use>
+                      </svg></a>
+                  </li>
+                  <li class="social__item">
+                    <a class="social__link link" href="" target="_blank" rel="noopener noreferrer"
+                      aria-label="линкедин иконка">
+                      <svg class="social__icon" width="20px" height="20px">
+                        <use href="./images/sprite.svg#icon-linkedin"></use>
+                      </svg></a>
+                  </li>
+                </ul>-->
+              </div>
+                     
+              <li class="card-description">
+                
+            <picture>
+              
+                  
+              <source media="(min-width: 1200px)"
+                srcset="./PHARM/ish.jpg" type="image/jpg" />
+              <source media="(min-width: 1200px)"
+                srcset="./PHARM/ish.jpg" type="image/jpg" />
+
+
+              <source media="(min-width: 768px)"
+                srcset="./PHARM/ish.jpg" type="image/jpg" />
+              <source media="(min-width: 768px)"
+                srcset="./PHARM/ish.jpg" type="image/jpg" />
+
+
+              <source media="(max-width: 767px)"
+                srcset="./PHARM/ish.jpg" type="image/jpg" />
+              <source media="(max-width: 767px)"
+                srcset="./PHARM/ish.jpg" type="image/jpg" />
+              <img src="./PHARM/ish.jpg" alt="igor" width="450" height="460" /><span id="tooltip" style="font-size: 22px;"></span>
+            </picture>
+
+            <div class="content">
+              <h3 class="name">Інна Шлапак</h3>
+              <p class="position"><span lang="en">Product manager</span></p>
+              <div Style="display: flex; justify-content: center;">
+                <!--<button class="btn" style="margin-top: 5%;" onclick="location.href='mailto:i.shlapak@pharmasco.com?subject=Звернення з сайту&body=Шановна Вероніко!'">Надіслати листа</button></div>-->
+              <div class="social">
+                <!--<ul class="social__list">
+                  <li class="social__item">
+                    <a class="social__link link" href="" target="_blank" rel="noopener noreferrer"
+                      aria-label="инстаграм иконка">
+                      <svg class="social__icon" width="20px" height="20px">
+                        <use href="./images/sprite.svg#icon-instagram"></use>
+                      </svg></a>
+                  </li>
+                  <li class="social__item">
+                    <a class="social__link link" href="" target="_blank" rel="noopener noreferrer"
+                      aria-label="твиттер иконка">
+                      <svg class="social__icon" width="20px" height="20px">
+                        <use href="./images/sprite.svg#icon-twitter"></use>
+                      </svg></a>
+                  </li>
+                  <li class="social__item">
+                    <a class="social__link link" href="" target="_blank" rel="noopener noreferrer"
+                      aria-label="фейсбук иконка">
+                      <svg class="social__icon" width="20px" height="20px">
+                        <use href="./images/sprite.svg#icon-facebook"></use>
+                      </svg></a>
+                  </li>
+                  <li class="social__item">
+                    <a class="social__link link" href="" target="_blank" rel="noopener noreferrer"
+                      aria-label="линкедин иконка">
+                      <svg class="social__icon" width="20px" height="20px">
+                        <use href="./images/sprite.svg#icon-linkedin"></use>
+                      </svg></a>
+                  </li>
+                </ul>
+              <li class="card-description">
+            <picture>
+
+              <source media="(min-width: 1200px)"
+                srcset="./PHARM/gol.bmp" type="image/jpg" />
+              <source media="(min-width: 1200px)"
+                srcset="./PHARM/gol.bmp" type="image/jpg" />
+
+
+              <source media="(min-width: 768px)"
+                srcset="./PHARM/gol.bmp" type="image/jpg" />
+              <source media="(min-width: 768px)"
+                srcset="./PHARM/gol.bmp" type="image/jpg" />
+
+
+              <source media="(max-width: 767px)"
+                srcset="./PHARM/gol.bmp" type="image/jpg" />
+              <source media="(max-width: 767px)"
+                srcset="./PHARM/gol.bmp" type="image/jpg" />
+              <img src="./PHARM/gol.bmp" alt="igor" width="450" height="460" />
+            </picture>
+
+            <div class="content">
+              <h3 class="name">Ярослав Головань</h3>
+              <p class="position"><span lang="en">Head of salesforce</span></p>
+              <div Style="display: flex; justify-content: center;">
+                <button class="btn" style="margin-top: 5%;" onclick="location.href='mailto:y.holovan@pharmasco.com?subject=Звернення з сайту&body=Шановний Ярославе!'">Надіслати листа</button></div>-->
+              <div class="social">
+                <!--<ul class="social__list">
+                  <li class="social__item">
+                    <a class="social__link link" href="" target="_blank" rel="noopener noreferrer"
+                      aria-label="инстаграм иконка">
+                      <svg class="social__icon" width="20px" height="20px">
+                        <use href="./images/sprite.svg#icon-instagram"></use>
+                      </svg></a>
+                  </li>
+                  <li class="social__item">
+                    <a class="social__link link" href="" target="_blank" rel="noopener noreferrer"
+                      aria-label="твиттер иконка">
+                      <svg class="social__icon" width="20px" height="20px">
+                        <use href="./images/sprite.svg#icon-twitter"></use>
+                      </svg></a>
+                  </li>
+                  <li class="social__item">
+                    <a class="social__link link" href="" target="_blank" rel="noopener noreferrer"
+                      aria-label="фейсбук иконка">
+                      <svg class="social__icon" width="20px" height="20px">
+                        <use href="./images/sprite.svg#icon-facebook"></use>
+                      </svg></a>
+                  </li>
+                  <li class="social__item">
+                    <a class="social__link link" href="" target="_blank" rel="noopener noreferrer"
+                      aria-label="линкедин иконка">
+                      <svg class="social__icon" width="20px" height="20px">
+                        <use href="./images/sprite.svg#icon-linkedin"></use>
+                      </svg></a>
+                  </li>
+                  </ul>-->
+                  <!--<li class="card-description">
+            <picture>
+
+              <source media="(min-width: 1200px)"
+                srcset="./PHARM/gal.bmp" type="image/jpg" />
+              <source media="(min-width: 1200px)"
+                srcset="./PHARM/gal.bmp" type="image/jpg" />
+
+
+              <source media="(min-width: 768px)"
+                srcset="./PHARM/gal.bmp" type="image/jpg" />
+              <source media="(min-width: 768px)"
+                srcset="./PHARM/gal.bmp" type="image/jpg" />
+
+
+              <source media="(max-width: 767px)"
+                srcset="./PHARM/gal.bmp" type="image/jpg" />
+              <source media="(max-width: 767px)"
+                srcset="./PHARM/gal.bmp" type="image/jpg" />
+              <img src="./PHARM/gal.bmp" alt="igor" width="450" height="460" />
+            </picture>
+
+            <div class="content">
+              <h3 class="name">Галина Кузнєцова</h3>
+              <p class="position"><span lang="en">Head of marketing</span></p>
+              <div Style="display: flex; justify-content: center;">
+                <button class="btn" style="margin-top: 5%;" onclick="location.href='mailto:g.kuznetsova@pharmasco.com?subject=Звернення з сайту&body=Шановна Галино!'">Надіслати листа</button></div>-->
+              <div class="social">
+                <!--<ul class="social__list">
+                  <li class="social__item">
+                    <a class="social__link link" href="" target="_blank" rel="noopener noreferrer"
+                      aria-label="инстаграм иконка">
+                      <svg class="social__icon" width="20px" height="20px">
+                        <use href="./images/sprite.svg#icon-instagram"></use>
+                      </svg></a>
+                  </li>
+                  <li class="social__item">
+                    <a class="social__link link" href="" target="_blank" rel="noopener noreferrer"
+                      aria-label="твиттер иконка">
+                      <svg class="social__icon" width="20px" height="20px">
+                        <use href="./images/sprite.svg#icon-twitter"></use>
+                      </svg></a>
+                  </li>
+                  <li class="social__item">
+                    <a class="social__link link" href="" target="_blank" rel="noopener noreferrer"
+                      aria-label="фейсбук иконка">
+                      <svg class="social__icon" width="20px" height="20px">
+                        <use href="./images/sprite.svg#icon-facebook"></use>
+                      </svg></a>
+                  </li>
+                  <li class="social__item">
+                    <a class="social__link link" href="" target="_blank" rel="noopener noreferrer"
+                      aria-label="линкедин иконка">
+                      <svg class="social__icon" width="20px" height="20px">
+                        <use href="./images/sprite.svg#icon-linkedin"></use>
+                      </svg></a>
+                  </li>
+                  </ul>-->
+              </div>
+            </div>
+           </section>
+    <!--<section class="clients">
+      <div class="container">
+        <h2 class="title">Постійні клієнти</h1>
+          <ul class="client-list">
+            <li class="client-item">
+              <a class="client-link link" href="" target="_blank" rel="noopener noreferrer"
+                aria-label="лого клиента 1 иконка">
+                <svg class="client-icon" width="106px" height="60px">
+                  <use href="./images/sprite.svg#icon-Logo1"></use>
+                </svg></a>
+            </li>
+            <li class="client-item">
+              <a class="client-link link" href="" target="_blank" rel="noopener noreferrer"
+                aria-label="лого клиента 2 иконка">
+                <svg class="client-icon" width="106px" height="60px">
+                  <use href="./images/sprite.svg#icon-Logo2"></use>
+                </svg></a>
+            </li>
+            <li class="client-item">
+              <a class="client-link link" href="" target="_blank" rel="noopener noreferrer"
+                aria-label="лого клиента 3 иконка">
+                <svg class="client-icon" width="106px" height="60px">
+                  <use href="./images/sprite.svg#icon-Logo3"></use>
+                </svg></a>
+            </li>
+            <li class="client-item">
+              <a class="client-link link" href="" target="_blank" rel="noopener noreferrer"
+                aria-label="лого клиента 4 иконка">
+                <svg class="client-icon" width="106px" height="60px">
+                  <use href="./images/sprite.svg#icon-Logo4"></use>
+                </svg></a>
+            </li>
+            <li class="client-item">
+              <a class="client-link link" href="" target="_blank" rel="noopener noreferrer"
+                aria-label="лого клиента 5 иконка">
+                <svg class="client-icon" width="106px" height="60px">
+                  <use href="./images/sprite.svg#icon-Logo5"></use>
+                </svg></a>
+            </li>
+            <li class="client-item">
+              <a class="client-link link" href="" target="_blank" rel="noopener noreferrer"
+                aria-label="лого клиента 6 иконка">
+                <svg class="client-icon" width="106px" height="60px">
+                  <use href="./images/sprite.svg#icon-Logo6"></use>
+                </svg></a>
+            </li>
+          </ul>
+      </div>
+    </section>-->
+  </main>
+  <footer class="footer">
+    <div class="container">
+      <div class="find-us">
+        <div class="find">
+          <a class="logo footer__logo" href="index.html"><img src="./images/logo.svg" alt="logo" width="200"></a>
+          <ul class="contacts contacts--footer">
+            <li class="contacts__contact contacts__contact--footer">
+              <address class="contacts__post"><p>Україна, Київська обл.,</p> <p>м. Вишгород,</p> <p>вул. Шолуденка, 15г</p></address>
+            </li>
+            <li class="contacts__contact contacts__contact--footer">
+              <a class="contacts__contact-mail contacts__contact-mail--footer"
+                href="mailto:contact@pharmasco.com">contact@pharmasco.com</a>
+            </li>
+            <li class="contacts__contact contacts__contact--footer">
+              <a class="contacts__contact-phone contacts__contact-phone--footer" href="tel:+38 (044) 537-08-04">+38 (044) 537-08-04</a>
+              <a class="contacts__contact-phone contacts__contact-phone--footer" href="tel:+38 (067) 500-82-74">+38 (067) 500-82-74</a>
+            </li>
+          </ul>
+        </div>
+        <div class="social social--footer">
+          <h2 class="social__title">приєднуйтесь</h2>
+          <ul class="social__list social__list--footer">
+            <li class="social__item social__item--footer">
+              <a class="social__link social__link--footer link" href="https://www.instagram.com/pharmascocom/" target="_blank" rel="noopener noreferrer"
+                aria-label="инстаграм иконка">
+                <svg class="social__icon social__icon--footer" width="20px" height="20px">
+                  <use href="./images/sprite.svg#icon-instagram"></use>
+                </svg></a>
+            </li>
+            <li class="social__item social__item--footer">
+              <a class="social__link social__link--footer link" href="https://www.youtube.com/@Pharmasco" target="_blank" rel="noopener noreferrer"
+                aria-label="твиттер иконка">
+                <svg class="social__icon social__icon--footer" width="20px" height="20px">
+                  <use href="./images/uoytube.svg"></use>
+                </svg></a>
+            </li>
+            <li class="social__item social__item--footer">
+              <a class="social__link social__link--footer link" href="https://www.facebook.com/Pharmasco/" target="_blank" rel="noopener noreferrer"
+                aria-label="фейсбук иконка">
+                <svg class="social__icon social__icon--footer" width="20px" height="20px">
+                  <use href="./images/sprite.svg#icon-facebook"></use>
+                </svg></a> 
+            </li>           
+          </ul>
+        </div>
+        <div class="spam">
+          <h2 class="spam__title" style="line-height: 2;">ТОВ «НВК «Фармаско» – провідний постачальник засобів діагностики для українських закладів охорони здоров’я, лікарів та пацієнтів.</h2>
+          <!--<form class="spam__form">
+            <label class="spam__label">
+              <input class="spam__input" type="email" name="email" placeholder="E-mail" />
+            </label>
+            <button class="btn btn--spam" type="submit">Підписатися<a class="spam-link link" href="" target="_blank"
+                rel="noopener noreferrer" aria-label="инстаграм иконка">
+                <svg class="spam__icon" width="24px" height="24px">
+                  <use href="./images/sprite.svg#icon-send"></use>
+                </svg></a></button>
+          </form>-->
+        </div>
+      </div>
+    </div>
+        <p id="currentUser" style="font-size: smaller; color: #666; text-align: center;"></p>
+        <button id="scrollTopBtn" title="До гори">⬆</button>
+  </footer>
+  <div class="backdrop is-hidden" data-modal>
+    <div class="modal">
+      <button class="close" type="button" data-modal-close>
+        <svg class="close__icon" width="11px" height="11px">
+          <use href="./images/sprite.svg#icon-X"></use>
+        </svg></a></button>
+      <p class="modal__title">Залиште свої дані для доступу до матеріалів сайту</p>
+      <form id="loginForm" class="form" name="signup_form" autocomplete="on" novalidate>
+        <label class="form__label">
+          <p class="form__name">Ім'я</p>
+          <input class="form__input" type="text" name="name" autofocus placeholder="Введіть ваше ім'я та прізвище" required/>
+          <svg class="form__icon" width="12px" height="12px">
+            <use href="./images/sprite.svg#icon-man"></use>
+          </svg></a>
+        </label>
+        <label class="form__label">
+          <p class="form__name">Місто</p>
+          <input class="form__input" type="text" name="city" placeholder="Введіть ваше місто" required/>
+          <svg class="form__icon" width="13px" height="13px">
+            <use href="./images/ico/city (2).svg"></use>
+          </svg></a>
+        </label>
+        <label class="form__label" for="emailInput">
+          <p class="form__name">e-mail</p>
+          <input class="form__input" type="email" id="emailInput" name="email"  placeholder="Введіть ваш корпоративний email" required>
+          <svg class="form__icon" width="15px" height="12px">
+            <use href="./images/sprite.svg#icon-envy"></use>
+          </svg></a>
+        </label>
+        <!--<label class="form__label">
+          <p class="form__name">Залиште Ваші побажання</p>
+          <textarea class="form__input" name="feedback" row="6" placeholder="Введіть текст"></textarea>
+        </label>-->
+        <label class="check">
+          <input class="check__checkbox" visualy hidden type="checkbox" name="policy" value="agree" />
+          <span class="custom-checkbox">
+            <svg class="check__icon" width="11px" height="8px">
+              <use href="./images/sprite.svg#icon-galka">
+              </use>
+            </svg>
+          </span>
+          <span class="check__name" style="text-align: center;">Підтвердіть, що Ви не розголошуватимете отриману інформацію</span>
+        </label>
+        <button type="submit" class="submit-btn">Навчатися!</button>
+        
+      </form>
+      </div>
+    <script src="./js/modal.js"></script>
+    <script src="./js/menu.js"></script>
+    <script src="script.js"></script>
+    <script>
+  // Зчитуємо тему з localStorage
+  if (localStorage.getItem('theme') === 'dark') {
+    document.body.classList.add('dark-mode');
+  }
+
+  function toggleDarkMode() {
+    document.body.classList.toggle('dark-mode');
+    // Записуємо вибір
+    if (document.body.classList.contains('dark-mode')) {
+      localStorage.setItem('theme', 'dark');
+    } else {
+      localStorage.setItem('theme', 'light');
+    }
+  }
+</script>
+<script src="theme-toggle.js"></script>
+<script src="tracking.js"></script>
+<script>
+  // Кнопка "До гори"
+  const scrollTopBtn = document.getElementById("scrollTopBtn");
+  window.onscroll = function() {
+    if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+      scrollTopBtn.style.display = "block";
+    } else {
+      scrollTopBtn.style.display = "none";
+    }
+  };
+
+  scrollTopBtn.onclick = function() {
+    document.body.scrollTop = 0;
+    document.documentElement.scrollTop = 0;
+  };
+</script>
+</body>
+</html>

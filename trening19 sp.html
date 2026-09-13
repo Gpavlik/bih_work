@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>DISC-комунікація: Інтерактивна шпаргалка</title>
+  <style>
+    
+    details {
+      background: #fff;
+      padding: 20px;
+      margin: 20px 0;
+      margin-left: 20%;
+      margin-right: 20%;
+      border-radius: 20px;
+      border: 1px solid #666;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+    summary {
+      font-size: 1.2em;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .D summary { color: crimson; }
+    .I summary { color: goldenrod; }
+    .S summary { color: seagreen; }
+    .C summary { color: steelblue; }
+    ul { margin: 20px 10px 0 20px;  color: #7c7c7c;}
+    strong { display: inline-block; min-width: 20px; color: black;}
+    code { background: #eef; padding: 2px 6px; border-radius: 3px; }
+    p {
+      margin: 10px 0;
+      line-height: 1.8;
+      font-size: 1em;
+      color: #7c7c7c;
+    }
+  </style>
+  <!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Конференції</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@700&family=Roboto:wght@400;500;700;900&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/modern-normalize/1.1.0/modern-normalize.css"
+    integrity="sha512-Y0MM+V6ymRKN2zStTqzQ227DWhhp4Mzdo6gnlRnuaNCbc+YN/ZH0sBCLTM4M0oSy9c9VKiCvd4Jk44aCLrNS5Q=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="./css/main.css" />
+  <link rel="stylesheet" href="./css/styles.css">
+
+<!-- Google tag (gtag.js) -->
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-5BZZCV5DRK"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag("js", new Date());
+  gtag("config", "G-5BZZCV5DRK");
+</script>
+<script>
+  const email = localStorage.getItem("allowedEmail");
+  if (email) {
+    gtag("set", "user_properties", {
+      user_id: email
+    });
+  }
+</script>
+<script>
+  function sha256(input) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(input);
+    return crypto.subtle.digest("SHA-256", data).then(hash => {
+      return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
+    });
+  }
+</script>
+</head>
+<body>
+<header class="header">
+    <div class="container header__container">
+      <a class="logo" href="./index.html"><img src="./images/logo.svg" alt="logo" width="160"></a>
+      <!--<ul class="nav">
+        <li class="nav__referent"><a class="nav__link" href="./index.html">Головна</a></li>
+        <li class="nav__referent"><a class="nav__link nav__link--active" href="./portfolio.html">Курси</a></li>
+        <li class="nav__referent"><a class="nav__link" href="https://pharmasco.com/contacts" target="_blank" rel="noopener noreferrer">Контакти</a></li>
+      </ul>-->
+      <ul class="contacts">
+        <li class="contacts__contact">
+          <a class="contacts__contact-mail " href="mailto:contact@pharmasco.com">
+            <svg class="contacts__contact-icon" width="20px" height="20px">
+              <use href="./images/sprite.svg#icon-envelope"></use>
+            </svg>contact@pharmasco.com</a>
+          </a>
+        </li>
+       <li class="contacts__contact">
+          <a class="contacts__contact-phone " href="tel:+38 (044) 537-08-04">
+            <svg class="contacts__contact-icon" width="20px" height="20px">
+              <use href="./images/sprite.svg#icon-phone"></use>
+            </svg>+38 (044) 537-08-04</a>
+            <a class="contacts__contact-phone" style="margin-top: 8px;" href="tel:+38 (067) 500-82-74">
+            <svg class="contacts__contact-icon" width="20px" height="20px">
+              <use href="./images/sprite.svg#icon-phone"></use>
+            </svg>+38 (067) 500-82-74</a>
+        </li>
+      </ul>
+    </div>
+    <button class="mobile-menu-btn" type="button" data-menu-button>
+      <svg class="mobile-menu-icon" width="24" height="16">
+        <use class="mobile-menu-burger" href="./images/sprite.svg#24-menu"></use>
+        <use class="mobile-menu-close" href="./images/sprite.svg#icon-X"></use>
+      </svg>
+    </button>
+    <div class="mobile-menu" data-menu>
+      <!--<ul class="mobile-menu-nav">
+        <li class="mobile-menu-nav-item">
+          <a class="link " href="./index.html">Головна</a>
+        </li>
+        <li class="mobile-menu-nav-item">
+          <a class="link current" href="./portfolio.html">Курси</a>
+        </li>
+        <li class="mobile-menu-nav-item">
+          <a class="link" href="/contact">Контакти</a>
+        </li>
+      </ul>-->
+      <ul class="mobile-menu-contacts">
+        <li class="contacts__contact">
+          <a class="contacts__contact-phone " href="tel:+38 (044) 537-08-04">
+            <svg class="contacts__contact-icon" width="20px" height="20px">
+              <use href="./images/sprite.svg#icon-phone"></use>
+            </svg>+38 (044) 537-08-04</a>
+            <a class="contacts__contact-phone" style="margin-top: 8px;" href="tel:+38 (067) 500-82-74">
+            <svg class="contacts__contact-icon" width="20px" height="20px">
+              <use href="./images/sprite.svg#icon-phone"></use>
+            </svg>+38 (067) 500-82-74</a>
+        </li>
+        <li class="mobile-menu-contacts-item">
+          <a class="link" href="mailto:contact@pharmasco.com">contact@pharmasco.com</a>
+        </li>
+      </ul>
+      <ul class="mobile-menu-socials">
+        <li class="mobile-menu-socials-item">
+          <a class="mobile-menu-socials-link link" href="https://www.instagram.com/pharmascocom/" target="_blank" rel="noopener noreferrer">Instagram</a>
+        </li>
+        <li class="mobile-menu-socials-item">
+          <a class="mobile-menu-socials-link link" href="https://www.youtube.com/@Pharmasco" target="_blank" rel="noopener noreferrer">Youtube</a>
+        </li>
+        <li class="mobile-menu-socials-item">
+          <a class="mobile-menu-socials-link link" href="https://www.facebook.com/Pharmasco/" target="_blank" rel="noopener noreferrer">Facebook</a>
+        </li>
+      </ul>
+    </div>
+  </header>
+  <main>
+    <div class="container" style="margin-top: 200px; margin-bottom: 20px;">
+      <section style="background:#e7fce7fa; padding:20px; border-radius:20px; border:1px solid #ccc; box-shadow:0 2px 6px rgba(0,0,0,0.05);">
+  <h2 style="text-align: center; margin-bottom: 20px;">🧪 DISC-діагностика: Визнач свій поведінковий тип</h2>
+  <form id="quizForm">
+    <p><strong>1.</strong> Як Ви реагуєте, коли стикаєтеся із новим викликом?</p>
+    <label><input type="radio" name="q1" value="D"> Шукаєте шлях реалізації, дієте рішуче</label><br>
+    <label><input type="radio" name="q1" value="I"> Надихаєте команду, генеруєте ідеї</label><br>
+    <label><input type="radio" name="q1" value="S"> Прагнете зберегти стабільність та гармонію</label><br>
+    <label><input type="radio" name="q1" value="C"> Аналізуєте факти, готуєте аргументи</label><br><br>
+
+    <p><strong>2.</strong> Що Вам найважливіше в партнерській взаємодії?</p>
+    <label><input type="radio" name="q2" value="D"> Результативність і швидке рішення</label><br>
+    <label><input type="radio" name="q2" value="I"> Надихаюча атмосфера і свобода ідей</label><br>
+    <label><input type="radio" name="q2" value="S"> Надійність і стабільні домовленості</label><br>
+    <label><input type="radio" name="q2" value="C"> Логіка, точність, аргументи</label><br><br>
+
+    <p><strong>3.</strong> Що Вас найбільше дратує в комунікації?</p>
+    <label><input type="radio" name="q3" value="D"> Нерішучість або затягування</label><br>
+    <label><input type="radio" name="q3" value="I"> Беземоційність або формальність</label><br>
+    <label><input type="radio" name="q3" value="S"> Конфлікти та тиск</label><br>
+    <label><input type="radio" name="q3" value="C"> Відсутність логіки або послідовності</label><br><br>
+
+    <p><strong>4.</strong> Як Ви зазвичай ухвалюєте рішення?</p>
+    <label><input type="radio" name="q4" value="D"> Швидко, інтуїтивно, з урахуванням результату</label><br>
+    <label><input type="radio" name="q4" value="I"> Емоційно, з оглядом на групову динаміку</label><br>
+    <label><input type="radio" name="q4" value="S"> Зважено, після порад і обговорення</label><br>
+    <label><input type="radio" name="q4" value="C"> Аналітично, на основі фактів</label><br><br>
+
+    <p><strong>5.</strong> Яку роль Ви зазвичай берете в групі?</p>
+    <label><input type="radio" name="q5" value="D"> Лідера, стратегічного двигуна</label><br>
+    <label><input type="radio" name="q5" value="I"> Надихаючого комунікатора</label><br>
+    <label><input type="radio" name="q5" value="S"> Посередника і “стабілізатора”</label><br>
+    <label><input type="radio" name="q5" value="C"> Експерта, аналітика</label><br><br>
+
+    <p><strong>6.</strong> Як Ви реагуєте на зміни?</p>
+    <label><input type="radio" name="q6" value="D"> Як на виклик — хочете змінити на краще</label><br>
+    <label><input type="radio" name="q6" value="I"> Мотивуєтеся ідеєю нового, цікавого</label><br>
+    <label><input type="radio" name="q6" value="S"> З обережністю, хочете зрозуміти наслідки</label><br>
+    <label><input type="radio" name="q6" value="C"> Прагнете спершу розібратися в деталях</label><br><br>
+
+    <p><strong>7.</strong> Що для Вас є основним джерелом впевненості?</p>
+    <label><input type="radio" name="q7" value="D"> Контроль і вплив на результат</label><br>
+    <label><input type="radio" name="q7" value="I"> Позитивна підтримка інших</label><br>
+    <label><input type="radio" name="q7" value="S"> Стабільність і відносини</label><br>
+    <label><input type="radio" name="q7" value="C"> Дані, факти, прогнозованість</label><br><br>
+<ul class="button">
+    <li class="button-section"><button type="button" onclick="processQuiz()" class="btn">Отримати результат</button></li>
+    <li class="button-section"><button type="button" onclick="resetForm()" class="btn">Скинути все</button></li>
+</ul>
+
+  </form>
+</section>
+
+<section style="background:#fcfae7fa; margin-top: 20px; padding:20px; border-radius:20px; border:1px solid #ccc; box-shadow:0 2px 6px rgba(0,0,0,0.05);">
+  <h2 style="text-align: center; margin-bottom: 20px;">🕵️ Визнач поведінковий тип партнера за спостереженням</h2>
+  <form id="quickQuiz">
+    <p><strong>1.</strong> Як він(-вона) приймає рішення?</p>
+    <label><input type="radio" name="q1" value="D"> Швидко, з фокусом на результат</label><br>
+    <label><input type="radio" name="q1" value="I"> Через ентузіазм та інтуїцію</label><br>
+    <label><input type="radio" name="q1" value="S"> Обережно, після консультацій</label><br>
+    <label><input type="radio" name="q1" value="C"> Після глибокого аналізу</label><br><br>
+
+    <p><strong>2.</strong> Які питання партнер ставить найчастіше?</p>
+    <label><input type="radio" name="q2" value="D"> "Який результат?", "Що наступне?"</label><br>
+    <label><input type="radio" name="q2" value="I"> "А хто ще бере участь?", "Яка ідея за цим?"</label><br>
+    <label><input type="radio" name="q2" value="S"> "А як це вплине на людей?"</label><br>
+    <label><input type="radio" name="q2" value="C"> "Які факти це підтверджують?"</label><br><br>
+
+    <p><strong>3.</strong> Як він(-вона) поводиться тілом і голосом?</p>
+    <label><input type="radio" name="q3" value="D"> Швидкі жести, прямий погляд, короткі фрази</label><br>
+    <label><input type="radio" name="q3" value="I"> Посмішка, жива інтонація, активна міміка</label><br>
+    <label><input type="radio" name="q3" value="S"> Стриманість, лагідний голос, обережність</label><br>
+    <label><input type="radio" name="q3" value="C"> Мінімум емоцій, аналітичний погляд</label><br><br>
+
+    <p><strong>4.</strong> Що його(-її) мотивує у переговорах?</p>
+    <label><input type="radio" name="q4" value="D"> Вплив і досягнення</label><br>
+    <label><input type="radio" name="q4" value="I"> Захоплення і взаємодія</label><br>
+    <label><input type="radio" name="q4" value="S"> Гармонія і довіра</label><br>
+    <label><input type="radio" name="q4" value="C"> Якість, безпомилковість</label><br><br>
+<ul class="button">
+    <li class="button-section"><button class="btn" type="button" onclick="processQuickQuiz()">Визнач тип</button></li>
+    <li class="button-section"><button class="btn" type="button" onclick="resetQuick()">Скинути</button></li>
+</ul>
+  </form>
+</section>
+<h2 style="text-align: center; margin-bottom: 20px; margin-top: 20px;">📎 Додаткові поради до роботи з DISC-типами</h2>
+
+<details>
+  <summary>👀 Як швидко зчитати тип партнера</summary>
+  <ul>
+    <li><strong>D:</strong> говорить швидко, фокус на результат, запитує “що далі?”, “як швидше?”</li>
+    <li><strong>I:</strong> активний, емоційний, легко переходить на “про людей”, питає “а хто ще?”, “як це виглядатиме?”</li>
+    <li><strong>S:</strong> обережний, спокійний, турбується про стабільність, уточнює “як це вплине на інших?”</li>
+    <li><strong>C:</strong> стриманий, аналізує, ставить уточнюючі запитання, хоче логіки</li>
+  </ul>
+  <p><em>🎯 Порада: спробуй віддзеркалити темп, тон і структуру мовлення співрозмовника у перші хвилини.</em></p>
+</details>
+
+<details>
+  <summary>🗂 Що показати на зустрічі кожному типу</summary>
+  <ul>
+    <li><strong>D:</strong> цифри, результат, ROI — “що отримаєте?”</li>
+    <li><strong>I:</strong> приклади, історії, яскравий візуал — “як це буде виглядати?”</li>
+    <li><strong>S:</strong> roadmap, стабільність, що не зміниться — “що залишиться сталим?”</li>
+    <li><strong>C:</strong> логіка, таблиці, порівняння, джерела — “як це підтверджено?”</li>
+  </ul>
+</details>
+
+<details>
+  <summary>🧯 Типові помилки у комунікації</summary>
+  <ul>
+    <li><strong>D:</strong> затягування, нечіткість, “давайте подумаємо пізніше”</li>
+    <li><strong>I:</strong> ігнорування емоцій, сухість, “давайте без деталей”</li>
+    <li><strong>S:</strong> тиск, зміни в останній момент, радикальні фрази</li>
+    <li><strong>C:</strong> емоційні аргументи, поверховість, неточність</li>
+  </ul>
+</details>
+
+      <section class="portfolio" style="margin-top: 50px; margin-bottom: 20px;">
+        <h1 class="portfolio__title" style="text-align: center;">DISC-комунікація — інтерактивна шпаргалка</h1>
+        <p class="portfolio__subtitle" style="text-align: center;">Клікни на тип, щоб розгорнути рекомендації 👇</p>
+      </section>
+    </div>
+  <details class="D">
+    <summary>🔴 D — Домінантний (рішучий, фокус на результат)</summary>
+    <p><strong>Цінує:</strong> результат, ефективність, лідерство</p>
+    <p><strong>Уникає:</strong> повільності, надмірних деталей, сумнівів</p>
+    <p><strong>Мова тіла:</strong> прямий погляд, жестикуляція, швидка мова</p>
+    <p><strong>Запитання:</strong></p>
+    <ul>
+      <li>“Який результат для вас головний?”</li>
+      <li>“Що дозволить ухвалити рішення швидше?”</li>
+    </ul>
+    <p><strong>Інтонація:</strong> впевнена, рішуча, стисло</p>
+    <p><strong>Слова-тригери:</strong> результат, контроль, оптимально, діяти</p>
+    <p><strong>Не працює:</strong> розмитість, надто м’які формулювання, “хитання”</p>
+  </details>
+
+  <details class="I">
+    <summary>🟡 I — Ініціативний (емоційний, натхненний)</summary>
+    <p><strong>Цінує:</strong> визнання, комунікацію, натхнення</p>
+    <p><strong>Уникає:</strong> формальності, монотонності</p>
+    <p><strong>Мова тіла:</strong> відкрита поза, посмішка, енергійність</p>
+    <p><strong>Запитання:</strong></p>
+    <ul>
+      <li>“Що вас захоплює у цій ідеї?”</li>
+      <li>“Який досвід був для вас найяскравішим у подібних ситуаціях?”</li>
+    </ul>
+    <p><strong>Інтонація:</strong> жива, відкрита, з доброзичливістю</p>
+    <p><strong>Слова-тригери:</strong> ідея, вплив, разом, надихає</p>
+    <p><strong>Не працює:</strong> “суха” мова, холодна подача, обмеження емоцій</p>
+  </details>
+
+  <details class="S">
+    <summary>🟢 S — Стабільний (спокійний, орієнтований на відносини)</summary>
+    <p><strong>Цінує:</strong> передбачуваність, довіру, стабільність</p>
+    <p><strong>Уникає:</strong> конфліктів, несподіванок, тиску</p>
+    <p><strong>Мова тіла:</strong> врівноважена, невелика жестикуляція, уважне слухання</p>
+    <p><strong>Запитання:</strong></p>
+    <ul>
+      <li>“Що для вас створює комфорт у співпраці?”</li>
+      <li>“Які умови для вас є показником довіри?”</li>
+    </ul>
+    <p><strong>Інтонація:</strong> м’яка, повільна, обережна</p>
+    <p><strong>Слова-тригери:</strong> надійність, підтримка, разом, безпека</p>
+    <p><strong>Не працює:</strong> тиск, ультиматуми, зміни без попередження</p>
+  </details>
+
+  <details class="C">
+    <summary>🔵 C — Аналітичний (логічний, орієнтований на деталі)</summary>
+    <p><strong>Цінує:</strong> факти, структуру, точність</p>
+    <p><strong>Уникає:</strong> невизначеності, “розмитих” обіцянок</p>
+    <p><strong>Мова тіла:</strong> спокій, мало емоцій, схильність до нотаток</p>
+    <p><strong>Запитання:</strong></p>
+    <ul>
+      <li>“Які критерії ухвалення рішення для вас ключові?”</li>
+      <li>“Яку інформацію потрібно вам для аналізу?”</li>
+    </ul>
+    <p><strong>Інтонація:</strong> рівна, логічна, без тиску</p>
+    <p><strong>Слова-тригери:</strong> аргументи, структура, прогноз, деталі</p>
+    <p><strong>Не працює:</strong> емоційний натиск, обіцянки без підкріплення</p>
+  </details>
+  <ul class="button">
+    <li class="button-section"><button class="btn" type="button"><a style="text-decoration: none; font-size: smaller;" class="text__work" href="./trening19.html">Назад</a></button></li>
+  </ul>
+</main>
+  <footer class="footer">
+    <div class="container">
+      <div class="find-us">
+        <div class="find">
+          <a class="logo footer__logo" href="/"><img src="./images/logo.svg" alt="logo" width="160"></a>
+          <ul class="contacts contacts--footer">
+            <li class="contacts__contact contacts__contact--footer">
+              <address class="contacts__post"><p>Україна, Київська обл.,</p> <p>м. Вишгород,</p> <p>вул. Шолуденка, 15г</p></address>
+            </li>
+            <li class="contacts__contact contacts__contact--footer">
+              <a class="contacts__contact-mail contacts__contact-mail--footer"
+                href="mailto:contact@pharmasco.com">contact@pharmasco.com</a>
+            </li>
+            <li class="contacts__contact contacts__contact--footer">
+              <a class="contacts__contact-phone contacts__contact-phone--footer" href="tel:+38 (044) 537-08-04">+38 (044) 537-08-04</a>
+              <a class="contacts__contact-phone contacts__contact-phone--footer" href="tel:+38 (067) 500-82-74">+38 (067) 500-82-74</a>
+            </li>
+          </ul>
+        </div>
+        <div class="social social--footer">
+          <h2 class="social__title">приєднуйтесь</h2>
+          <ul class="social__list social__list--footer">
+            <li class="social__item social__item--footer">
+              <a class="social__link social__link--footer link" href="https://www.instagram.com/pharmascocom/" target="_blank" rel="noopener noreferrer"
+                aria-label="инстаграм иконка">
+                <svg class="social__icon social__icon--footer" width="20px" height="20px">
+                  <use href="./images/sprite.svg#icon-instagram"></use>
+                </svg></a>
+            </li>
+            <li class="social__item social__item--footer">
+              <a class="social__link social__link--footer link" href="https://www.youtube.com/@Pharmasco" target="_blank" rel="noopener noreferrer"
+                aria-label="твиттер иконка">
+                <svg class="social__icon social__icon--footer" width="20px" height="20px">
+                  <use href="./images/uoytube.svg"></use>
+                </svg></a>
+            </li>
+            <li class="social__item social__item--footer">
+              <a class="social__link social__link--footer link" href="https://www.facebook.com/Pharmasco/" target="_blank" rel="noopener noreferrer"
+                aria-label="фейсбук иконка">
+                <svg class="social__icon social__icon--footer" width="20px" height="20px">
+                  <use href="./images/sprite.svg#icon-facebook"></use>
+                </svg></a> 
+            </li>       
+          </ul>
+        </div>
+        <div class="spam">
+          <h2 class="spam__title" style="line-height: 2;">ТОВ «НВК «Фармаско» – провідний постачальник засобів діагностики для українських закладів охорони здоров’я, лікарів та пацієнтів.</h2>
+          <!--<form class="spam__form">
+            <label class="spam__label">
+              <input class="spam__input" type="email" name="email" placeholder="E-mail" />
+            </label>
+            <button class="btn btn--spam" type="submit">Підписатися<a class="spam-link link" href="" target="_blank"
+                rel="noopener noreferrer" aria-label="инстаграм иконка">
+                <svg class="spam__icon" width="24px" height="24px">
+                  <use href="./images/sprite.svg#icon-send"></use>
+                </svg></a></button>
+          </form>-->
+        </div>
+      </div>
+    </div>
+        <p id="currentUser" style="font-size: smaller; color: #666; text-align: center;"></p>
+        <button id="scrollTopBtn" title="До гори">⬆</button>
+  </footer>
+  <script src="./js/menu.js"></script>
+  <script src="theme-toggle.js"></script>
+  <script src="tracking.js"></script>
+  <script>
+// Функція для плавного скролінгу з урахуванням фіксованого хедера
+function scrollToWithOffset(el, offset = 250) {
+  const y = el.getBoundingClientRect().top + window.pageYOffset - offset;
+  window.scrollTo({ top: y, behavior: 'smooth' });
+}
+
+// Обробка для форми "DISC-діагностика себе"
+function processQuiz() {
+  const form = document.getElementById("quizForm");
+  const answers = new FormData(form);
+  const score = { D: 0, I: 0, S: 0, C: 0 };
+
+  for (const [_, value] of answers.entries()) {
+    if (value in score) score[value]++;
+  }
+
+  const topType = Object.entries(score).reduce((a, b) => a[1] >= b[1] ? a : b)[0];
+  const target = document.querySelector(`details.${topType}`);
+
+  document.querySelectorAll("details").forEach(d => d.removeAttribute("open"));
+  if (target) {
+    target.setAttribute("open", "true");
+    scrollToWithOffset(target);
+  } else {
+    alert("Не вдалося визначити тип.");
+  }
+}
+
+// Очищення для форми "себе"
+function resetForm() {
+  document.getElementById("quizForm").reset();
+  document.querySelectorAll("details").forEach(d => d.removeAttribute("open"));
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+// Обробка для форми "Визнач тип партнера"
+function processQuickQuiz() {
+  const form = document.getElementById("quickQuiz");
+  const data = new FormData(form);
+  const score = { D: 0, I: 0, S: 0, C: 0 };
+
+  for (const [_, value] of data.entries()) {
+    if (value in score) score[value]++;
+  }
+
+  const topType = Object.entries(score).reduce((a, b) => a[1] >= b[1] ? a : b)[0];
+  const target = document.querySelector(`details.${topType}`);
+
+  document.querySelectorAll("details").forEach(d => d.removeAttribute("open"));
+  if (target) {
+    target.setAttribute("open", "true");
+    scrollToWithOffset(target);
+  } else {
+    alert("Не вдалося визначити тип.");
+  }
+}
+
+// Очищення для форми "партнера"
+function resetQuick() {
+  document.getElementById("quickQuiz").reset();
+  document.querySelectorAll("details").forEach(d => d.removeAttribute("open"));
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+</script>
+ <script>
+  // Кнопка "До гори"
+  const scrollTopBtn = document.getElementById("scrollTopBtn");
+  window.onscroll = function() {
+    if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+      scrollTopBtn.style.display = "block";
+    } else {
+      scrollTopBtn.style.display = "none";
+    }
+  };
+
+  scrollTopBtn.onclick = function() {
+    document.body.scrollTop = 0;
+    document.documentElement.scrollTop = 0;
+  };
+</script>
+</body>
+</html>

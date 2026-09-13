@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <title>Генератор фраз знижки</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+  
+    h2 { text-align: center; color: #333; }
+    label { font-weight: bold; margin-top: 10px; display: block; }
+    select, button { width: 100%; padding: 12px; margin-top: 5px; font-size: 16px; border-radius: 20px; border: 1px solid #ccc; }
+    button { background: #0078D4; color: white; font-weight: bold; border: none; cursor: pointer; }
+    .card { background: white; margin-top: 20px; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    .card h3 { margin: 0 0 10px; color: #0078D4; }
+    .card p { font-size: 16px; line-height: 1.4; }
+    .share-buttons { display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap; }
+    .share-btn {
+      flex: 1;
+      background: #25D366;
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 6px;
+      text-align: center;
+      font-weight: bold;
+      text-decoration: none;
+    }
+    .telegram { background: #0088cc; }
+    .copy-btn { background: #00a859; margin-top: 10px; }
+  </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@700&family=Roboto:wght@400;500;700;900&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/modern-normalize/1.1.0/modern-normalize.css"
+    integrity="sha512-Y0MM+V6ymRKN2zStTqzQ227DWhhp4Mzdo6gnlRnuaNCbc+YN/ZH0sBCLTM4M0oSy9c9VKiCvd4Jk44aCLrNS5Q=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="./css/main.css" />
+  <link rel="stylesheet" href="./css/styles.css">
+
+<!-- Google tag (gtag.js) -->
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-5BZZCV5DRK"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag("js", new Date());
+  gtag("config", "G-5BZZCV5DRK");
+</script>
+<script>
+  const email = localStorage.getItem("allowedEmail");
+  if (email) {
+    gtag("set", "user_properties", {
+      user_id: email
+    });
+  }
+</script>
+<script>
+  function sha256(input) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(input);
+    return crypto.subtle.digest("SHA-256", data).then(hash => {
+      return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
+    });
+  }
+</script>
+</head>
+<body>
+  <header class="header">
+    <div class="container header__container">
+      <a class="logo" href="./index.html"><img src="./images/logo.svg" alt="logo" width="160"></a>
+      <!--<ul class="nav">
+        <li class="nav__referent"><a class="nav__link" href="./index.html">Головна</a></li>
+        <li class="nav__referent"><a class="nav__link nav__link--active" href="./portfolio.html">Курси</a></li>
+        <li class="nav__referent"><a class="nav__link" href="https://pharmasco.com/contacts" target="_blank" rel="noopener noreferrer">Контакти</a></li>
+      </ul>-->
+      <ul class="contacts">
+        <li class="contacts__contact">
+          <a class="contacts__contact-mail " href="mailto:contact@pharmasco.com">
+            <svg class="contacts__contact-icon" width="20px" height="20px">
+              <use href="./images/sprite.svg#icon-envelope"></use>
+            </svg>contact@pharmasco.com</a>
+          </a>
+        </li>
+       <li class="contacts__contact">
+          <a class="contacts__contact-phone " href="tel:+38 (044) 537-08-04">
+            <svg class="contacts__contact-icon" width="20px" height="20px">
+              <use href="./images/sprite.svg#icon-phone"></use>
+            </svg>+38 (044) 537-08-04</a>
+            <a class="contacts__contact-phone" style="margin-top: 8px;" href="tel:+38 (067) 500-82-74">
+            <svg class="contacts__contact-icon" width="20px" height="20px">
+              <use href="./images/sprite.svg#icon-phone"></use>
+            </svg>+38 (067) 500-82-74</a>
+        </li>
+      </ul>
+    </div>
+    <button class="mobile-menu-btn" type="button" data-menu-button>
+      <svg class="mobile-menu-icon" width="24" height="16">
+        <use class="mobile-menu-burger" href="./images/sprite.svg#24-menu"></use>
+        <use class="mobile-menu-close" href="./images/sprite.svg#icon-X"></use>
+      </svg>
+    </button>
+    <div class="mobile-menu" data-menu>
+      <!--<ul class="mobile-menu-nav">
+        <li class="mobile-menu-nav-item">
+          <a class="link " href="./index.html">Головна</a>
+        </li>
+        <li class="mobile-menu-nav-item">
+          <a class="link current" href="./portfolio.html">Курси</a>
+        </li>
+        <li class="mobile-menu-nav-item">
+          <a class="link" href="/contact">Контакти</a>
+        </li>
+      </ul>-->
+      <ul class="mobile-menu-contacts">
+        <li class="contacts__contact">
+          <a class="contacts__contact-phone " href="tel:+38 (044) 537-08-04">
+            <svg class="contacts__contact-icon" width="20px" height="20px">
+              <use href="./images/sprite.svg#icon-phone"></use>
+            </svg>+38 (044) 537-08-04</a>
+            <a class="contacts__contact-phone" style="margin-top: 8px;" href="tel:+38 (067) 500-82-74">
+            <svg class="contacts__contact-icon" width="20px" height="20px">
+              <use href="./images/sprite.svg#icon-phone"></use>
+            </svg>+38 (067) 500-82-74</a>
+        </li>
+        <li class="mobile-menu-contacts-item">
+          <a class="link" href="mailto:contact@pharmasco.com">contact@pharmasco.com</a>
+        </li>
+      </ul>
+      <ul class="mobile-menu-socials">
+        <li class="mobile-menu-socials-item">
+          <a class="mobile-menu-socials-link link" href="https://www.instagram.com/pharmascocom/" target="_blank" rel="noopener noreferrer">Instagram</a>
+        </li>
+        <li class="mobile-menu-socials-item">
+          <a class="mobile-menu-socials-link link" href="https://www.youtube.com/@Pharmasco" target="_blank" rel="noopener noreferrer">Youtube</a>
+        </li>
+        <li class="mobile-menu-socials-item">
+          <a class="mobile-menu-socials-link link" href="https://www.facebook.com/Pharmasco/" target="_blank" rel="noopener noreferrer">Facebook</a>
+        </li>
+      </ul>
+    </div>
+  </header>
+  <main>
+    <section class="works">
+      <div class="container">
+  <h2 style="text-align: center;">🧩 Генератор аргументації знижки</h2>
+
+  <label>1️⃣ Причина:</label>
+  <select id="reason">
+    <option value="Ця пропозиція створена спеціально для старту співпраці">Старт співпраці</option>
+    <option value="Ми хочемо, щоб ви першими протестували оновлене рішення">Промо-запуск</option>
+    <option value="Враховуючи ваш досвід роботи з нами, ми запропонували персональну умову">Лояльність</option>
+    <option value="Це частина нашої програми оновлення обладнання">Акційна програма</option>
+  </select>
+
+  <label>2️⃣ Вигода:</label>
+  <select id="value">
+    <option value="Окрім знижки, ви отримуєте безкоштовне сервісне обслуговування">Сервісний бонус</option>
+    <option value="Ми включаємо стартовий комплект реактивів для запуску">Комплект реагентів</option>
+    <option value="У комплект входить налаштування, навчання персоналу та техпідтримка">Технічна підтримка</option>
+  </select>
+
+  <label>3️⃣ Обмеження:</label>
+  <select id="limit">
+    <option value="Пропозиція дійсна до кінця місяця">До кінця місяця</option>
+    <option value="Умови діють при замовленні до зазначеної дати">Тимчасова дія</option>
+    <option value="Пропозиція доступна лише для комплектного рішення">Умовний формат</option>
+  </select>
+
+  <label>4️⃣ Завершення:</label>
+  <select id="closing">
+    <option value="Це дозволить вам протестувати рішення без фінансового ризику">Без ризику</option>
+    <option value="Ми впевнені, що ви відчуєте вигоду з першого дня використання">Відчутна вигода</option>
+    <option value="Залишається лише узгодити деталі — ми на зв’язку">Заклик до дії</option>
+  </select>
+  <div class="button-section" Style="margin-top: 20px; position: relative; display: flex; justify-content: center; gap: 10px;">
+    <button class="btn" onclick="generate()">📣 Сформулювати фразу</button>
+    <button class="btn" onclick="copyPhrase()">📋 Копіювати текст</button>
+    <button class="btn" onclick="window.location.href='./trening17.html'">Назад</button>
+  </div>
+  <div class="card" id="output" style="display:none;">
+    <h3>Згенерована фраза:</h3>
+    <p id="phraseText"></p>
+    
+  </div>
+  </section>
+  </main>
+  <footer class="footer">
+    <div class="container">
+      <div class="find-us">
+        <div class="find">
+          <a class="logo footer__logo" href="/"><img src="./images/logo.svg" alt="logo" width="160"></a>
+          <ul class="contacts contacts--footer">
+            <li class="contacts__contact contacts__contact--footer">
+              <address class="contacts__post"><p>Україна, Київська обл.,</p> <p>м. Вишгород,</p> <p>вул. Шолуденка, 15г</p></address>
+            </li>
+            <li class="contacts__contact contacts__contact--footer">
+              <a class="contacts__contact-mail contacts__contact-mail--footer"
+                href="mailto:contact@pharmasco.com">contact@pharmasco.com</a>
+            </li>
+            <li class="contacts__contact contacts__contact--footer">
+              <a class="contacts__contact-phone contacts__contact-phone--footer" href="tel:+38 (044) 537-08-04">+38 (044) 537-08-04</a>
+              <a class="contacts__contact-phone contacts__contact-phone--footer" href="tel:+38 (067) 500-82-74">+38 (067) 500-82-74</a>
+            </li>
+          </ul>
+        </div>
+        <div class="social social--footer">
+          <h2 class="social__title">приєднуйтесь</h2>
+          <ul class="social__list social__list--footer">
+            <li class="social__item social__item--footer">
+              <a class="social__link social__link--footer link" href="https://www.instagram.com/pharmascocom/" target="_blank" rel="noopener noreferrer"
+                aria-label="инстаграм иконка">
+                <svg class="social__icon social__icon--footer" width="20px" height="20px">
+                  <use href="./images/sprite.svg#icon-instagram"></use>
+                </svg></a>
+            </li>
+            <li class="social__item social__item--footer">
+              <a class="social__link social__link--footer link" href="https://www.youtube.com/@Pharmasco" target="_blank" rel="noopener noreferrer"
+                aria-label="твиттер иконка">
+                <svg class="social__icon social__icon--footer" width="20px" height="20px">
+                  <use href="./images/uoytube.svg"></use>
+                </svg></a>
+            </li>
+            <li class="social__item social__item--footer">
+              <a class="social__link social__link--footer link" href="https://www.facebook.com/Pharmasco/" target="_blank" rel="noopener noreferrer"
+                aria-label="фейсбук иконка">
+                <svg class="social__icon social__icon--footer" width="20px" height="20px">
+                  <use href="./images/sprite.svg#icon-facebook"></use>
+                </svg></a> 
+            </li>       
+          </ul>
+        </div>
+        <div class="spam">
+          <h2 class="spam__title" style="line-height: 2;">ТОВ «НВК «Фармаско» – провідний постачальник засобів діагностики для українських закладів охорони здоров’я, лікарів та пацієнтів.</h2>
+          <!--<form class="spam__form">
+            <label class="spam__label">
+              <input class="spam__input" type="email" name="email" placeholder="E-mail" />
+            </label>
+            <button class="btn btn--spam" type="submit">Підписатися<a class="spam-link link" href="" target="_blank"
+                rel="noopener noreferrer" aria-label="инстаграм иконка">
+                <svg class="spam__icon" width="24px" height="24px">
+                  <use href="./images/sprite.svg#icon-send"></use>
+                </svg></a></button>
+          </form>-->
+        </div>
+      </div>
+    </div>
+        <p id="currentUser" style="font-size: smaller; color: #666; text-align: center;"></p>
+  </footer>
+    
+  
+
+  <script>
+    function generate() {
+      const r = document.getElementById('reason').value;
+      const v = document.getElementById('value').value;
+      const l = document.getElementById('limit').value;
+      const c = document.getElementById('closing').value;
+      const phrase = `${r}. ${v}. ${l}. ${c}.`;
+
+      document.getElementById('phraseText').innerText = phrase;
+      document.getElementById('output').style.display = 'block';
+
+      // WhatsApp
+      const wa = "https://api.whatsapp.com/send?text=" + encodeURIComponent(phrase);
+      document.getElementById('whatsappLink').href = wa;
+
+      // Telegram
+      const tg = "https://t.me/share/url?url=&text=" + encodeURIComponent(phrase);
+      document.getElementById('telegramLink').href = tg;
+    }
+
+    function copyPhrase() {
+      const text = document.getElementById('phraseText').innerText;
+      navigator.clipboard.writeText(text);
+      alert("✅ Текст скопійовано!");
+    }
+
+    
+  </script>
+</body>
+</html>

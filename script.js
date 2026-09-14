@@ -34,10 +34,10 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     // Автоматичне відкриття посилань для користувачів із збереженою поштою
-    let storedEmail = localStorage.getItem("allowedEmail");
-    if (storedEmail && allowedEmails.includes(storedEmail)) {
+   // let storedEmail = localStorage.getItem("allowedEmail");
+   // if (storedEmail && allowedEmails.includes(storedEmail)) {
         // Зверни увагу: тут ти перенаправляєш на "./portfolio.html", 
         // а при сабміті форми на "./portfolio news.html". Перевір, чи так і задумано.
-        window.location.href = "./portfolio news.html"; 
-    }
+     // window.location.href = "./portfolio news.html"; 
+    //}
 });

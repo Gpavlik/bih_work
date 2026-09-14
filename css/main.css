@@ -609,7 +609,11 @@ margin-bottom: 6px;
   display: block;
   margin-bottom: 20px;
 }
-
+.footer__logo-img {
+  display: block;
+  margin-bottom: 20px;
+  max-width: 150%;
+}
 .contacts {
   display: -webkit-box;
   display: -ms-flexbox;
@@ -1381,8 +1385,8 @@ margin-bottom: 6px;
   display: block;
   background: var(--fuller-color);
   font-weight: 400;
-  padding-top: 60px;
-  padding-bottom: 60px;
+  padding-top: 20px;
+  padding-bottom: 20px;
 }
 
 .find-us {
@@ -1456,28 +1460,29 @@ margin-bottom: 6px;
     top: 0; /* Розміщує його у верхній частині сторінки */
     width: 100%; /* Розтягує на всю ширину */
     background-color: #f5f4fa; /* Задає фон (можна змінити) */
+    transition: transform 0.7s ease-in-out;
     z-index: 1000; /* Встановлює пріоритет показу над іншими елементами */
 }
 @media screen and (max-width: 767px) {
   .header {
-    padding-top: 22px;
-    padding-bottom: 22px;
+    
     height: 60px;
   }
 }
 @media screen and (min-width: 768px) {
   .header {
-    padding-top: 22px;
-    padding-bottom: 22px;
+    
   }
 }
 @media screen and (min-width: 1200px) {
   .header {
-    padding-top: 32px;
-    padding-bottom: 32px;
+    
   }
 }
-
+/* Клас, який ховає хедер вгору за межі екрана */
+.header--hidden {
+  transform: translateY(-100%);
+}
 .header__container {
   display: -webkit-box;
   display: -ms-flexbox;

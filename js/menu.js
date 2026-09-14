@@ -1,15 +1,14 @@
-(() => {
-	const menuBtnRef = document.querySelector("[data-menu-button]");
-	const mobileMenuRef = document.querySelector("[data-menu]");
-	const body = document.querySelector("[data-body]");
+// menu.js
+function initMenu() {
+  const menuBtn = document.querySelector('[data-menu-button]');
+  const mobileMenu = document.querySelector('[data-menu]');
 
-	menuBtnRef.addEventListener("click", () => {
-		const expanded = menuBtnRef.getAttribute("aria-expanded") === "true" || false;
-
-		menuBtnRef.classList.toggle("is-open");
-		menuBtnRef.setAttribute("aria-expanded", !expanded);
-
-		mobileMenuRef.classList.toggle("is-open");
-		body.classList.toggle("no-scroll");
-	});
-})();
+  // Перевірка: виконувати код тільки якщо елементи вже є на сторінці
+  if (menuBtn && mobileMenu) {
+    menuBtn.addEventListener('click', () => {
+      const expanded = menuBtn.getAttribute('aria-expanded') === 'true' || false;
+      menuBtn.setAttribute('aria-expanded', !expanded);
+      mobileMenu.classList.toggle('is-open');
+    });
+  }
+}

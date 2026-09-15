@@ -19,10 +19,10 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Відображаємо привітання в хедері (перенесено сюди)
-    const greeting = document.getElementById("greetingMessage");
-    if (greeting) {
-      greeting.textContent = "Вітаємо, " + nameOrEmail + "!";
-    }
+    //const greeting = document.getElementById("greetingMessage");
+    //if (greeting) {
+      //greeting.textContent = "Вітаємо, " + nameOrEmail + "!";
+   // }
   }
 
   if (email) {

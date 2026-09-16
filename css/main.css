@@ -10,9 +10,7 @@
             position: relative;
             display: inline-block;
               }
-.rounded {
-    border-radius: 20px; 
-}
+
 
 .menu {
                         position: absolute;
@@ -44,7 +42,7 @@
         .menu a:hover {
             color: #069606;
             border: 1px solid #007500;
-            border-radius: 20px;
+           
             transition: opacity 1.3s ease, visibility 1.3s ease;
             animation: bounce 0.5s;
         }
@@ -54,7 +52,7 @@
             opacity: 1;
             max-height: 500px;
             border: #aaaaaa 1px solid;
-            border-radius: 20px;
+            
         }
         .button-section:hover .btn {
           position: relative;
@@ -241,7 +239,6 @@ img {
 }
 .btn {
   background-color: #f5f4fa;
-  border-radius: 20px;
   font-size: 16px;
   line-height: 1.62;
   text-align: center;
@@ -262,6 +259,7 @@ border: 1px solid rgba(33, 33, 33, 0.2);
 margin-bottom: 6px;  
   position: relative;
   overflow: hidden;
+  margin-right: 10px;
 }
 
 .btn:active {
@@ -326,7 +324,6 @@ margin-bottom: 6px;
   display: block;
   margin-left: auto;
   margin-right: auto;
-  border-radius: 30px;
   background: var(--brand-color);
   height: 50px;
   width: 200px;
@@ -346,7 +343,6 @@ margin-bottom: 6px;
 
 .submit-btn {
   background: var(--brand-color);
-  border-radius: 30px;
   font-family: "Roboto";
   font-style: normal;
   font-weight: 700;
@@ -386,7 +382,6 @@ margin-bottom: 6px;
   -webkit-box-pack: center;
       -ms-flex-pack: center;
           justify-content: center;
-  border-radius: 50%;
   background: #ffffff;
   border: 1px solid rgba(0, 0, 0, 0.1);
   position: absolute;
@@ -1545,6 +1540,9 @@ margin-bottom: 6px;
   margin-bottom: 30px;
   margin-left: auto;
   margin-right: auto;
+  -webkit-text-stroke: 1px black;
+  paint-order: stroke fill;
+  text-shadow: 0 4px 15px rgba(0, 0, 0, 0.75);
 }
 @media screen and (max-width: 1199px) {
   .hero-title {
@@ -1608,7 +1606,6 @@ margin-bottom: 6px;
   background-position: center;
   background-size: 70px;
   border: #c7c5c5 1px solid;
-  border-radius: 20px;
   margin-bottom: 30px;
 }
 .list > .item:nth-child(1)::before {
@@ -1793,7 +1790,7 @@ margin-bottom: 6px;
   width: 370px;
   background: #ffffff;
   border: 1px solid #069606;
-  border-radius: 10px;
+
 }
 @media screen and (max-width: 767px) {
   .description {
@@ -1837,7 +1834,7 @@ margin-bottom: 6px;
   height: 293px;
   position: relative;
   overflow: hidden;
-  border-radius: 10px;
+ 
 }
 @media screen and (max-width: 767px) {
   .overflow {
@@ -1929,7 +1926,7 @@ margin-bottom: 6px;
   bottom: 20px;
   right: 50px;
   z-index: 999;
-  background-color: #069606;
+  background-color: #69f369;
   color: white;
   border: none;
   padding: 10px 14px;

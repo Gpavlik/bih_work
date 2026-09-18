@@ -14,7 +14,6 @@
     integrity="sha512-Y0MM+V6ymRKN2zStTqzQ227DWhhp4Mzdo6gnlRnuaNCbc+YN/ZH0sBCLTM4M0oSy9c9VKiCvd4Jk44aCLrNS5Q=="
     crossorigin="anonymous" referrerpolicy="no-referrer" />
   <link rel="stylesheet" href="./css/main.css" />
-  <link rel="stylesheet" href="./css/styles.css" />
 
 <!-- Google tag (gtag.js) -->
 
@@ -159,7 +158,6 @@
       </div>
     <script src="./js/modal.js"></script>
     <script src="./js/menu.js"></script>
-    <script src="script.js"></script>
     <script>
   // Зчитуємо тему з localStorage
   if (localStorage.getItem('theme') === 'dark') {
@@ -176,6 +174,11 @@
     }
   }
 </script>
+<audio id="bg-audio" preload="auto">
+  <source src="./11.mp3" type="audio/mp3">
+</audio>
+
+<script src="audio.js"></script>
 <script src="theme-toggle.js"></script>
 <script src="tracking.js"></script>
 <script src="headfoot.js"></script>

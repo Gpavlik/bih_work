@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="uk">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Продукти та Тренінги</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@700&family=Roboto:wght@400;500;700;900&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/modern-normalize/1.1.0/modern-normalize.css"
+    integrity="sha512-Y0MM+V6ymRKN2zStTqzQ227DWhhp4Mzdo6gnlRnuaNCbc+YN/ZH0sBCLTM4M0oSy9c9VKiCvd4Jk44aCLrNS5Q=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="./css/main.css" />
+  <link rel="stylesheet" href="./css/styles.css">
+
+  <style>
+    /* Стилі для спойлерів (акордеона) */
+    .spoiler-group {
+      margin-bottom: 25px;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      background-color: #ffffff;
+      overflow: hidden;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .spoiler-header {
+      padding: 16px 20px;
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+      background-color: #f8f9fa;
+      color: #212121;
+      list-style: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: background-color 0.2s ease, color 0.2s ease;
+      user-select: none;
+    }
+
+    .spoiler-header::-webkit-details-marker {
+      display: none;
+    }
+
+    .spoiler-header::after {
+      content: '▲';
+      font-size: 14px;
+      transition: transform 0.3s ease;
+      color: #2196f3;
+    }
+
+    .spoiler-group[open] .spoiler-header::after {
+      transform: rotate(180deg);
+    }
+
+    .spoiler-header:hover {
+      background-color: #e3f2fd;
+      color: #2196f3;
+    }
+
+    .spoiler-content {
+      padding: 20px;
+    }
+  </style>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-5BZZCV5DRK"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag("js", new Date());
+  gtag("config", "G-5BZZCV5DRK");
+</script>
+<script>
+  const email = localStorage.getItem("allowedEmail");
+  if (email) {
+    gtag("set", "user_properties", {
+      user_id: email
+    });
+  }
+</script>
+<script>
+  function sha256(input) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(input);
+    return crypto.subtle.digest("SHA-256", data).then(hash => {
+      return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
+    });
+  }
+</script>
+</head>
+<body>
+  <div id="header-container"></div>
+  <main>
+    <section class="works">
+      <div class="container">
+        <h2 class="works__title">роботи</h2>
+        <ul class="button">
+          <li class="button-section"><button class="btn" type="button"><a style="text-decoration: none; font-size: smaller;" class="text__work" href="./portfolio news.html">Новини</a></button></li>
+          <li class="button-section"><button class="btn btn--select" type="button"><a style="text-decoration: none; font-size: smaller;" class="text__work" href="./portfolio products.html">Продукти</a></button></li>
+          <li class="button-section"><button class="btn" type="button"><a style="text-decoration: none; font-size: smaller;" class="text__work" href="./portfolio trenings.html">Тренінги</a></button></li>
+          <li class="button-section"><button class="btn" type="button"><a style="text-decoration: none; font-size: smaller;" class="text__work" href="./portfolio standart.html">Стандарти</a></button></li>
+          <li class="button-section"><button class="btn" type="button"><a onclick="showPasswordPrompt(event, './portfolio PV.html')" style="text-decoration: none; font-size: smaller;" class="text__work" href="./portfolio PV.html">ПВ</a></button></li>
+        </ul>
+
+        <!-- СПОЙЛЕР 1: Базові навички та візити (open - розгорнутий за замовчуванням) -->
+        <details class="spoiler-group" open>
+          <summary class="spoiler-header">1. Базові навички та візити МП</summary>
+          <div class="spoiler-content">
+            <ul class="works-cards">
+              <li class="description">
+                <div class="overflow">
+                  <picture>
+                    <source media="(min-width: 1200px)" srcset="./PHARM/basic.jpg, ./images2/works/img-0_lg2x.webp" type="image/webp" />
+                    <source media="(min-width: 768px)" srcset="./PHARM/basic.jpg, ./images2/works/img-0_md2x.webp" type="image/webp" />
+                    <source media="(max-width: 767px)" srcset="./PHARM/basic.jpg, ./images2/works/img-0_sm2x.webp" type="image/webp" />
+                    <img src="./images2/works/img-0_sm1x.jpg" alt="Visit structure" width="450" height="294" />
+                  </picture>
+                  <div class="bg">
+                    <a class="atext" href="./trening1.html">
+                      <p class="bg__uppertext">На цьому тренінгу ви отримаєте базові знання про роботу з партнерами (лікарями та аптеками), які допоможуть вам у вашій практиці.</p>
+                    </a>
+                  </div>
+                </div>
+                <div class="text">
+                  <h3 class="text__work">Visit structure</h3>
+                  <p class="text__sub">Базовий тренінг МП</p>
+                </div>
+              </li>
+
+              <li class="description">
+                <div class="overflow">
+                  <picture>
+                    <source media="(min-width: 1200px)" srcset="./PHARM/LPR.jpg, ./images2/works/img-1_lg2x.webp" type="image/webp" />
+                    <source media="(min-width: 768px)" srcset="./PHARM/LPR.jpg, ./images2/works/img-1_md2x.webp" type="image/webp" />
+                    <source media="(max-width: 767px)" srcset="./PHARM/LPR.jpg, ./images2/works/img-1_sm2x.webp" type="image/webp" />
+                    <img src="./images2/works/img-1_sm1x.jpg" alt="Decision-maker" width="450" height="294" />
+                  </picture>
+                  <div class="bg">
+                    <a class="atext" href="./trening2.html">
+                      <p class="bg__uppertext">На цьому тренінгу ви отримаєте базові знання про роботу з ЛПР (завідувачі лабораторіями, головні лікарі та інші), які допоможуть вам у вашій практиці.</p>
+                    </a>
+                  </div>
+                </div>
+                <div class="text">
+                  <h3 class="text__work">Decision-maker</h3>
+                  <p class="text__sub">Тренінг по роботі з ЛПР</p>
+                </div>
+              </li>
+
+              <li class="description">
+                <div class="overflow">
+                  <picture>
+                    <source media="(min-width: 1200px)" srcset="./PHARM/apt.jpg, ./images2/works/img-5_lg2x.webp" type="image/webp" />
+                    <source media="(min-width: 768px)" srcset="./PHARM/apt.jpg, ./images2/works/img-5_md2x.webp" type="image/webp" />
+                    <source media="(max-width: 767px)" srcset="./PHARM/apt.jpg, ./images2/works/img-5_sm2x.webp" type="image/webp" />
+                    <img src="./images2/works/img-5_sm1x.jpg" alt="Pharm-unit work" width="450" height="294" />
+                  </picture>
+                  <div class="bg">
+                    <a class="atext" href="./trening23.html">
+                      <p class="bg__uppertext">На цьому тренінгу ви отримаєте знання з роботи в аптечному юніті, а саме основних каналах і методах впливу на продажі аптечної категорії швидких тестів.</p>
+                    </a>
+                  </div>
+                </div>
+                <div class="text">
+                  <h3 class="text__work"><span lang="en">Pharm-unit work</span></h3>
+                  <p class="text__sub">Тренінг з роботи в аптечному юніті</p>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </details>
+
+        <!-- СПОЙЛЕР 2: Робота з запереченнями та конкурентами -->
+        <details class="spoiler-group">
+          <summary class="spoiler-header">2. Робота з запереченнями, потребами та конкурентами</summary>
+          <div class="spoiler-content">
+            <ul class="works-cards">
+              <li class="description">
+                <div class="overflow">
+                  <picture>
+                    <source media="(min-width: 1200px)" srcset="./PHARM/NEED.jfif, ./images2/works/img-5_lg2x.webp" type="image/webp" />
+                    <source media="(min-width: 768px)" srcset="./PHARM/NEED.jfif, ./images2/works/img-5_md2x.webp" type="image/webp" />
+                    <source media="(max-width: 767px)" srcset="./PHARM/NEED.jfif, ./images2/works/img-5_sm2x.webp" type="image/webp" />
+                    <img src="./PHARM/NEED.jfif" alt="Needs" width="450" height="294" />
+                  </picture>
+                  <div class="bg">
+                    <a class="atext" href="./trening19.html">
+                      <p class="bg__uppertext">На цьому тренінгу ви отримаєте знання про особливості визначення потреб партнерів різних поведінкових типів та формування пропозицій відповідно до поведінкового типу.</p>
+                    </a>
+                  </div>
+                </div>
+                <div class="text">
+                  <h3 class="text__work"><span lang="en">Needs</span></h3>
+                  <p class="text__sub">Тренінг з визначення потреб</p>
+                </div>
+              </li>
+
+              <li class="description">
+                <div class="overflow">
+                  <picture>
+                    <source media="(min-width: 1200px)" srcset="./PHARM/YN.jpg, ./images2/works/img-4_lg2x.webp" type="image/webp" />
+                    <source media="(min-width: 768px)" srcset="./PHARM/YN.jpg, ./images2/works/img-4_md2x.webp" type="image/webp" />
+                    <source media="(max-width: 767px)" srcset="./PHARM/YN.jpg, ./images2/works/img-4_sm2x.webp" type="image/webp" />
+                    <img src="./images2/works/img-4_sm1x.jpg" alt="Handling objections" width="450" height="294" />
+                  </picture>
+                  <div class="bg">
+                    <a class="atext" href="./trening5.html">
+                      <p class="bg__uppertext">На цьому тренінгу ви отримаєте знання про роботу з запереченнями, які допоможуть вам у вашій практиці.</p>
+                    </a>
+                  </div>
+                </div>
+                <div class="text">
+                  <h3 class="text__work">Handling objections</h3>
+                  <p class="text__sub">Робота з запереченнями</p>
+                </div>
+              </li>
+
+              <li class="description">
+                <div class="overflow">
+                  <picture>
+                    <source media="(min-width: 1200px)" srcset="./PHARM/BATALLAS.jpg, ./images2/works/img-5_lg2x.webp" type="image/webp" />
+                    <source media="(min-width: 768px)" srcset="./PHARM/BATALLAS.jpg, ./images2/works/img-5_md2x.webp" type="image/webp" />
+                    <source media="(max-width: 767px)" srcset="./PHARM/BATALLAS.jpg, ./images2/works/img-5_sm2x.webp" type="image/webp" />
+                    <img src="./images2/works/img-5_sm1x.jpg" alt="Dealing with competitor" width="450" height="294" />
+                  </picture>
+                  <div class="bg">
+                    <a class="atext" href="./trening6.html">
+                      <p class="bg__uppertext">На цьому тренінгу ви отримаєте знання про роботу з конкурентами, які допоможуть вам у вашій практиці.</p>
+                    </a>
+                  </div>
+                </div>
+                <div class="text">
+                  <h3 class="text__work"><span lang="en">Dealing with competitor</span></h3>
+                  <p class="text__sub">Робота з конкурентами</p>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </details>
+
+        <!-- СПОЙЛЕР 3: Комунікації, переговори та презентації -->
+        <details class="spoiler-group">
+          <summary class="spoiler-header">3. Комунікації, переговори та презентації</summary>
+          <div class="spoiler-content">
+            <ul class="works-cards">
+              <li class="description">
+                <div class="overflow">
+                  <picture>
+                    <source media="(min-width: 1200px)" srcset="./PHARM/EC.jpg, ./images2/works/img-5_lg2x.webp" type="image/webp" />
+                    <source media="(min-width: 768px)" srcset="./PHARM/EC.jpg, ./images2/works/img-5_md2x.webp" type="image/webp" />
+                    <source media="(max-width: 767px)" srcset="./PHARM/EC.jpg, ./images2/works/img-5_sm2x.webp" type="image/webp" />
+                    <img src="./PHARM/EC.jpg" alt="Effective communication" width="450" height="294" />
+                  </picture>
+                  <div class="bg">
+                    <a class="atext" href="./trening22.html">
+                      <p class="bg__uppertext">На цьому тренінгу ви отримаєте знання з ефективної комунікації з партнерами, які допоможуть вам у вашій практиці.</p>
+                    </a>
+                  </div>
+                </div>
+                <div class="text">
+                  <h3 class="text__work"><span lang="ua">Effective communication</span></h3>
+                  <p class="text__sub">Тренінг з ефективної комунікації</p>
+                </div>
+              </li>
+
+              <li class="description">
+                <div class="overflow">
+                  <picture>
+                    <source media="(min-width: 1200px)" srcset="./PHARM/pere.jpg, ./images2/works/img-2_lg2x.webp" type="image/webp" />
+                    <source media="(min-width: 768px)" srcset="./PHARM/pere.jpg, ./images2/works/img-2_md2x.webp" type="image/webp" />
+                    <source media="(max-width: 767px)" srcset="./PHARM/pere.jpg, ./images2/works/img-2_sm2x.webp" type="image/webp" />
+                    <img src="./images2/works/img-2_sm1x.jpg" alt="Negotiation process" width="450" height="294" />
+                  </picture>
+                  <div class="bg">
+                    <a class="atext" href="./trening12.html">
+                      <p class="bg__uppertext">На цьому тренінгу ви отримаєте знання про ведення переговорів, які допоможуть вам у вашій практиці. Тренінг розрахований на всіх, хто хоче покращити свої навички ведення переговорів.</p>
+                    </a>
+                  </div>
+                </div>
+                <div class="text">
+                  <h3 class="text__work">Negotiation process</h3>
+                  <p class="text__sub">Тренінг з ведення переговорів.</p>
+                </div>
+              </li>
+
+              <li class="description">
+                <div class="overflow">
+                  <picture>
+                    <source media="(min-width: 1200px)" srcset="./PHARM/present.jpg, ./images2/works/img-2_lg2x.webp" type="image/webp" />
+                    <source media="(min-width: 768px)" srcset="./PHARM/present.jpg, ./images2/works/img-2_md2x.webp" type="image/webp" />
+                    <source media="(max-width: 767px)" srcset="./PHARM/present.jpg, ./images2/works/img-2_sm2x.webp" type="image/webp" />
+                    <img src="./images2/works/img-2_sm1x.jpg" alt="Presentation" width="450" height="294" />
+                  </picture>
+                  <div class="bg">
+                    <a class="atext" href="./trening3.html">
+                      <p class="bg__uppertext">На цьому тренінгу ви отримаєте базові знання по груповим продажам для аудиторії лікарів та фармацевтів, які допоможуть вам у вашій практиці.</p>
+                    </a>
+                  </div>
+                </div>
+                <div class="text">
+                  <h3 class="text__work">Presentation</h3>
+                  <p class="text__sub">Тренінг з презентації продукту</p>
+                </div>
+              </li>
+
+              <li class="description">
+                <div class="overflow">
+                  <picture>
+                    <source media="(min-width: 1200px)" srcset="./PHARM/ppt.jfif, ./images2/works/img-3_lg2x.webp" type="image/webp" />
+                    <source media="(min-width: 768px)" srcset="./PHARM/ppt.jfif, ./images2/works/img-3_md2x.webp" type="image/webp" />
+                    <source media="(max-width: 767px)" srcset="./PHARM/ppt.jfif, ./images2/works/img-3_sm2x.webp" type="image/webp" />
+                    <img src="./images2/works/img-3_sm1x.jpg" alt="Presentation making" width="450" height="294" />
+                  </picture>
+                  <div class="bg">
+                    <a class="atext" href="./trening13.html">
+                      <p class="bg__uppertext">На цьому тренінгу ви отримаєте знання про створення презентацій, які допоможуть вам у вашій практиці.</p>
+                    </a>
+                  </div>
+                </div>
+                <div class="text">
+                  <h3 class="text__work"><span lang="en">Presentation making</span></h3>
+                  <p class="text__sub">Тренінг з підготовки презентацій</p>
+                </div>
+              </li>
+
+              <li class="description">
+                <div class="overflow">
+                  <picture>
+                    <source media="(min-width: 1200px)" srcset="./PHARM/LIST.jpg, ./images2/works/img-3_lg2x.webp" type="image/webp" />
+                    <source media="(min-width: 768px)" srcset="./PHARM/LIST.jpg, ./images2/works/img-3_md2x.webp" type="image/webp" />
+                    <source media="(max-width: 767px)" srcset="./PHARM/LIST.jpg, ./images2/works/img-3_sm2x.webp" type="image/webp" />
+                    <img src="./images2/works/img-3_sm1x.jpg" alt="business emailing" width="450" height="294" />
+                  </picture>
+                  <div class="bg">
+                    <a class="atext" href="./trening4.html">
+                      <p class="bg__uppertext">На цьому тренінгу ви отримаєте базові знання по діловому листуванню з партнерами, які допоможуть вам у вашій практиці.</p>
+                    </a>
+                  </div>
+                </div>
+                <div class="text">
+                  <h3 class="text__work">business emailing</h3>
+                  <p class="text__sub">Тренінг з ділового листування</p>
+                </div>
+              </li>
+
+              <li class="description">
+                <div class="overflow">
+                  <picture>
+                    <source media="(min-width: 1200px)" srcset="./PHARM/call.jfif, ./images2/works/img-5_lg2x.webp" type="image/webp" />
+                    <source media="(min-width: 768px)" srcset="./PHARM/call.jfif, ./images2/works/img-5_md2x.webp" type="image/webp" />
+                    <source media="(max-width: 767px)" srcset="./PHARM/call.jfif, ./images2/works/img-5_sm2x.webp" type="image/webp" />
+                    <img src="./images2/works/img-5_sm1x.jpg" alt="Call sales" width="450" height="294" />
+                  </picture>
+                  <div class="bg">
+                    <a class="atext" href="./trening16.html">
+                      <p class="bg__uppertext">На цьому тренінгу ви отримаєте знання про особливості дистанційних продажів, які допоможуть вам у вашій практиці.</p>
+                    </a>
+                  </div>
+                </div>
+                <div class="text">
+                  <h3 class="text__work"><span lang="en">Call sales</span></h3>
+                  <p class="text__sub">Тренінг з дистанційного продажу</p>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </details>
+
+        <!-- СПОЙЛЕР 4: Продажі, таргетинг та комерція -->
+        <details class="spoiler-group">
+          <summary class="spoiler-header">4. Продажі, таргетинг та комерційні активності</summary>
+          <div class="spoiler-content">
+            <ul class="works-cards">
+              <li class="description">
+                <div class="overflow">
+                  <picture>
+                    <source media="(min-width: 1200px)" srcset="./PHARM/sales.jpg, ./images2/works/img-7_lg2x.webp" type="image/webp" />
+                    <source media="(min-width: 768px)" srcset="./PHARM/sales.jpg, ./images2/works/img-7_md2x.webp" type="image/webp" />
+                    <source media="(max-width: 767px)" srcset="./PHARM/sales.jpg, ./images2/works/img-7_sm2x.webp" type="image/webp" />
+                    <img src="./images2/works/img-7_sm1x.jpg" alt="Sales management" width="450" height="294" />
+                  </picture>
+                  <div class="bg">
+                    <a class="atext" href="./trening8.html">
+                      <p class="bg__uppertext">На цьому тренінгу ви отримаєте знання управління продажами на території, які допоможуть вам у вашій практиці.</p>
+                    </a>
+                  </div>
+                </div>
+                <div class="text">
+                  <h3 class="text__work">Sales management</h3>
+                  <p class="text__sub">Тренінг з управління продажами</p>
+                </div>
+              </li>
+
+              <li class="description">
+                <div class="overflow">
+                  <picture>
+                    <source media="(min-width: 1200px)" srcset="./PHARM/image.jpg, ./images2/works/img-8_lg2x.webp" type="image/webp" />
+                    <source media="(min-width: 768px)" srcset="./PHARM/image.jpg, ./images2/works/img-8_md2x.webp" type="image/webp" />
+                    <source media="(max-width: 767px)" srcset="./PHARM/image.jpg, ./images2/works/img-8_sm2x.webp" type="image/webp" />
+                    <img src="./images2/works/img-8_sm1x.jpg" alt="Targeting" width="450" height="294" />
+                  </picture>
+                  <div class="bg">
+                    <a class="atext" href="./trening9.html">
+                      <p class="bg__uppertext">На цьому тренінгу ви отримаєте знання про формування ефективної партнерської бази, які допоможуть вам у вашій практиці.</p>
+                    </a>
+                  </div>
+                </div>
+                <div class="text">
+                  <h3 class="text__work"><span lang="en">Targeting</span></h3>
+                  <p class="text__sub">Створення партнерської бази</p>
+                </div>
+              </li>
+
+              <li class="description">
+                <div class="overflow">
+                  <picture>
+                    <source media="(min-width: 1200px)" srcset="./PHARM/calc.jpg, ./images2/works/img-5_lg2x.webp" type="image/webp" />
+                    <source media="(min-width: 768px)" srcset="./PHARM/calc.jpg, ./images2/works/img-5_md2x.webp" type="image/webp" />
+                    <source media="(max-width: 767px)" srcset="./PHARM/calc.jpg, ./images2/works/img-5_sm2x.webp" type="image/webp" />
+                    <img src="./PHARM/calc.jpg" alt="Discounts offering" width="450" height="294" />
+                  </picture>
+                  <div class="bg">
+                    <a class="atext" href="./trening17.html">
+                      <p class="bg__uppertext">На цьому тренінгу ви отримаєте знання про роботу зі знижками, які допоможуть вам у вашій практиці.</p>
+                    </a>
+                  </div>
+                </div>
+                <div class="text">
+                  <h3 class="text__work"><span lang="en">Discounts offering</span></h3>
+                  <p class="text__sub">Тренінг по роботі зі знижками</p>
+                </div>
+              </li>
+
+              <li class="description">
+                <div class="overflow">
+                  <picture>
+                    <source media="(min-width: 1200px)" srcset="./PHARM/conf.jpg, ./images2/works/img-5_lg2x.webp" type="image/webp" />
+                    <source media="(min-width: 768px)" srcset="./PHARM/conf.jpg, ./images2/works/img-5_md2x.webp" type="image/webp" />
+                    <source media="(max-width: 767px)" srcset="./PHARM/conf.jpg, ./images2/works/img-5_sm2x.webp" type="image/webp" />
+                    <img src="./images2/works/img-5_sm1x.jpg" alt="Conference activities" width="450" height="294" />
+                  </picture>
+                  <div class="bg">
+                    <a class="atext" href="./trening18.html">
+                      <p class="bg__uppertext">На цьому тренінгу ви отримаєте знання про роботу на конференціях, які допоможуть вам у вашій практиці.</p>
+                    </a>
+                  </div>
+                </div>
+                <div class="text">
+                  <h3 class="text__work"><span lang="en">Conference activities</span></h3>
+                  <p class="text__sub">Тренінг по роботі на конференціях</p>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </details>
+
+        <!-- СПОЙЛЕР 5: Менеджмент, розвиток та ефективність -->
+        <details class="spoiler-group">
+          <summary class="spoiler-header">5. Менеджмент, розвиток персоналу та ефективність</summary>
+          <div class="spoiler-content">
+            <ul class="works-cards">
+              <li class="description">
+                <div class="overflow">
+                  <picture>
+                    <source media="(min-width: 1200px)" srcset="./PHARM/leader.jpg, ./images2/works/img-0_lg2x.webp" type="image/webp" />
+                    <source media="(min-width: 768px)" srcset="./PHARM/leader.jpg, ./images2/works/img-0_md2x.webp" type="image/webp" />
+                    <source media="(max-width: 767px)" srcset="./PHARM/leader.jpg, ./images2/works/img-0_sm2x.webp" type="image/webp" />
+                    <img src="./images2/works/img-0_sm1x.jpg" alt="Situational leadership" width="450" height="294" />
+                  </picture>
+                  <div class="bg">
+                    <a class="atext" href="./trening10.html" onclick="showPasswordPrompt(event, './trening10.html')">
+                      <p class="bg__uppertext">На цьому тренінгу ви отримаєте знання про стилі керування персоналом, які допоможуть вам у вашій практиці.</p>
+                    </a>
+                  </div>
+                </div>
+                <div class="text">
+                  <h3 class="text__work">Situational leadership</h3>
+                  <p class="text__sub">Ситуаційне лідерство</p>
+                </div>
+              </li>
+
+              <li class="description">
+                <div class="overflow">
+                  <picture>
+                    <source media="(min-width: 1200px)" srcset="./PHARM/roz.jpg, ./images2/works/img-1_lg2x.webp" type="image/webp" />
+                    <source media="(min-width: 768px)" srcset="./PHARM/roz.jpg, ./images2/works/img-1_md2x.webp" type="image/webp" />
+                    <source media="(max-width: 767px)" srcset="./PHARM/roz.jpg, ./images2/works/img-1_sm2x.webp" type="image/webp" />
+                    <img src="./images2/works/img-1_sm1x.jpg" alt="People development" width="450" height="294" />
+                  </picture>
+                  <div class="bg">
+                    <a class="atext" href="./trening11.html" onclick="showPasswordPrompt(event, './trening11.html')">
+                      <p class="bg__uppertext">На цьому тренінгу ви отримаєте знання про управління та розвиток співробітників, які допоможуть вам у вашій практиці.</p>
+                    </a>
+                  </div>
+                </div>
+                <div class="text">
+                  <h3 class="text__work"><span lang="en">People development</span></h3>
+                  <p class="text__sub">Розвиток персоналу</p>
+                </div>
+              </li>
+
+              <li class="description">
+                <div class="overflow">
+                  <picture>
+                    <source media="(min-width: 1200px)" srcset="./PHARM/time.jpg, ./images2/works/img-4_lg2x.webp" type="image/webp" />
+                    <source media="(min-width: 768px)" srcset="./PHARM/time.jpg, ./images2/works/img-4_md2x.webp" type="image/webp" />
+                    <source media="(max-width: 767px)" srcset="./PHARM/time.jpg, ./images2/works/img-4_sm2x.webp" type="image/webp" />
+                    <img src="./images2/works/img-4_sm1x.jpg" alt="Time management" width="450" height="294" />
+                  </picture>
+                  <div class="bg">
+                    <a class="atext" href="./trening14.html">
+                      <p class="bg__uppertext">На цьому тренінгу ви отримаєте знання про управління часом і справами, які допоможуть вам у вашій практиці.</p>
+                    </a>
+                  </div>
+                </div>
+                <div class="text">
+                  <h3 class="text__work">Time management</h3>
+                  <p class="text__sub">Тренінг з тайм-менеджменту</p>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </details>
+
+        <!-- СПОЙЛЕР 6: Спеціалізовані теми, контроль якості та зворотний зв'язок -->
+        <details class="spoiler-group">
+          <summary class="spoiler-header">6. Контроль якості, фармаконагляд та пропозиції</summary>
+          <div class="spoiler-content">
+            <ul class="works-cards">
+              <li class="description">
+                <div class="overflow">
+                  <picture>
+                    <source media="(min-width: 1200px)" srcset="./PHARM/otziv.jpg, ./images2/works/img-6_lg2x.webp" type="image/webp" />
+                    <source media="(min-width: 768px)" srcset="./PHARM/otziv.jpg, ./images2/works/img-6_md2x.webp" type="image/webp" />
+                    <source media="(max-width: 767px)" srcset="./PHARM/otziv.jpg, ./images2/works/img-6_sm2x.webp" type="image/webp" />
+                    <img src="./images2/works/img-6_sm1x.jpg" alt="Reviews writing" width="450" height="294" />
+                  </picture>
+                  <div class="bg">
+                    <a class="atext" href="./trening7.html">
+                      <p class="bg__uppertext">На цьому тренінгу ви отримаєте знання про написання відгуків, які допоможуть вам у вашій практиці.</p>
+                    </a>
+                  </div>
+                </div>
+                <div class="text">
+                  <h3 class="text__work">Reviews writing</h3>
+                  <p class="text__sub">Тренінг з написання відгуків</p>
+                </div>
+              </li>
+
+              <li class="description">
+                <div class="overflow">
+                  <picture>
+                    <source media="(min-width: 1200px)" srcset="./PHARM/robot.jfif, ./images2/works/img-5_lg2x.webp" type="image/webp" />
+                    <source media="(min-width: 768px)" srcset="./PHARM/robot.jfif, ./images2/works/img-5_md2x.webp" type="image/webp" />
+                    <source media="(max-width: 767px)" srcset="./PHARM/robot.jfif, ./images2/works/img-5_sm2x.webp" type="image/webp" />
+                    <img src="./images2/works/img-5_sm1x.jpg" alt="Quality control" width="450" height="294" />
+                  </picture>
+                  <div class="bg">
+                    <a class="atext" href="./trening15.html" onclick="showPasswordPrompt(event, './trening15.html')">
+                      <p class="bg__uppertext">На цьому тренінгу ви отримаєте знання про підвищення якості готової продукції і зменшення браку, які допоможуть вам у вашій практиці.</p>
+                    </a>
+                  </div>
+                </div>
+                <div class="text">
+                  <h3 class="text__work"><span lang="en">Quality control</span></h3>
+                  <p class="text__sub">Тренінг з контролю якості</p>
+                </div>
+              </li>
+
+              <li class="description">
+                <div class="overflow">
+                  <picture>
+                    <source media="(min-width: 1200px)" srcset="./PHARM/fv.jpg, ./images2/works/img-5_lg2x.webp" type="image/webp" />
+                    <source media="(min-width: 768px)" srcset="./PHARM/fv.jpg, ./images2/works/img-5_md2x.webp" type="image/webp" />
+                    <source media="(max-width: 767px)" srcset="./PHARM/fv.jpg, ./images2/works/img-5_sm2x.webp" type="image/webp" />
+                    <img src="./PHARM/fv.jpg" alt="Pharmacovigilance" width="450" height="294" />
+                  </picture>
+                  <div class="bg">
+                    <a class="atext" href="./trening21.html">
+                      <p class="bg__uppertext">На цьому тренінгу ви отримаєте знання з фармаконагляду, які допоможуть вам у вашій практиці.</p>
+                    </a>
+                  </div>
+                </div>
+                <div class="text">
+                  <h3 class="text__work"><span lang="en">Pharmacovigilance</span></h3>
+                  <p class="text__sub">Тренінг з фармаконагляду</p>
+                </div>
+              </li>
+
+              <li class="description">
+                <div class="overflow">
+                  <picture>
+                    <source media="(min-width: 1200px)" srcset="./PHARM/ping.jpg, ./images2/works/img-8_lg2x.webp" type="image/webp" />
+                    <source media="(min-width: 768px)" srcset="./PHARM/ping.jpg, ./images2/works/img-8_md2x.webp" type="image/webp" />
+                    <source media="(max-width: 767px)" srcset="./PHARM/ping.jpg, ./images2/works/img-8_sm2x.webp" type="image/webp" />
+                    <img src="./images2/works/img-8_sm1x.jpg" alt="Пропозиції" width="450" height="294" />
+                  </picture>
+                  <div class="bg">
+                    <a class="atext" href="./Trening20.html"> 
+                      <p class="bg__uppertext">Тут ви зможете написати своє побажання, або пропозицію чи зауваження до бізнес тренера.</p>
+                    </a>
+                  </div>
+                </div>
+                <div class="text">
+                  <h3 class="text__work"><span lang="en">Пропозиції</span></h3>
+                  <p class="text__sub">до бізнес тренера</p>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </details>
+
+      </div>
+    </section>
+  </main>
+  <div id="footer-container"></div>
+  
+  <script src="./js/menu.js"></script>
+  <script src="theme-toggle.js"></script>
+  <script>
+    function showPasswordPrompt(event, url) {
+        event.preventDefault(); // Зупиняємо стандартне відкриття посилання
+        
+        if (localStorage.getItem("accessGranted") === "true") {
+            window.location.href = url; // Якщо пароль вже введено раніше, переходимо автоматично
+            return;
+        }
+
+        const password = prompt("Введіть пароль:");
+        const correctPassword = "12345"; // Замініть на реальний пароль
+
+        if (password === correctPassword) {
+            localStorage.setItem("accessGranted", "true"); // Зберігаємо статус входу
+            window.location.href = url; // Переходимо до захищеного контенту
+        } else {
+            alert("Неправильний пароль!");
+        }
+    }
+  </script>
+  <script src="tracking.js"></script>
+  <script>
+    // Кнопка "До гори"
+    const scrollTopBtn = document.getElementById("scrollTopBtn");
+    window.onscroll = function() {
+      if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+        scrollTopBtn.style.display = "block";
+      } else {
+        scrollTopBtn.style.display = "none";
+      }
+    };
+
+    scrollTopBtn.onclick = function() {
+      document.body.scrollTop = 0;
+      document.documentElement.scrollTop = 0;
+    };
+  </script>
+  <script src="headfoot.js"></script>
+  <script src="scroll.js"></script>
+</body>
+</html>

@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="uk">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Продукти</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@700&family=Roboto:wght@400;500;700;900&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/modern-normalize/1.1.0/modern-normalize.css"
+    integrity="sha512-Y0MM+V6ymRKN2zStTqzQ227DWhhp4Mzdo6gnlRnuaNCbc+YN/ZH0sBCLTM4M0oSy9c9VKiCvd4Jk44aCLrNS5Q=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="./css/main.css" />
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-5BZZCV5DRK"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag("js", new Date());
+    gtag("config", "G-5BZZCV5DRK");
+  </script>
+  <script>
+    const email = localStorage.getItem("allowedEmail");
+    if (email) {
+      gtag("set", "user_properties", {
+        user_id: email
+      });
+    }
+  </script>
+  <script>
+    function sha256(input) {
+      const encoder = new TextEncoder();
+      const data = encoder.encode(input);
+      return crypto.subtle.digest("SHA-256", data).then(hash => {
+        return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
+      });
+    }
+  </script>
+</head>
+
+<body>
+  <div id="header-container"></div>
+  <main>
+    <section class="works">
+      <div class="container">
+        <ul class="button">
+          <li class="button-section"><button class="btn" type="button"><a style="text-decoration: none; font-size: smaller;" class="text__work" href="./portfolio news.html">Новини</a></button></li>
+          <li class="button-section"><button class="btn btn--select" type="button"><a style="text-decoration: none; font-size: smaller;" class="text__work" href="./portfolio products.html">Продукти</a></button></li>
+          <li class="button-section"><button class="btn" type="button"><a style="text-decoration: none; font-size: smaller;" class="text__work" href="./portfolio trenings.html">Тренінги</a></button></li>
+          <li class="button-section"><button class="btn" type="button"><a style="text-decoration: none; font-size: smaller;" class="text__work" href="./portfolio standart.html">Стандарти</a></button></li>
+          <li class="button-section"><button class="btn" type="button"><a onclick="showPasswordPrompt(event, './portfolio PV.html')" style="text-decoration: none; font-size: smaller;" class="text__work" href="./portfolio PV.html">ПВ</a></button></li>
+        </ul>
+
+        <!-- СПОЙЛЕР 1: Жіноче здоров'я -->
+        <details id="female" class="spoiler-group">
+          <summary class="spoiler-header">+ Жіноче здоров'я</summary>
+          <div class="spoiler-content">
+            <ul class="works-cards">
+              <li class="description">
+                <div class="overflow">
+                  <picture>
+                    <img src="./images2/products/Жз/Аргіс ДУО_left.png" alt="Аргіс ДУО" width="450" height="294" loading="lazy" />
+                  </picture>
+                  <a class="atext" href="./argisDuo.html">
+                    <div class="bg">
+                      <p class="bg__uppertext">Гігієнічно-профілактичний засіб у комплексній терапії та для профілактики гінекологічних і урологічних захворювань</p>
+                    </div>
+                  </a>
+                </div>
+                <div class="text">
+                  <h3 class="text__work">Аргіс ДУО свічки №10</h3>
+                  <p class="text__sub">Засіб гігієнічно-профілактичний</p>
+                </div>
+              </li>
+
+              <li class="description">
+                <div class="overflow">
+                  <picture>
+                    <img src="./images2/products/Жз/Білорд_left.png" alt="Білорд" width="450" height="294" loading="lazy" />
+                  </picture>
+                  <a class="atext" href="./bilord.html">
+                    <div class="bg">
+                      <p class="bg__uppertext">Засіб для підтримки репродуктивного здоров'я та гармонізації жіночого гормонального фону.</p>
+                    </div>
+                  </a>
+                </div>
+                <div class="text">
+                  <h3 class="text__work">Білорд</h3>
+                  <p class="text__sub">Дієтична добавка для жінок</p>
+                </div>
+              </li>
+
+              <li class="description">
+                <div class="overflow">
+                  <picture>                    
+                    <img src="./images2/products/Жз/Верікса_left.png" alt="Верікса" width="450" height="294" loading="lazy" />
+                  </picture>
+                  <a class="atext" href="./veriksa.html">
+                    <div class="bg">
+                      <p class="bg__uppertext">Спеціалізований комплекс для гінекологічного здоров'я та профілактики запальних процесів.</p>
+                    </div>
+                  </a>
+                </div>
+                <div class="text">
+                  <h3 class="text__work">Верікса</h3>
+                  <p class="text__sub">Засіб гігієнічно-профілактичний</p>
+                </div>
+              </li>
+              
+              <li class="description">
+                <div class="overflow">
+                  <picture>                    
+                    <img src="./images2/products/Жз/ДеКаБуст 2000 (коробка)_left.png" alt="ДеКаБуст 2000" width="450" height="294" loading="lazy" />
+                  </picture>
+                  <a class="atext" href="./dekaboost2000.html">
+                    <div class="bg">
+                      <p class="bg__uppertext">Джерело вітаміну D3 для регуляції фосфорно-кальцієвого обміну та підтримки імунітету.</p>
+                    </div>
+                  </a>
+                </div>
+                <div class="text">
+                  <h3 class="text__work">ДеКаБуст 2000</h3>
+                  <p class="text__sub">Дієтична добавка Вітамін D3</p>
+                </div>
+              </li>
+              
+              <li class="description">
+                <div class="overflow">
+                  <picture>                    
+                    <img src="./images2/products/Жз/Прегнемаг_left.png" alt="Прегнемаг" width="450" height="294" loading="lazy" />
+                  </picture>
+                  <a class="atext" href="./pregnemag.html">
+                    <div class="bg">
+                      <p class="bg__uppertext">Збалансований комплекс магнію та вітаміну B6 для підтримки нервової системи під час вагітності.</p>
+                    </div>
+                  </a>
+                </div>
+                <div class="text">
+                  <h3 class="text__work">Прегнемаг</h3>
+                  <p class="text__sub">Вітамінно-мінеральний комплекс</p>
+                </div>
+              </li>
+              
+              <li class="description">
+                <div class="overflow">
+                  <picture>                    
+                    <img src="./images2/products/Жз/Фемінозид_left.png" alt="Фемінозид" width="450" height="294" loading="lazy" />
+                  </picture>
+                  <a class="atext" href="./feminozyd.html">
+                    <div class="bg">
+                      <p class="bg__uppertext">Рослинний комплекс для нормалізації функціонального стану жіночих статевих органів.</p>
+                    </div>
+                  </a>
+                </div>
+                <div class="text">
+                  <h3 class="text__work">Фемінозид</h3>
+                  <p class="text__sub">Дієтична добавка для жінок</p>
+                </div>
+              </li>
+              
+              <li class="description">
+                <div class="overflow">
+                  <picture>                    
+                    <img src="./images2/products/Жз/Хелівайн_left.png" alt="Хелівайн" width="450" height="294" loading="lazy" />
+                  </picture>
+                  <a class="atext" href="./helivayn.html">
+                    <div class="bg">
+                      <p class="bg__uppertext">Спеціальний засіб для підтримки мікрофлори та інтимного здоров'я жінок.</p>
+                    </div>
+                  </a>
+                </div>
+                <div class="text">
+                  <h3 class="text__work">Хелівайн</h3>
+                  <p class="text__sub">Профілактичний засіб</p>
+                </div>
+              </li>
+              
+              <li class="description">
+                <div class="overflow">
+                  <picture>                    
+                    <img src="./images2/products/Жз/Циклофіт Форте №30_left.png" alt="Циклофіт Форте" width="450" height="294" loading="lazy" />
+                  </picture>
+                  <a class="atext" href="./cyklofitForte.html">
+                    <div class="bg">
+                      <p class="bg__uppertext">Комплекс екстрактів лікарських рослин для нормалізації менструального циклу.</p>
+                    </div>
+                  </a>
+                </div>
+                <div class="text">
+                  <h3 class="text__work">Циклофіт Форте №30</h3>
+                  <p class="text__sub">Фітокомплекс для жінок</p>
+                </div>
+              </li>
+              
+              <li class="description">
+                <div class="overflow">
+                  <picture>                    
+                    <img src="./images2/products/Жз/Іксіндол №30_left (3).png" alt="Іксіндол" width="450" height="294" loading="lazy" />
+                  </picture>
+                  <a class="atext" href="./ixindol.html">
+                    <div class="bg">
+                      <p class="bg__uppertext">Ефективний засіб на основі індол-3-карбінолу для профілактики гіперпластичних процесів.</p>
+                    </div>
+                  </a>
+                </div>
+                <div class="text">
+                  <h3 class="text__work">Іксіндол №30</h3>
+                  <p class="text__sub">Дієтична добавка</p>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </details>
+
+        <!-- СПОЙЛЕР 2: Чоловіче здоров'я -->
+        <details id="male" class="spoiler-group">
+          <summary class="spoiler-header">+ Чоловіче здоров'я</summary>
+          <div class="spoiler-content">
+            <ul class="works-cards">
+              <li class="description">
+                <div class="overflow">
+                  <picture>                    
+                    <img src="./images2/products/ЧЗ/Бравол_left.png" alt="Бравол" width="450" height="294" loading="lazy" />
+                  </picture>
+                  <a class="atext" href="./bravol.html">
+                    <div class="bg">
+                      <p class="bg__uppertext">Рослинний комплекс для покращення потенції, статевого потягу та сексуальної витривалості.</p>
+                    </div>
+                  </a>
+                </div>
+                <div class="text">
+                  <h3 class="text__work">Бравол</h3>
+                  <p class="text__sub">Засіб для чоловічого здоров'я</p>
+                </div>
+              </li>
+              
+              <li class="description">
+                <div class="overflow">
+                  <picture>                    
+                    <img src="./images2/products/ЧЗ/Валеопрост_left.png" alt="Валеопрост" width="450" height="294" loading="lazy" />
+                  </picture>
+                  <a class="atext" href="./valeoprost.html">
+                    <div class="bg">
+                      <p class="bg__uppertext">Натуральний фітокомплекс для підтримки функції передміхурової залози та сечовиділення.</p>
+                    </div>
+                  </a>
+                </div>
+                <div class="text">
+                  <h3 class="text__work">Валеопрост</h3>
+                  <p class="text__sub">Дієтична добавка для простати</p>
+                </div>
+              </li>
+              
+              <li class="description">
+                <div class="overflow">
+                  <picture>                    
+                    <img src="./images2/products/ЧЗ/Вогер №30_left.png" alt="Вогер" width="450" height="294" loading="lazy" />
+                  </picture>
+                  <a class="atext" href="./voger.html">
+                    <div class="bg">
+                      <p class="bg__uppertext">Засіб для нормалізації функціонування передміхурової залози та покращення мікроциркуляції.</p>
+                    </div>
+                  </a>
+                </div>
+                <div class="text">
+                  <h3 class="text__work">Вогер №30</h3>
+                  <p class="text__sub">Урологічний комплекс</p>
+                </div>
+              </li>
+              
+              <li class="description">
+                <div class="overflow">
+                  <picture>                    
+                    <img src="./images2/products/ЧЗ/Загест №30_left.png" alt="Загест" width="450" height="294" loading="lazy" />
+                  </picture>
+                  <a class="atext" href="./zagest.html">
+                    <div class="bg">
+                      <p class="bg__uppertext">Спеціалізований засіб для відновлення статевої функції та підвищення тонусу організму.</p>
+                    </div>
+                  </a>
+                </div>
+                <div class="text">
+                  <h3 class="text__work">Загест №30</h3>
+                  <p class="text__sub">Комплекс для репродуктивної системи</p>
+                </div>
+              </li>
+              
+              <li class="description">
+                <div class="overflow">
+                  <picture>                    
+                    <img src="./images2/products/ЧЗ/Статон_left.png" alt="Статон" width="450" height="294" loading="lazy" />
+                  </picture>
+                  <a class="atext" href="./staton.html">
+                    <div class="bg">
+                      <p class="bg__uppertext">Препарат для підтримки урологічного здоров'я та нормалізації сечовипускання.</p>
+                    </div>
+                  </a>
+                </div>
+                <div class="text">
+                  <h3 class="text__work">Статон</h3>
+                  <p class="text__sub">Урологічний засіб</p>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </details>
+
+        <!-- СПОЙЛЕР 3: Здоров'я нирок -->
+        <details id="kidneys" class="spoiler-group">
+          <summary class="spoiler-header">+ Здоров'я нирок</summary>
+          <div class="spoiler-content">
+            <ul class="works-cards">
+              <li class="description">
+                <div class="overflow">
+                  <picture>                    
+                    <img src="./images2/products/Нир/Анеза_left (1).png" alt="Анеза" width="450" height="294" loading="lazy" />
+                  </picture>
+                  <a class="atext" href="./aneza.html">
+                    <div class="bg">
+                      <p class="bg__uppertext">Фітокомплекс для профілактики та комплексної терапії захворювань сечовидільної системи.</p>
+                    </div>
+                  </a>
+                </div>
+                <div class="text">
+                  <h3 class="text__work">Анеза</h3>
+                  <p class="text__sub">Нефропротекторний засіб</p>
+                </div>
+              </li>
+              
+              <li class="description">
+                <div class="overflow">
+                  <picture>                    
+                    <img src="./images2/products/Нир/Кальбінд.webp" alt="Кальбінд" width="450" height="294" loading="lazy" />
+                  </picture>
+                  <a class="atext" href="./kalbind.html">
+                    <div class="bg">
+                      <p class="bg__uppertext">Спеціалізований засіб для зв'язування фосфатів та підтримки ниркової функції.</p>
+                    </div>
+                  </a>
+                </div>
+                <div class="text">
+                  <h3 class="text__work">Кальбінд</h3>
+                  <p class="text__sub">Дієтична добавка при ХХН</p>
+                </div>
+              </li>
+              
+              <li class="description">
+                <div class="overflow">
+                  <picture>                    
+                    <img src="./images2/products/Нир/Лібера Форте №30_left.png" alt="Лібера Форте" width="450" height="294" loading="lazy" />
+                  </picture>
+                  <a class="atext" href="./liberaForte.html">
+                    <div class="bg">
+                      <p class="bg__uppertext">Посилена формула для поліпшення функціонального стану нирок та сечовивідних шляхів.</p>
+                    </div>
+                  </a>
+                </div>
+                <div class="text">
+                  <h3 class="text__work">Лібера Форте №30</h3>
+                  <p class="text__sub">Посилений нефропротектор</p>
+                </div>
+              </li>
+              
+              <li class="description">
+                <div class="overflow">
+                  <picture>                    
+                    <img src="./images2/products/Нир/Лібера №30_left.png" alt="Лібера" width="450" height="294" loading="lazy" />
+                  </picture>
+                  <a class="atext" href="./libera.html">
+                    <div class="bg">
+                      <p class="bg__uppertext">Рослинний комплекс для сприяння розчиненню ниркових каменів та профілактики сечокам'яної хвороби.</p>
+                    </div>
+                  </a>
+                </div>
+                <div class="text">
+                  <h3 class="text__work">Лібера №30</h3>
+                  <p class="text__sub">Фітопрепарат для нирок</p>
+                </div>
+              </li>
+              
+              <li class="description">
+                <div class="overflow">
+                  <picture>                    
+                    <img src="./images2/products/Нир/Ренохелс №30_left.png" alt="Ренохелс" width="450" height="294" loading="lazy" />
+                  </picture>
+                  <a class="atext" href="./renohels.html">
+                    <div class="bg">
+                      <p class="bg__uppertext">Комбінований рослинний засіб із протизапальною, спазмолітичною та сечогінною дією.</p>
+                    </div>
+                  </a>
+                </div>
+                <div class="text">
+                  <h3 class="text__work">Ренохелс №30</h3>
+                  <p class="text__sub">Комплексний засіб для нирок</p>
+                </div>
+              </li>
+
+              <li class="description">
+                <div class="overflow">
+                  <picture>                    
+                    <img src="./images2/products/Нир/УроПак-36 _30_left.png" alt="УроПак-36" width="450" height="294" loading="lazy" />
+                  </picture>
+                  <a class="atext" href="./uropak36.html">
+                    <div class="bg">
+                      <p class="bg__uppertext">Високодозований екстракт журавлини (36 мг проантоціанідинів PAC A) проти циститу та інфекцій СШ.</p>
+                    </div>
+                  </a>
+                </div>
+                <div class="text">
+                  <h3 class="text__work">УроПак-36 №30</h3>
+                  <p class="text__sub">Екстракт журавлини високої концентрації</p>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </details>
+
+        <!-- СПОЙЛЕР 4: Здоров'я ШКТ -->
+        <details id="gastro" class="spoiler-group">
+          <summary class="spoiler-header">+ Здоров'я ШКТ</summary>
+          <div class="spoiler-content">
+            <ul class="works-cards">
+              <li class="description">
+                <div class="overflow">
+                  <picture>                    
+                    <img src="./images2/products/ШКТ/Бутрикол №10_left.png" alt="Бутрикол" width="450" height="294" loading="lazy" />
+                  </picture>
+                  <a class="atext" href="./butrykol.html">
+                    <div class="bg">
+                      <p class="bg__uppertext">Джерело масляної кислоти та маслянокислих бактерій для відновлення слизової оболонки кишечника.</p>
+                    </div>
+                  </a>
+                </div>
+                <div class="text">
+                  <h3 class="text__work">Бутрикол №10</h3>
+                  <p class="text__sub">Засіб для відновлення кишечника</p>
+                </div>
+              </li>
+              
+              <li class="description">
+                <div class="overflow">
+                  <picture>                    
+                    <img src="./images2/products/ШКТ/Есбуларді_left.png" alt="Есбуларді" width="450" height="294" loading="lazy" />
+                  </picture>
+                  <a class="atext" href="./esbulardi.html">
+                    <div class="bg">
+                      <p class="bg__uppertext">Пробіотичний засіб на основі Saccharomyces boulardii для лікування та профілактики діареї.</p>
+                    </div>
+                  </a>
+                </div>
+                <div class="text">
+                  <h3 class="text__work">Есбуларді</h3>
+                  <p class="text__sub">Пробіотик проти діареї</p>
+                </div>
+              </li>
+              
+              <li class="description">
+                <div class="overflow">
+                  <picture>                    
+                    <img src="./images2/products/ШКТ/Еупатілекс_left.png" alt="Еупатілекс" width="450" height="294" loading="lazy" />
+                  </picture>
+                  <a class="atext" href="./eupatileks.html">
+                    <div class="bg">
+                      <p class="bg__uppertext">Гепатопротекторний засіб для захисту та відновлення клітин печінки і жовчовидільної системи.</p>
+                    </div>
+                  </a>
+                </div>
+                <div class="text">
+                  <h3 class="text__work">Еупатілекс</h3>
+                  <p class="text__sub">Гепатопротектор</p>
+                </div>
+              </li>
+              
+              <li class="description">
+                <div class="overflow">
+                  <picture>                    
+                    <img src="./images2/products/ШКТ/Мастикозин_left (3).png" alt="Мастикозин" width="450" height="294" loading="lazy" />
+                  </picture>
+                  <a class="atext" href="./mastykozyn.html">
+                    <div class="bg">
+                      <p class="bg__uppertext">Засіб на основі фісташки мастикової для захисту слизової шлунка та боротьби з Helicobacter pylori.</p>
+                    </div>
+                  </a>
+                </div>
+                <div class="text">
+                  <h3 class="text__work">Мастикозин</h3>
+                  <p class="text__sub">Гастропротекторний засіб</p>
+                </div>
+              </li>
+              
+              <li class="description">
+                <div class="overflow">
+                  <picture>                    
+                    <img src="./images2/products/ШКТ/Пантофітол_left.png" alt="Пантофітол" width="450" height="294" loading="lazy" />
+                  </picture>
+                  <a class="atext" href="./pantofytol.html">
+                    <div class="bg">
+                      <p class="bg__uppertext">Рослинна добавка для покращення травлення, стимуляції секреції та нормалізації моторики ШКТ.</p>
+                    </div>
+                  </a>
+                </div>
+                <div class="text">
+                  <h3 class="text__work">Пантофітол</h3>
+                  <p class="text__sub">Фітопрепарат для травлення</p>
+                </div>
+              </li>
+
+              <li class="description">
+                <div class="overflow">
+                  <picture>                    
+                    <img src="./images2/products/ШКТ/Травітафер №30_left.png" alt="Травітафер" width="450" height="294" loading="lazy" />
+                  </picture>
+                  <a class="atext" href="./travitafer.html">
+                    <div class="bg">
+                      <p class="bg__uppertext">Легкозасвоюваний комплекс заліза та вітамінів для профілактики та компенсації залізодефіциту.</p>
+                    </div>
+                  </a>
+                </div>
+                <div class="text">
+                  <h3 class="text__work">Травітафер №30</h3>
+                  <p class="text__sub">Залізовмісний комплекс</p>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </details>
+
+        <!-- СПОЙЛЕР 5: Ендокринологія -->
+        <details id="endo" class="spoiler-group">
+          <summary class="spoiler-header">+ Ендокринологія</summary>
+          <div class="spoiler-content">
+            <ul class="works-cards">
+              <li class="description">
+                <div class="overflow">
+                  <picture>                    
+                    <img src="./images2/products/Енд/Глікоміцел_left.png" alt="Глікоміцел" width="450" height="294" loading="lazy" />
+                  </picture>
+                  <a class="atext" href="./glykomycel.html">
+                    <div class="bg">
+                      <p class="bg__uppertext">Засіб для підтримки вуглеводного обміну та нормалізації рівня цукру в крові.</p>
+                    </div>
+                  </a>
+                </div>
+                <div class="text">
+                  <h3 class="text__work">Глікоміцел</h3>
+                  <p class="text__sub">Засіб для регуляції метаболізму</p>
+                </div>
+              </li>
+              
+              <li class="description">
+                <div class="overflow">
+                  <picture>                    
+                    <img src="./images2/products/Енд/Лібера Аргінін №30_left.png" alt="Лібера Аргінін" width="450" height="294" loading="lazy" />
+                  </picture>
+                  <a class="atext" href="./liberaArginin.html">
+                    <div class="bg">
+                      <p class="bg__uppertext">Джерело L-аргініну для покращення ендотеліальної функції, судинного тонусу та детоксикації.</p>
+                    </div>
+                  </a>
+                </div>
+                <div class="text">
+                  <h3 class="text__work">Лібера Аргінін №30</h3>
+                  <p class="text__sub">Дієтична добавка L-Arginine</p>
+                </div>
+              </li>
+              
+              <li class="description">
+                <div class="overflow">
+                  <picture>                    
+                    <img src="./images2/products/Енд/Селефікс_left.png" alt="Селефікс" width="450" height="294" loading="lazy" />
+                  </picture>
+                  <a class="atext" href="./selefiks.html">
+                    <div class="bg">
+                      <p class="bg__uppertext">Джерело органічного селену для підтримки функції щитоподібної залози та антиоксидантного захисту.</p>
+                    </div>
+                  </a>
+                </div>
+                <div class="text">
+                  <h3 class="text__work">Селефікс</h3>
+                  <p class="text__sub">Препарат селену</p>
+                </div>
+              </li>
+              
+              <li class="description">
+                <div class="overflow">
+                  <picture>                    
+                    <img src="./images2/products/Енд/Спірона (3).png" alt="Спірона" width="450" height="294" loading="lazy" />
+                  </picture>
+                  <a class="atext" href="./spirona.html">
+                    <div class="bg">
+                      <p class="bg__uppertext">Препарат для підтримки ендокринного балансу та антиандрогенної коригувальної терапії.</p>
+                    </div>
+                  </a>
+                </div>
+                <div class="text">
+                  <h3 class="text__work">Спірона</h3>
+                  <p class="text__sub">Засіб для гормонального балансу</p>
+                </div>
+              </li>
+              
+              <li class="description">
+                <div class="overflow">
+                  <picture>                    
+                    <img src="./images2/products/Енд/Тарнітин.png" alt="Тарнітин" width="450" height="294" loading="lazy" />
+                  </picture>
+                  <a class="atext" href="./tarnityn.html">
+                    <div class="bg">
+                      <p class="bg__uppertext">L-карнітиновий комплекс для оптимізації енергетичного обміну в клітинах і підтримки метаболізму.</p>
+                    </div>
+                  </a>
+                </div>
+                <div class="text">
+                  <h3 class="text__work">Тарнітин</h3>
+                  <p class="text__sub">Метаболічний засіб</p>
+                </div>
+              </li>
+
+              <li class="description">
+                <div class="overflow">
+                  <picture>                    
+                    <img src="./images2/products/Енд/Тірбізод_left.png" alt="Тірбізод" width="450" height="294" loading="lazy" />
+                  </picture>
+                  <a class="atext" href="./tirbizod.html">
+                    <div class="bg">
+                      <p class="bg__uppertext">Спеціалізований засіб для нормотиреоїдної підтримки та захисту паренхіми щитоподібної залози.</p>
+                    </div>
+                  </a>
+                </div>
+                <div class="text">
+                  <h3 class="text__work">Тірбізод</h3>
+                  <p class="text__sub">Тиреопротекторний засіб</p>
+                </div>
+              </li>
+
+              <li class="description">
+                <div class="overflow">
+                  <picture>                    
+                    <img src="./images2/products/Енд/Шугард №30_left.png" alt="Шугард" width="450" height="294" loading="lazy" />
+                  </picture>
+                  <a class="atext" href="./shugard.html">
+                    <div class="bg">
+                      <p class="bg__uppertext">Комплекс для контроля рівня глікемії, підвищення чутливості до інсуліну та профілактики ускладнень.</p>
+                    </div>
+                  </a>
+                </div>
+                <div class="text">
+                  <h3 class="text__work">Шугард №30</h3>
+                  <p class="text__sub">Засіб для контроля цукру</p>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </details>
+
+        <!-- СПОЙЛЕР 6: Неврологія -->
+        <details id="neuro" class="spoiler-group">
+          <summary class="spoiler-header">+ Неврологія</summary>
+          <div class="spoiler-content">
+            <ul class="works-cards">
+              <li class="description">
+                <div class="overflow">
+                  <picture>                    
+                    <img src="./images2/products/нер/Гіппоміцел_left.png" alt="Гіппоміцел" width="450" height="294" loading="lazy" />
+                  </picture>
+                  <a class="atext" href="./gippomycel.html">
+                    <div class="bg">
+                      <p class="bg__uppertext">Засіб для заспокоєння, покращення якості сну та нормалізації функціонування нервової системи.</p>
+                    </div>
+                  </a>
+                </div>
+                <div class="text">
+                  <h3 class="text__work">Гіппоміцел</h3>
+                  <p class="text__sub">Седативний фітопрепарат</p>
+                </div>
+              </li>
+
+              <li class="description">
+                <div class="overflow">
+                  <picture>                    
+                    <img src="./images2/products/нер/Нейромінерій_left (1).png" alt="Нейромінерій" width="450" height="294" loading="lazy" />
+                  </picture>
+                  <a class="atext" href="./neyromineriy.html">
+                    <div class="bg">
+                      <p class="bg__uppertext">Нейропротекторний комплекс для поліпшення пам'яті, концентрації уваги та розумової працездатності.</p>
+                    </div>
+                  </a>
+                </div>
+                <div class="text">
+                  <h3 class="text__work">Нейромінерій</h3>
+                  <p class="text__sub">Нейропротекторний комплекс</p>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </details>
+
+      </div>
+    </section>
+  </main>
+
+  <div id="footer-container"></div>
+  
+  <script src="./js/menu.js"></script>
+  <script src="theme-toggle.js"></script>
+  <script>
+    function showPasswordPrompt(event, url) {
+        event.preventDefault();
+        
+        if (localStorage.getItem("accessGranted") === "true") {
+            window.location.href = url;
+            return;
+        }
+
+        const password = prompt("Введіть пароль:");
+        const correctPassword = "12345";
+
+        if (password === correctPassword) {
+            localStorage.setItem("accessGranted", "true");
+            window.location.href = url;
+        } else {
+            alert("Неправильний пароль!");
+        }
+    }
+  </script>
+  <script src="tracking.js"></script>
+
+  <script>
+    // Захищений обробник кнопки "Вгору" (запобігає помилкам у консолі)
+    window.addEventListener('scroll', function() {
+      const mybutton = document.getElementById("btn-back-to-top");
+      if (mybutton) {
+        if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+          mybutton.style.display = "block";
+        } else {
+          mybutton.style.display = "none";
+        }
+      }
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+      const mybutton = document.getElementById("btn-back-to-top");
+      if (mybutton) {
+        mybutton.onclick = function() {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+      }
+    });
+  </script>
+
+  <script src="headfoot.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const spoilers = document.querySelectorAll('details.spoiler-group');
+
+      // 1. Анімація відкриття/закриття спойлерів при кліку
+      spoilers.forEach((spoiler) => {
+        const summary = spoiler.querySelector('summary');
+        const content = spoiler.querySelector('.spoiler-content');
+
+        if (!summary || !content) return;
+
+        summary.addEventListener('click', (e) => {
+          e.preventDefault();
+
+          if (!spoiler.hasAttribute('open')) {
+            // ВІДКРИТТЯ
+            spoiler.setAttribute('open', '');
+            content.style.visibility = 'visible';
+            
+            const targetHeight = content.scrollHeight;
+            content.style.maxHeight = '0px';
+            content.style.opacity = '0';
+
+            content.offsetHeight; // Reflow
+
+            content.style.maxHeight = targetHeight + 'px';
+            content.style.opacity = '1';
+
+            setTimeout(() => {
+              if (spoiler.hasAttribute('open')) {
+                content.style.maxHeight = 'none';
+              }
+            }, 800);
+
+          } else {
+            // ЗГОРТАННЯ
+            content.style.maxHeight = content.scrollHeight + 'px';
+            content.style.opacity = '1';
+
+            content.offsetHeight; // Reflow
+
+            content.style.maxHeight = '0px';
+            content.style.opacity = '0';
+
+            setTimeout(() => {
+              if (!content.style.opacity || content.style.opacity === '0') {
+                content.style.visibility = 'hidden';
+                spoiler.removeAttribute('open');
+                content.style.maxHeight = '';
+                content.style.opacity = '';
+              }
+            }, 1000);
+          }
+        });
+      });
+
+      // 2. ВІДКРИТТЯ СПОЙЛЕРА ПО ЯКОРЮ В URL ТА ПЛАВНИЙ СКРОЛ (1.5 СЕКУНДИ)
+      const hash = window.location.hash;
+      if (hash) {
+        const targetSpoiler = document.querySelector(hash);
+        if (targetSpoiler && targetSpoiler.classList.contains('spoiler-group')) {
+          const content = targetSpoiler.querySelector('.spoiler-content');
+          
+          targetSpoiler.setAttribute('open', '');
+          if (content) {
+            content.style.visibility = 'visible';
+            content.style.maxHeight = 'none';
+            content.style.opacity = '1';
+          }
+
+          // Повільна та м'яка функція скролінгу (1500 мс)
+          const smoothScrollTo = (element, duration = 1500) => {
+            const targetPosition = element.getBoundingClientRect().top + window.pageYOffset - 20;
+            const startPosition = window.pageYOffset;
+            const distance = targetPosition - startPosition;
+            let startTime = null;
+
+            const easeInOutQuad = (t, b, c, d) => {
+              t /= d / 2;
+              if (t < 1) return (c / 2) * t * t + b;
+              t--;
+              return (-c / 2) * (t * (t - 2) - 1) + b;
+            };
+
+            const animation = (currentTime) => {
+              if (startTime === null) startTime = currentTime;
+              const timeElapsed = currentTime - startTime;
+              const run = easeInOutQuad(timeElapsed, startPosition, distance, duration);
+              
+              window.scrollTo(0, run);
+              
+              if (timeElapsed < duration) {
+                requestAnimationFrame(animation);
+              }
+            };
+
+            requestAnimationFrame(animation);
+          };
+
+          // Запуск м'якого скролу після відкриття спойлера
+          setTimeout(() => {
+            smoothScrollTo(targetSpoiler, 1500);
+          }, 1500);
+        }
+      }
+    });
+  </script>
+</body>
+
+</html>

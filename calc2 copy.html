@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <title>Діагностика навичок та оцінка візитів (ПВ ТПРК)</title>
+  <style>
+    body { font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px; color: #333; }
+    h1 { text-align: center; margin-bottom: 20px; color: #2c3e50; }
+    
+    .meta-block { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 5px rgba(0,0,0,0.1); margin-bottom: 30px; }
+    .meta-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-bottom: 20px; }
+    .meta-field label { font-weight: bold; display: block; margin-bottom: 5px; font-size: 0.95em; color: #444; }
+    .meta-field input, .meta-field select { width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #ccc; box-sizing: border-box; font-size: 0.95em; }
+
+    .visits-meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; border-top: 1px dashed #ccc; padding-top: 15px; }
+    .visit-meta-column h3 { margin: 0 0 10px 0; color: #007acc; font-size: 1.05em; border-bottom: 1px solid #eef; padding-bottom: 5px; }
+    .visit-meta-field { margin-bottom: 10px; }
+    .visit-meta-field label { font-size: 0.85em; color: #555; font-weight: normal; margin-bottom: 2px; display: block; }
+    .visit-meta-field input { width: 100%; padding: 6px; border-radius: 4px; border: 1px solid #ccc; font-size: 0.9em; box-sizing: border-box; }
+
+    .group-block { margin-bottom: 40px; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 5px rgba(0,0,0,0.1); }
+    .group-block h2 { color: #007acc; border-bottom: 2px solid #eef; padding-bottom: 8px; margin-top: 0; }
+    
+    .criterion { margin-bottom: 25px; border-bottom: 1px solid #f0f0f0; padding-bottom: 15px; }
+    .criterion:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+    .criterion label { font-weight: bold; display: block; margin-bottom: 5px; font-size: 1.05em; }
+    .criterion p { margin: 5px 0; font-size: 0.9em; color: #666; }
+    
+    .visits-scores-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-top: 10px; background: #fcfcfc; padding: 12px; border: 1px solid #eaeaea; border-radius: 6px; }
+    .visit-score-col label { font-size: 0.85em; color: #555; font-weight: normal; margin-bottom: 2px; display: block; }
+    .visit-score-col select, .visit-score-col input { width: 100%; padding: 6px; border-radius: 4px; border: 1px solid #ccc; font-size: 0.9em; box-sizing: border-box; }
+
+    #results, #styleBlock, #recommendationBlock {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 8px;
+    }
+    #results { background-color: #e0ffe0; border: 1px solid #0c0; }
+    #styleBlock { background-color: #eef; border: 1px solid #77c; }
+    #recommendationBlock { background-color: #fff8e1; border: 1px solid #ffc107; }
+
+    .action-container { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 5px rgba(0,0,0,0.1); margin-top: 30px; text-align: center; }
+    .action-container select { width: 100%; max-width: 500px; padding: 10px; margin-top: 8px; border-radius: 4px; border: 1px solid #ccc; font-size: 1em; }
+    
+    button { padding: 12px 25px; font-size: 16px; background-color: #007acc; color: white; border: none; border-radius: 5px; cursor: pointer; display: inline-block; margin-top: 15px; }
+    button:hover { background-color: #005fa3; }
+    .copy-btn { background-color: #27ae60; margin-left: 10px; }
+    .copy-btn:hover { background-color: #219653; }
+    .save-btn { background-color: #e67e22; margin-left: 10px; }
+    .save-btn:hover { background-color: #d35400; }
+
+    @media (max-width: 900px) {
+      .visits-scores-grid { grid-template-columns: 1fr; }
+      .visits-meta-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🧾 Діагностика навичок та оцінка візитів (ПВ ТПРК)</h1>
+
+  <!-- Шапка: Дані дня та Дані візитів -->
+  <div class="meta-block">
+    <div class="meta-row">
+      <div class="meta-field">
+        <label for="evalDate">Дата оцінки:</label>
+        <input type="date" id="evalDate">
+      </div>
+      <div class="meta-field">
+        <label for="mpName">Ім'я МП:</label>
+        <input type="text" id="mpName" placeholder="Введіть ПІБ МП">
+      </div>
+      <div class="meta-field">
+        <label for="rmName">Ім'я РМ / Тренера:</label>
+        <input type="text" id="rmName" placeholder="Введіть ПІБ РМ">
+      </div>
+    </div>
+
+    <div class="visits-meta-grid">
+      <div class="visit-meta-column">
+        <h3>🔹 Візит 1</h3>
+        <div class="visit-meta-field">
+          <label>Місто:</label>
+          <input type="text" id="meta_city1" placeholder="Місто візиту 1">
+        </div>
+        <div class="visit-meta-field">
+          <label>ЛПЗ / Аптека:</label>
+          <input type="text" id="meta_lpu1" placeholder="ЛПЗ або аптека візиту 1">
+        </div>
+        <div class="visit-meta-field">
+          <label>Прізвище лікаря:</label>
+          <input type="text" id="meta_doc1" placeholder="ПІБ лікаря візиту 1">
+        </div>
+      </div>
+
+      <div class="visit-meta-column">
+        <h3>🔹 Візит 2</h3>
+        <div class="visit-meta-field">
+          <label>Місто:</label>
+          <input type="text" id="meta_city2" placeholder="Місто візиту 2">
+        </div>
+        <div class="visit-meta-field">
+          <label>ЛПЗ / Аптека:</label>
+          <input type="text" id="meta_lpu2" placeholder="ЛПЗ або аптека візиту 2">
+        </div>
+        <div class="visit-meta-field">
+          <label>Прізвище лікаря:</label>
+          <input type="text" id="meta_doc2" placeholder="ПІБ лікаря візиту 2">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="formContainer">
+    <!-- Сюди динамічно завантажуються критерії оцінки -->
+  </div>
+
+  <div class="action-container">
+    <button onclick="calculateEvaluation()">🔍 Проаналізувати результати</button>
+    
+    <div id="actionFocusContainer" style="display:none; margin-top: 20px; text-align: left; max-width: 600px; margin-left: auto; margin-right: auto;">
+      <label for="focusSkillSelect" style="font-weight: bold; color: #d35400; display: block; margin-bottom: 5px;">🎯 Оберіть навик для відпрацювання (фокус розвитку):</label>
+      <select id="focusSkillSelect">
+        <option value="">-- Оберіть навик із зони розвитку --</option>
+      </select>
+    </div>
+    
+    <div>
+      <button class="copy-btn" id="copyBtn" style="display:none;" onclick="copyRecommendations()">📋 Скопіювати рекомендації</button>
+      <button class="save-btn" id="saveBtn" style="display:none;" onclick="saveToDatabase()">💾 Зберегти в базу даних</button>
+    </div>
+  </div>
+
+  <div id="results"></div>
+  <div id="styleBlock"></div>
+  <div id="recommendationBlock"></div>
+
+  <script>
+    const evaluationCriteria = [
+      {
+        "id": "crit_1",
+        "group": "Підготовка",
+        "title": "Вміє збирати інформацію, діагностувати та робити висновки щодо клієнта та території.",
+        "description": "Маркер ефективності: Зафіксована ціль за критеріями SMART. Є всі необхідні промо-матеріали, цілі встановлені відповідно до плану розвитку лояльності.",
+        "levels": {
+          "1": "МП планує візит, не маючи повної інформації про клієнта (потенціал, конкурентів, бар'єри...).",
+          "2": "МП планує візит, маючи неповну інформацію про клієнта, використовуючи лише доступні джерела...",
+          "3": "МП іноді звертається до записів з попереднього візиту, аналізує дані продажів, щоб скласти план на візит...",
+          "4": "МП часто звертається до записів з попереднього візиту, бачить шляхи стратегічного розвитку відносин із клієнтом",
+          "5": "МП завжди під час підготовки до візиту звертається до записів з попереднього візиту, бачить шляхи розвитку..."
+        }
+      },
+      {
+        "id": "crit_2",
+        "group": "Підготовка",
+        "title": "Вміє підготувати необхідні промо-матеріали.",
+        "description": "Маркер ефективності: Наявність та готовність матеріалів під цілі візиту.",
+        "levels": {
+          "1": "МП не готує необхідні промо-матеріали, ще потрібний звіт MSL для аптеки.",
+          "2": "МП готує всі необхідні промо-матеріали, для аптеки також необхідний звіт MSL, але має труднощі з формулюванням.",
+          "3": "МП готує всі необхідні матеріали, але не завжди готовий чітко визначити контекст презентації.",
+          "4": "МП готує всі необхідні матеріали, може чітко сформулювати ключові висновки, планує логічні зв'язки.",
+          "5": "МП демонструє поведінку рівня 4 та знає бар'єри чи додаткові можливості у зв'язку з активностями конкурентів."
+        }
+      },
+      {
+        "id": "crit_3",
+        "group": "Підготовка",
+        "title": "Вміє ставити цілі за методологією SMART",
+        "description": "Маркер ефективності: Коректність та релевантність цілей візиту.",
+        "levels": {
+          "1": "МП ставить розмиті цілі, які не відповідають усім критеріям SMART.",
+          "2": "МП ставить цілі за всіма критеріями SMART у контексті конкретного портрета пацієнта.",
+          "3": "МП встановлює цілі відповідно до всіх критеріїв SMART в контексті конкретного портрета пацієнта та категорії.",
+          "4": "МП правильно ставить SMART-мети на візит, у 5 випадках з 7 ціль відповідає потенціалу та категорії.",
+          "5": "МП завжди ставить цілі за всіма критеріями SMART у контексті портрета пацієнта, індивідуальних особливостей."
+        }
+      },
+      {
+        "id": "crit_4",
+        "group": "Підготовка",
+        "title": "Вміє планувати розвиток лояльності.",
+        "description": "Маркер ефективності: Використання інструментів для збільшення лояльності.",
+        "levels": {
+          "1": "МП не визначає інструменти для розвитку лояльності клієнта.",
+          "2": "МП визначає лише один інструмент розвитку лояльності клієнта або проводить базовий аналіз.",
+          "3": "МП використовує різні інструменти для розвитку лояльності клієнта і володіє цифрами продажів/призначень.",
+          "4": "МП використовує всі інструменти розвитку лояльності, знає цифри продажів/призначень по ЛПЗ.",
+          "5": "МП досяг лояльності клієнта, знає цифри та планує виконання цільових показників за кожним продуктом."
+        }
+      },
+      {
+        "id": "crit_5",
+        "group": "Побудова довірливих відносин",
+        "title": "Уміє представити себя і компанію",
+        "description": "Маркер ефективності: Клієнт виявив зацікавленість у продовженні розмови, поділився досвідом.",
+        "levels": {
+          "1": "МП у привітанні не використовує повний алгоритм встановлення контакту.",
+          "2": "МП використовує алгоритм встановлення контакту, але не завжди він призводить до успіху.",
+          "3": "МП розпочинає візит, ґрунтуючись на підготовлених фразах. Контакт встановлюється в 3-4 випадках.",
+          "4": "МП встановлює контакт у 5 випадках із 7, діє впевнено.",
+          "5": "МП завжди використовує повний алгоритм встановлення контакту, швидко пропонує вихід у стресі."
+        }
+      },
+      {
+        "id": "crit_6",
+        "group": "Побудова довірливих відносин",
+        "title": "Деларує ціль у зв'язці з портретом пацієнта",
+        "description": "Маркер ефективності: Обговорення конкретного портрета пацієнта з перших хвилин.",
+        "levels": {
+          "1": "Для лікаря та провізора МП не обговорює конкретний портрет пацієнта.",
+          "2": "Спроба МП розпочати візит пов'язана з портретом пацієнта, містить мінімум деталей.",
+          "3": "МП задає напрямок розмови, зв'язуючи ціль візиту з конкретним портретом пацієнта.",
+          "4": "Портрет пацієнта тісно пов'язаний з конкретним клінічним випадком лікаря.",
+          "5": "МП завжди встановлює контакт із перших секунд, клієнт асоціює МП із брендом компанії."
+        }
+      },
+      {
+        "id": "crit_7",
+        "group": "Побудова довірливих відносин",
+        "title": "Вміє прояснити попередні домовленості",
+        "description": "Маркер ефективності: Логічний зв'язок з минулим візитом та фіксація результатів.",
+        "levels": {
+          "1": "МП не будує логічного зв'язку з попереднім візитом, не згадує домовленості.",
+          "2": "МП встановлює зв'язок, проте МП та клієнт сприймають угоди по-різному.",
+          "3": "МП починає візит з перевірки виконання домовленостей, плавно переходить до результатів.",
+          "4": "МП у 5 із 7 випадків зацікавлює клієнта та фіксує позитивний досвід у рекомендаціях.",
+          "5": "МП завжди зацікавлює клієнта, закріплюючи позитивний досвід та рекомендації."
+        }
+      },
+      {
+        "id": "crit_8",
+        "group": "Актуалізація потреб",
+        "title": "Вміє актуалізувати запланований портрет",
+        "description": "Маркер ефективності: Клієнт підтвердив потребу і виявив зацікавленість.",
+        "levels": {
+          "1": "МП не використовує алгоритми виявлення, не керує розмовою.",
+          "2": "МП не керує розмовою, ставить різні типи запитань, але не актуалізує потребу повністю.",
+          "3": "МП керує бесідою, задає питання, але актуалізує портрет лише в 3-4 випадках з 7.",
+          "4": "МП демонструє високий рівень управління бесідою, актуалізує портрет у 5 випадках з 7.",
+          "5": "Задані МП запитання завжди чітко виявляють актуальні портрети пацієнта."
+        }
+      },
+      {
+        "id": "crit_9",
+        "group": "Актуалізація потреб",
+        "title": "Вміє виявляти та формувати потреби.",
+        "description": "Маркер ефективності: Робота з реанімуванням або створенням потреби.",
+        "levels": {
+          "1": "МП часто пропускає етап виявлення потреб, відразу переходячи до презентації.",
+          "2": "МП виявляє або формує потреби лише в 2 випадках із 7.",
+          "3": "МП виявляє або формує реальні потреби у 3-4 випадках з 7.",
+          "4": "МП виявляє/формує реальні потреби у 5 випадках з 7.",
+          "5": "МП виявляє/формує реальні потреби на кожному візиті, навіть зі складними клієнтами."
+        }
+      },
+      {
+        "id": "crit_10",
+        "group": "Актуалізація потреб",
+        "title": "Вміє будувати воронки запитань/ SPIN навколо запланованого портрета.",
+        "description": "Маркер ефективності: Застосування техніки запитань.",
+        "levels": {
+          "1": "МП не обговорює з клієнтом потреби конкретних пацієнтів.",
+          "2": "МП ставить запитання про продукти, а не про пацієнтів; зв'язок слабкий.",
+          "3": "МП ставить питання про конкретних пацієнтів/потреби у 3-4 випадках із 7.",
+          "4": "МП успішно застосовує воронку запитань у 5 з 7 випадків.",
+          "5": "МП завжди ставить глибокі запитання про пацієнтів, зацікавлюючи складних лікарів."
+        }
+      },
+      {
+        "id": "crit_11",
+        "group": "Актуалізація потреб",
+        "title": "Використовує техніку активного слухання",
+        "description": "Маркер ефективності: Уточнення деталей, перефразування.",
+        "levels": {
+          "1": "МП не уточнює деталі потреб клієнта, спілкується шаблонами.",
+          "2": "МП уточнює деталі, але при неповних відповідях одразу переходить до презентації.",
+          "3": "МП уточнює деталі, у 3-4 випадках із 7 демонструє активне слухання.",
+          "4": "МП демонструє навички активного слухання у 5 випадках із 7.",
+          "5": "МП завжди уточнює деталі, застосовує перефразування, визнає проблеми з погляду клієнта."
+        }
+      },
+      {
+        "id": "crit_12",
+        "group": "Презентація",
+        "title": "Вміє будувати презентацію за технікою ХПВ під заплановану потребу",
+        "description": "Маркер ефективності: Клієнт демонструє сигнали готовності.",
+        "levels": {
+          "1": "МП будує презентацію без логічної послідовності Х-П-В.",
+          "2": "МП лише 2 рази з 7 дотримується логіки Х-П-В, аргументи хаотичні.",
+          "3": "МП у 3-4 випадках з 7 витримує логіку Х-П-В під виявлену потребу.",
+          "4": "МП у 5 випадках з 7 чітко витримує логіку Х-П-В для портрета пацієнта.",
+          "5": "МП завжди витримує логіку Х-П-В під потребу, аргументи звучать емоційно та нешаблонно."
+        }
+      },
+      {
+        "id": "crit_13",
+        "group": "Презентація",
+        "title": "Використовує ключове повідомлення",
+        "description": "Маркер ефективності: Органічна інтеграція ключового повідомлення (КС).",
+        "levels": {
+          "1": "МП не вбудовує ключові повідомлення в презентацію.",
+          "2": "МП промовляє ключові повідомлення окремо від контексту.",
+          "3": "МП у 3-4 випадках із 7 вдало промовляє ключові повідомлення як органічне завершення.",
+          "4": "МП у 5 випадках з 7 органічно впроваджує ключові повідомлення у діалог.",
+          "5": "МП завжди промовляє ключові повідомлення навіть зі складними клієнтами."
+        }
+      },
+      {
+        "id": "crit_14",
+        "group": "Презентація",
+        "title": "Вміє сприймати сигнали готовності до рекомендацій/використання препаратів.",
+        "description": "Маркер ефективності: Розпізнавання вербальних/невербальних сигналів.",
+        "levels": {
+          "1": "МП не розпізнає та не реагує на сигнали готовності клієнта.",
+          "2": "МП рідко реагує на сигнали, лише на ті, які клієнт виражає явно.",
+          "3": "МП у 3-4 випадках з 7 реагує на сигнали готовності та переходить до закриття.",
+          "4": "МП у 5 випадках з 7 розпізнає сигнали та успішно переходить до закриття.",
+          "5": "МП завжди миттєво реагує на сигнали готовності, уникаючи зайвих заперечень."
+        }
+      },
+      {
+        "id": "crit_15",
+        "group": "Презентація",
+        "title": "Вміє використовувати промоматеріали",
+        "description": "Маркер ефективності: Задіяння каналів сприйняття.",
+        "levels": {
+          "1": "МП не задіює канали сприйняття; слова розходяться з візуалізацією.",
+          "2": "МП залучає базові канали, але лише в 2 випадках з 7 задовольняє потреби.",
+          "3": "МП задіяє основні канали сприйняття, у 3-4 випадках з 7 використовує матеріали.",
+          "4": "МП у 5 випадках з 7 грамотно використовує промоматеріали.",
+          "5": "МП завжди задіяє канали сприйняття, вдало оперує матеріалами у складних питаннях."
+        }
+      },
+      {
+        "id": "crit_16",
+        "group": "Робота із запереченнями",
+        "title": "Вміє визначати маркери заперечень",
+        "description": "Маркер ефективності: Відсутність перешкод для призначення.",
+        "levels": {
+          "1": "МП докладає мінімальних зусиль, сприймає заперечення особисто, сперечається.",
+          "2": "МП у 2 випадках з 7 намагається долати бар'єри, але не використовує їх для продажу.",
+          "3": "МП у 3 випадках з 7 працює з озвученими запереченнями, роблячи спроби.",
+          "4": "МП у 5 випадках з 7 коректно визначає невисловлені сумніви.",
+          "5": "МП завжди точно визначає приховані сумніви, проактивно перевіряє переконання."
+        }
+      },
+      {
+        "id": "crit_17",
+        "group": "Робота із запереченнями",
+        "title": "Вміє розпізнавати типи заперечень",
+        "description": "Маркер ефективності: Розрізнення хибних/істинних заперечень.",
+        "levels": {
+          "1": "МП не розпізнає загальні та конкретні заперечення, плутає із запитами.",
+          "2": "МП визнає заперечення лише в 2 випадках із 7, рідко ставить уточнення.",
+          "3": "МП розпізнає справжні заперечення у 3-4 випадках з 7.",
+          "4": "МП у 5 випадках з 7 ефективно працює з конкретними запереченнями.",
+          "5": "МП завжди переводить загальні заперечення в конкретні, перевіряючи готовність."
+        }
+      },
+      {
+        "id": "crit_18",
+        "group": "Робота із запереченнями",
+        "title": "Використовує техніку 5П",
+        "description": "Маркер ефективності: Послідовна робота з алгоритмом подолання бар'єрів.",
+        "levels": {
+          "1": "МП не використовує техніку 5П.",
+          "2": "МП будує алгоритм 5П лише в 2 з 7 випадках, згода формальна.",
+          "3": "МП у 3-4 випадках із 7 логічно будує алгоритм 5П.",
+          "4": "МП послідовно використовує алгоритм 5П, клієнт підтверджує інтерес.",
+          "5": "МП завжди бездоганно використовує алгоритм 5П у найскладніших ситуаціях."
+        }
+      },
+      {
+        "id": "crit_19",
+        "group": "Закриття візиту",
+        "title": "Вміє озвучувати домовленості",
+        "description": "Маркер ефективності: Клієнт підтвердив зобов'язання (Велике Закриття).",
+        "levels": {
+          "1": "МП не формує домовленості з урахуванням Великого Закриття.",
+          "2": "МП у 2 з 6 випадків формує угоду, але згода клієнта формальна.",
+          "3": "МП у 3-4 випадках з 7 підсумовує розмову, укладає угоду під портрет.",
+          "4": "МП у 5 з 7 випадків успішно проводить Велике Закриття.",
+          "5": "МП завжди закриває візит за повним стандартом Великого Закриття."
+        }
+      },
+      {
+        "id": "crit_20",
+        "group": "Мерчендайзинг",
+        "title": "Вміє формувати викладку згідно з планограмою",
+        "description": "Маркер ефективності: Викладка відповідно до стандартів.",
+        "levels": {
+          "1": "МП самостійно не виконує елементи мерчендайзингу, фотофіксація порушена.",
+          "2": "МП частково виконує мерчендайзинг, пропускає окремі елементи.",
+          "3": "МП виконує елементи мерчендайзингу в повному обсязі, робить фото.",
+          "4": "МП якісно виконує повний комплекс мерчендайзингу та візуалізацію.",
+          "5": "МП виконує всі стандарти, домовляється про додаткові форми візуалізації."
+        }
+      },
+      {
+        "id": "crit_21",
+        "group": "Адміністрування",
+        "title": "Вміє оцінити ефективність",
+        "description": "Маркер ефективності: Домовленості відповідають цілям SMART.",
+        "levels": {
+          "1": "Заключені МП домовленості не відповідають цілям SMART.",
+          "2": "Укладені МП угоди лише в 2 з 7 випадків відповідають цілям SMART.",
+          "3": "Укладені домовленості у 3-4 випадках із 7 відповідають цілям SMART.",
+          "4": "Укладені домовленості у 5 випадках з 7 відповідають цілям, визначено контроль.",
+          "5": "Укладені угоди завжди повністю відповідають цілям SMART."
+        }
+      },
+      {
+        "id": "crit_22",
+        "group": "Адміністрування",
+        "title": "Вміє систематизувати дані, отримати під час візиту",
+        "description": "Маркер ефективності: Ведення записів, аналіз результатів.",
+        "levels": {
+          "1": "МП самостійно не робить записів, не аналізує візит.",
+          "2": "МП робить записи лише інколи (2 рази з 7), не пов'язуючи їх з історією.",
+          "3": "МП у 3-4 випадках із 7 робить нотатки, аналізує тренди.",
+          "4": "МП у 5 випадках з 7 має системний підхід до планування та аналізу.",
+          "5": "МП завжди має бездоганну систему ведення записів та довгострокового планування."
+        }
+      },
+      {
+        "id": "crit_23",
+        "group": "Адміністрування",
+        "title": "Вміє аналізувати та планувати шляхи подолання перешкод",
+        "description": "Маркер ефективності: План подолання бар'єрів у розрізі портрета.",
+        "levels": {
+          "1": "МП зовсім не аналізує візит у розрізі портрета пацієнта та бар'єрів.",
+          "2": "МП рідко аналізує шляхи подолання бар'єрів для наступного візиту.",
+          "3": "МП у 3-4 випадках з 7 має план подолання бар'єрів.",
+          "4": "МП у 5 випадках з 7 проактивно визначає можливі труднощі.",
+          "5": "МП завжди проактивно проєктує стратегію подолання бар'єрів."
+        }
+      },
+      {
+        "id": "crit_24",
+        "group": "Адміністрування",
+        "title": "Вміє ставити цілі за методологією SMART на наступний візит",
+        "description": "Маркер ефективності: Формування наступної цілі.",
+        "levels": {
+          "1": "МП самостійно не формує ціль SMART на наступний візит.",
+          "2": "МП лише 2 рази з 7 самостійно формує ціль SMART.",
+          "3": "МП у 3-4 випадках з 7 формує мету SMART, використовуючи інформацію.",
+          "4": "МП у 5 випадках з 7 формує ціль з урахуванням історії відносин.",
+          "5": "МП завжди формує цілі з урахуванням довгострокової стратегії."
+        }
+      },
+      {
+        "id": "crit_25",
+        "group": "Адміністрування",
+        "title": "Вміє планувати розвиток лояльності клієнта",
+        "description": "Маркер ефективності: Використання спектра інструментів розвитку.",
+        "levels": {
+          "1": "МП не може визначити інструменти розвитку лікаря/провізора.",
+          "2": "МП розвиває лояльність клієнта, використовуючи лише 1 інструмент.",
+          "3": "МП у 3-4 випадках з 7 визначає та використовує різні інструменти.",
+          "4": "МП у 5 випадках з 7 максимально задіює потенціал інструментів.",
+          "5": "МП завжди шукає неординарні шляхи розвитку клієнта."
+        }
+      }
+    ];
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const container = document.getElementById("formContainer");
+
+      const grouped = {};
+      evaluationCriteria.forEach(item => {
+        if (!grouped[item.group]) grouped[item.group] = [];
+        grouped[item.group].push(item);
+      });
+
+      for (const groupName in grouped) {
+        const groupBlock = document.createElement("div");
+        groupBlock.className = "group-block";
+        const title = document.createElement("h2");
+        title.textContent = "🔹 " + groupName;
+        groupBlock.appendChild(title);
+
+        grouped[groupName].forEach(crit => {
+          const div = document.createElement("div");
+          div.className = "criterion";
+
+          const label = document.createElement("label");
+          label.textContent = crit.title;
+
+          const desc = document.createElement("p");
+          desc.textContent = crit.description;
+
+          let critOptions = '<option value="">-- Не оцінено --</option>';
+          for (let k in crit.levels) {
+            critOptions += '<option value="' + k + '">Рівень ' + k + ' – ' + crit.levels[k] + '</option>';
+          }
+
+          const grid = document.createElement("div");
+          grid.className = "visits-scores-grid";
+
+          const box1 = document.createElement("div");
+          box1.className = "visit-score-col";
+          box1.innerHTML = 
+            '<label>Оцінка (Візит 1):</label>' +
+            '<select id="' + crit.id + '_v1">' + critOptions + '</select>';
+
+          const box2 = document.createElement("div");
+          box2.className = "visit-score-col";
+          box2.innerHTML = 
+            '<label>Оцінка (Візит 2):</label>' +
+            '<select id="' + crit.id + '_v2">' + critOptions + '</select>';
+
+          const box3 = document.createElement("div");
+          box3.className = "visit-score-col";
+          box3.innerHTML = 
+            '<label>Коментар / Спостереження:</label>' +
+            '<input type="text" id="' + crit.id + '_comment" placeholder="Введіть коментар...">';
+
+          grid.appendChild(box1);
+          grid.appendChild(box2);
+          grid.appendChild(box3);
+
+          div.appendChild(label);
+          div.appendChild(desc);
+          div.appendChild(grid);
+          groupBlock.appendChild(div);
+        });
+
+        container.appendChild(groupBlock);
+      }
+    });
+
+    let lastEvaluationData = null; // Зберігаємо дані останнього розрахунку для відправки
+
+    function calculateEvaluation() {
+      const evalDate = document.getElementById("evalDate").value || "Не вказана";
+      const mpName = document.getElementById("mpName").value.trim() || "Не вказано";
+      const rmName = document.getElementById("rmName").value.trim() || "Не вказано";
+
+      const city1 = document.getElementById("meta_city1").value.trim() || "—";
+      const lpu1 = document.getElementById("meta_lpu1").value.trim() || "—";
+      const doc1 = document.getElementById("meta_doc1").value.trim() || "—";
+
+      const city2 = document.getElementById("meta_city2").value.trim() || "—";
+      const lpu2 = document.getElementById("meta_lpu2").value.trim() || "—";
+      const doc2 = document.getElementById("meta_doc2").value.trim() || "—";
+
+      let total = 0, count = 0;
+      const lowCriteria = [];
+      const criteriaDetails = [];
+      const focusSelect = document.getElementById("focusSkillSelect");
+      focusSelect.innerHTML = '<option value="">-- Оберіть навик із зони розвитку --</option>';
+
+      evaluationCriteria.forEach(crit => {
+        const el1 = document.getElementById(crit.id + "_v1");
+        const el2 = document.getElementById(crit.id + "_v2");
+        const commentEl = document.getElementById(crit.id + "_comment");
+        const commentText = commentEl ? commentEl.value.trim() : "";
+        
+        let v1 = el1 && el1.value !== "" ? parseInt(el1.value) : null;
+        let v2 = el2 && el2.value !== "" ? parseInt(el2.value) : null;
+        
+        let vals = [];
+        if (v1 !== null) vals.push(v1);
+        if (v2 !== null) vals.push(v2);
+
+        let avgVal = null;
+        if (vals.length > 0) {
+          avgVal = vals.reduce((a, b) => a + b, 0) / vals.length;
+          total += avgVal;
+          count++;
+
+          if (avgVal < 3) {
+            lowCriteria.push({ 
+              title: crit.title, 
+              avg: avgVal.toFixed(1), 
+              comment: commentText 
+            });
+            
+            const opt = document.createElement("option");
+            opt.value = crit.title;
+            opt.textContent = crit.title + " (Середній бал: " + avgVal.toFixed(1) + ")";
+            focusSelect.appendChild(opt);
+          }
+        }
+
+        criteriaDetails.push({
+          title: crit.title,
+          v1: v1 !== null ? v1 : "—",
+          v2: v2 !== null ? v2 : "—",
+          avg: avgVal !== null ? avgVal.toFixed(1) : "—",
+          comment: commentText
+        });
+      });
+
+      if (count === 0) {
+        alert("Будь ласка, оцініть хоча б кілька критеріїв перед аналізом!");
+        return;
+      }
+
+      const overallAvg = (total / count).toFixed(2);
+      
+      let levelDesc = "";
+      if (overallAvg >= 4.5) levelDesc = "Майстерний рівень виконання";
+      else if (overallAvg >= 3.5) levelDesc = "Високий / Сильний рівень";
+      else if (overallAvg >= 3.0) levelDesc = "Середній робочий рівень";
+      else levelDesc = "Потребує розвитку / Нижче середнього";
+
+      // Зберігаємо об'єкт для відправки на бекенд
+      lastEvaluationData = {
+        evalDate: evalDate,
+        mpName: mpName,
+        rmName: rmName,
+        city1: city1,
+        lpu1: lpu1,
+        doc1: doc1,
+        city2: city2,
+        lpu2: lpu2,
+        doc2: doc2,
+        overallAvg: overallAvg,
+        levelDesc: levelDesc,
+        focusSkill: "", // заповниться при збереженні
+        detailsJSON: JSON.stringify(criteriaDetails, null, 2)
+      };
+
+      document.getElementById("results").innerHTML = 
+        "📊 <strong>Загальна інформація:</strong><br>" +
+        "📅 Дата: " + evalDate + " | 👤 МП: " + mpName + " | 👨‍🏫 РМ: " + rmName + "<br>" +
+        "📍 <strong>Візит 1:</strong> Місто: " + city1 + " | ЛПЗ: " + lpu1 + " | Лікар: " + doc1 + "<br>" +
+        "📍 <strong>Візит 2:</strong> Місто: " + city2 + " | ЛПЗ: " + lpu2 + " | Лікар: " + doc2 + "<br><br>" +
+        "⭐ <strong>Загальний середній бал:</strong> " + overallAvg + " / 5 (оцінено критеріїв: " + count + " з " + evaluationCriteria.length + ")";
+
+      document.getElementById("styleBlock").innerHTML = "🧭 <strong>Загальна оцінка рівня:</strong> " + levelDesc + (overallAvg >= 4.5 ? " 🏆" : overallAvg >= 3.5 ? " 🚀" : overallAvg >= 3.0 ? " 👍" : " ⚠️");
+
+      let output = "<p><strong>📌 Зони розвитку (критерії з балом нижче 3):</strong></p>";
+
+      if (lowCriteria.length > 0) {
+        output += "<ul>";
+        lowCriteria.forEach(item => {
+          output += "<li><strong>" + item.title + "</strong> — Середній бал: " + item.avg;
+          if (item.comment) {
+            output += "<br><em>Коментар: " + item.comment + "</em>";
+          }
+          output += "</li><br>";
+        });
+        output += "</ul>";
+        document.getElementById("actionFocusContainer").style.display = "block";
+      } else {
+        output += "<p>✅ Чудово! Немає критеріїв із балом нижче 3.</p>";
+        document.getElementById("actionFocusContainer").style.display = "none";
+      }
+
+      document.getElementById("recommendationBlock").innerHTML = output;
+      document.getElementById("copyBtn").style.display = "inline-block";
+      document.getElementById("saveBtn").style.display = "inline-block";
+      document.getElementById("results").scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function copyRecommendations() {
+      const resultsText = document.getElementById("results").innerText;
+      const styleText = document.getElementById("styleBlock").innerText;
+      const recText = document.getElementById("recommendationBlock").innerText;
+      const focusSkill = document.getElementById("focusSkillSelect").value;
+      
+      let fullText = resultsText + "\n" + styleText + "\n\n" + recText;
+      if (focusSkill) {
+        fullText += "\n🎯 Обраний фокус для відпрацювання: " + focusSkill;
+      }
+      
+      navigator.clipboard.writeText(fullText).then(() => {
+        alert("Результати успішно скопійовано до буфера обміну! 📝");
+      }).catch(() => {
+        alert("Не вдалося скопіювати текст 😔");
+      });
+    }
+
+    function saveToDatabase() {
+      if (!lastEvaluationData) {
+        alert("Спочатку натисніть «Проаналізувати результати»!");
+        return;
+      }
+
+      const focusSkill = document.getElementById("focusSkillSelect").value;
+      lastEvaluationData.focusSkill = focusSkill ? focusSkill : "Не обрано";
+
+      const btn = document.getElementById("saveBtn");
+      btn.textContent = "⏳ Зберігається...";
+      btn.disabled = true;
+
+      // URL вашого веб-додатка Apps Script
+      const scriptURL = "https://script.google.com/macros/s/AKfycbxMEYj8xDVDdxJ7mFZADeFlqeQB0RgO4yYRcB-l_2Vqa7t8D9x6ect8sNZrKvRyk0QLqg/exec";
+
+      fetch(scriptURL, {
+        method: "POST",
+        mode: "no-cors", // Потрібно для Google Apps Script крос-доменних запитів
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(lastEvaluationData)
+      })
+      .then(() => {
+        alert("✅ Дані успішно збережено до вашої Google Таблиці!");
+        btn.textContent = "💾 Збережено у базі";
+      })
+      .catch((error) => {
+        console.error("Помилка:", error);
+        alert("❌ Сталася помилка при збереженні. Перевірте підключення до інтернету.");
+        btn.textContent = "💾 Зберегти в базу даних";
+        btn.disabled = false;
+      });
+    }
+  </script>
+</body>
+</html>

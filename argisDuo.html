@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="uk">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Аргіс Дуо</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@700&family=Roboto:wght@400;500;700;900&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/modern-normalize/1.1.0/modern-normalize.css"
+    integrity="sha512-Y0MM+V6ymRKN2zStTqzQ227DWhhp4Mzdo6gnlRnuaNCbc+YN/ZH0sBCLTM4M0oSy9c9VKiCvd4Jk44aCLrNS5Q=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="./css/main.css" />
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-5BZZCV5DRK"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag("js", new Date());
+  gtag("config", "G-5BZZCV5DRK");
+</script>
+<script>
+  const email = localStorage.getItem("allowedEmail");
+  if (email) {
+    gtag("set", "user_properties", {
+      user_id: email
+    });
+  }
+</script>
+<script>
+  function sha256(input) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(input);
+    return crypto.subtle.digest("SHA-256", data).then(hash => {
+      return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
+    });
+  }
+</script>
+</head>
+<body>
+  <div id="header-container"></div>
+  <main>
+    <section class="works">
+      <div class="container">
+        <h2 class="title" style="color: black; text-align: center; font-size: 24px; margin-bottom: 25px;">Аргіс Дуо</h2>
+        
+        <div class="product-details">
+          <div class="product-layout">
+            <img class="product-image" src="./images2/products/Жз/Аргіс ДУО_left.png" alt="Аргіс ДУО" width="450" height="294" loading="lazy" />
+            
+            <div class="product-info">
+              <h3>Аргіс ДУО (супозиторії №10)</h3>
+              <p class="product-subtitle">Засіб гігієнічно-профілактичний з антисептичною та протизапальною дією</p>
+              <p class="product-description-text">
+                Аргіс ДУО застосовується як гігієнічно-профілактичний засіб у комплексній терапії та для профілактики гінекологічних і урологічних захворювань.
+              </p>
+            </div>
+          </div>
+
+          <div class="product-section">
+            <h4>Склад та активні речовини</h4>
+            <p>Один супозиторій містить:</p>
+            <ul>
+              <li><strong>Екстракт хлорофіліпту густий</strong> (у перерахунку на суху речовину) — 0,025 г;</li>
+              <li><strong>Хлоргексидину біглюконат</strong> — 0,016 г.</li>
+            </ul>
+          </div>
+
+          <div class="product-section">
+            <h4>Властивості компонентів</h4>
+            <ul>
+              <li><strong>Хлорофіліпт (екстракт листя евкаліпта):</strong> володіє потужною антибактеріальною дією (зокрема проти стафілококів, стійких до антибіотиків), стимулює регенерацію слизових оболонок, знімає запалення та прискорює епітелізацію тканин.</li>
+              <li><strong>Хлоргексидину біглюконат:</strong> антисептик широкого спектра дії, активний щодо грампозитивних та грамнегативних бактерій, дріжджоподібних грибів (включаючи рід <em>Candida</em>) та найпростіших. Не порушує природну функціональну активність лактобактерій.</li>
+            </ul>
+          </div>
+
+          <div class="product-section">
+            <h4>Показання до застосування</h4>
+            <p>Застосовується у комплексній терапії та для профілактики:</p>
+            <ul>
+              <li><strong>У гінекології:</strong> бактеріальний вагіноз, кольпіти, вагініти різної етіології, ерозія шийки матки, а також для санації статевих шляхів перед пологами, операціями чи медичними маніпуляціями.</li>
+              <li><strong>У проктології та урології:</strong> запальні процеси прямої кишки (проктити, сигмоїдити), тріщини анального отвору, а також комплексне оздоровлення в урологічній практиці.</li>
+            </ul>
+          </div>
+
+          <div class="product-section">
+            <h4>Спосіб застосування та дози</h4>
+            <ul>
+              <li>Застосовують вагінально або ректально.</li>
+              <li><strong>Дозування:</strong> по 1 супозиторію 1–2 рази на добу (бажано вранці та ввечері перед сном).</li>
+              <li><strong>Курс застосування:</strong> від 7 до 14 днів (або за рекомендацією лікаря залежно від ступеня запального процесу).</li>
+            </ul>
+          </div>
+
+          <div class="product-section">
+            <h4>Протипоказання</h4>
+            <p>Підвищена індивідуальна чутливість до хлорофіліпту, хлоргексидину або інших компонентів засобу.</p>
+          </div>
+
+          <div class="product-section">
+            <h4>Форма випуску та умови зберігання</h4>
+            <ul>
+              <li><strong>Форма випуску:</strong> супозиторії, по 5 шт. у блістері, по 2 блістери в картонній пачці (№10).</li>
+              <li><strong>Умови зберігання:</strong> зберігати в оригінальній упаковці в сухому, захищеному від світла та недоступному для дітей місці при температурі не вище 25 °C.</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Кнопки та матеріали -->
+        <ul class="button">
+          <li class="button-section">
+            <button class="btn" type="button"><a id="campaign" style="text-decoration: none; font-size: smaller;" class="text__work" href="#">Кампейн</a></button>
+          </li>
+          <li class="button-section">
+            <button class="btn" type="button" style="text-decoration: none; font-size: smaller;">Відео</button>
+            <div class="menu">
+              <a id="video" href="https://drive.google.com/file/d/1md2elCuxjO293gF2iysmg1U0izdCcZhP/view?usp=sharing" target="_blank" rel="noopener noreferrer">Вебінар</a>
+            </div>
+          </li>
+          <li class="button-section">
+            <button class="btn" type="button" style="text-decoration: none; font-size: smaller;">Презентації</button>
+            <div class="menu">
+              <a href="./PRD/edu/DP-C16.pdf" target="_blank" rel="noopener noreferrer">Навчальна Презентація</a>
+              <a id="presentation" href="./PRD/DP-C16 на візит.pdf" target="_blank" rel="noopener noreferrer">На візит</a>
+              <a href="./PRD/cycle/DP-C16 0925.pdf" target="_blank" rel="noopener noreferrer">Циклова зустріч</a>
+              <a href="./PRD/cycle/Список додаткового обладнання для запуску.pdf#page=10" target="_blank" rel="noopener noreferrer">Перелік обладнання</a>
+            </div>
+          </li>
+          <li class="button-section">
+            <div class="test-wrapper">
+              <button class="btn" type="button">
+                <a id="test" style="text-decoration: none; font-size: smaller; opacity: 0.5; pointer-events: none;" class="text__work" href="https://docs.google.com/forms/d/e/1FAIpQLSfA6BjjxIHG09m5UKm0QcLyE6JyyxlWAUwqxyXiWcApidRzXg/viewform?usp=header" target="_blank" rel="noopener noreferrer">Тестування</a>
+              </button>
+              <span id="tooltip">📌 Спочатку переглянь усі матеріали!</span>
+            </div>
+          </li>
+          <li class="button-section">
+            <button class="btn" type="button"><a style="text-decoration: none; font-size: smaller;" class="text__work" href="./PRD/Інструкції до аналізаторів/Керівництво з експлуатації DP-C16_ред.1_05.2025.pdf" target="_blank" rel="noopener noreferrer">Інструкція</a></button>
+          </li>
+          <li class="button-section">
+            <button class="btn" type="button"><a style="text-decoration: none; font-size: smaller;" class="text__work" href="https://docs.google.com/spreadsheets/d/1Sd_HPAOdUQtUAPsyfU2tjTGr8EMDvo-p_5IoEUpR6K4/edit?usp=drive_link#gid=1919485500" target="_blank" rel="noopener noreferrer">Запитання</a></button>
+          </li>
+          <li class="button-section">
+            <button class="btn" type="button"><a style="text-decoration: none; font-size: smaller;" class="text__work" href="./portfolio products.html#female">Назад</a></button>
+          </li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <div id="footer-container"></div>
+  <script src="./js/menu.js"></script>
+  <script src="theme-toggle.js"></script>
+  <script src="tracking.js"></script>
+  <script src="headfoot.js"></script>
+</body>
+
+</html>

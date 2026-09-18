@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Гіппоміцел</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@700&family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/modern-normalize/1.1.0/modern-normalize.css" integrity="sha512-Y0MM+V6ymRKN2zStTqzQ227DWhhp4Mzdo6gnlRnuaNCbc+YN/ZH0sBCLTM4M0oSy9c9VKiCvd4Jk44aCLrNS5Q==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="./css/main.css" />
+  <link rel="stylesheet" href="./css/styles.css">
+  <style>
+    .product-details { background: #ffffff; border-radius: 12px; padding: 24px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); margin-bottom: 30px; }
+    .product-layout { display: flex; flex-direction: column; gap: 24px; align-items: center; margin-bottom: 24px; }
+    @media screen and (min-width: 768px) { .product-layout { flex-direction: row; align-items: flex-start; } }
+    .product-image { flex-shrink: 0; max-width: 100%; height: auto; border-radius: 8px; }
+    .product-info h3 { font-size: 22px; font-weight: 700; color: #212121; margin-bottom: 8px; }
+    .product-subtitle { font-size: 15px; color: #2196f3; font-weight: 500; margin-bottom: 16px; }
+    .product-description-text { font-size: 15px; line-height: 1.6; color: #424242; text-align: justify; }
+    .product-section { margin-top: 20px; border-top: 1px solid #f0f0f0; padding-top: 16px; }
+    .product-section h4 { font-size: 16px; font-weight: 700; color: #212121; margin-bottom: 10px; }
+    .product-section ul { padding-left: 20px; margin-bottom: 12px; }
+    .product-section li, .product-section p { font-size: 14px; line-height: 1.6; color: #424242; margin-bottom: 6px; }
+  </style>
+</head>
+<body>
+  <div id="header-container"></div>
+  <main>
+    <section class="works">
+      <div class="container">
+        <h2 class="title" style="color: black; text-align: center; font-size: 24px; margin-bottom: 25px;">Гіппоміцел</h2>
+        <div class="product-details">
+          <div class="product-layout">
+            <img class="product-image" src="./images2/products/Невр/Гіппоміцел.png" alt="Гіппоміцел" width="450" height="294" loading="lazy" />
+            <div class="product-info">
+              <h3>Гіппоміцел</h3>
+              <p class="product-subtitle">Нейропротекторний комплекс для поліпшення когнітивних функцій та пам'яті</p>
+              <p class="product-description-text">Засіб сприяє стимуляції нейрогенезу, нормалізації мозкового кровообігу, захисту нейронів від ішемії та підвищенню розумової працездатності.</p>
+            </div>
+          </div>
+          <div class="product-section">
+            <h4>Склад та активні речовини</h4>
+            <p>Екстракт міцелію їжовика гребінчастого (Hericium erinaceus), екстракт гінкго білоба, лецитин, вітаміни B1, B6, B12.</p>
+          </div>
+          <div class="product-section">
+            <h4>Властивості компонентів</h4>
+            <ul>
+              <li><strong>Їжовик гребінчастий (Hericium erinaceus):</strong> стимулює синтез фактора росту нервів (NGF), покращує пластичність нейронів та сприяє відновленню нервових волокон.</li>
+              <li><strong>Гінкго білоба:</strong> нормалізує мікроциркуляцію крові в судинах головного мозку та чинить антиоксидантну дію.</li>
+            </ul>
+          </div>
+          <div class="product-section">
+            <h4>Рекомендації до застосування</h4>
+            <ul>
+              <li>Порушення пам'яті, уваги та концентрації (вікові чи обумовлені стресом);</li>
+              <li>Хронічна ішемія головного мозку;</li>
+              <li>Відновлювальний період після черепно-мозкових травм та інсультів.</li>
+            </ul>
+          </div>
+          <div class="product-section">
+            <h4>Спосіб застосування та дози</h4>
+            <p>Приймати по 1 капсулі 2 рази на добу під час прийому їжі в першій половині дня. Курс — від 1 до 3 місяців.</p>
+          </div>
+          <div class="product-section">
+            <h4>Протипоказання</h4>
+            <p>Підвищена чутливість до компонентів, вагітність, період лактації.</p>
+          </div>
+        </div>
+        <ul class="button">
+          <li class="button-section"><button class="btn" type="button"><a id="campaign" style="text-decoration: none; font-size: smaller;" class="text__work" href="#">Кампейн</a></button></li>
+          <li class="button-section"><button class="btn" type="button" style="text-decoration: none; font-size: smaller;">Відео</button><div class="menu"><a id="video" href="#" target="_blank" rel="noopener noreferrer">Вебінар</a></div></li>
+          <li class="button-section"><button class="btn" type="button" style="text-decoration: none; font-size: smaller;">Презентації</button><div class="menu"><a href="#" target="_blank" rel="noopener noreferrer">Навчальна Презентація</a><a id="presentation" href="#" target="_blank" rel="noopener noreferrer">На візит</a></div></li>
+          <li class="button-section"><div class="test-wrapper"><button class="btn" type="button"><a id="test" style="text-decoration: none; font-size: smaller; opacity: 0.5; pointer-events: none;" class="text__work" href="#" target="_blank" rel="noopener noreferrer">Тестування</a></button></div></li>
+          <li class="button-section"><button class="btn" type="button"><a style="text-decoration: none; font-size: smaller;" class="text__work" href="#">Інструкція</a></button></li>
+          <li class="button-section"><button class="btn" type="button"><a style="text-decoration: none; font-size: smaller;" class="text__work" href="./portfolio products.html#neuro">Назад</a></button></li>
+        </ul>
+      </div>
+    </section>
+  </main>
+  <div id="footer-container"></div>
+  <script src="./js/menu.js"></script><script src="theme-toggle.js"></script><script src="tracking.js"></script><script src="headfoot.js"></script>
+</body>
+</html>

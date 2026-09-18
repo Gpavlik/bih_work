@@ -4,176 +4,343 @@
   <meta charset="UTF-8">
   <title>Діагностика роботи регіонального менеджера</title>
   <style>
-    body { font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px; }
-    h1 { text-align: center; margin-bottom: 30px; }
+    body { font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px; color: #333; }
+    h1 { text-align: center; margin-bottom: 20px; color: #2c3e50; }
+    
+    .meta-block { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 5px rgba(0,0,0,0.1); margin-bottom: 30px; }
+    .meta-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; }
+    .meta-field label { font-weight: bold; display: block; margin-bottom: 5px; font-size: 0.95em; color: #444; }
+    .meta-field input { width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #ccc; box-sizing: border-box; font-size: 0.95em; }
+
     .group-block { margin-bottom: 40px; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 5px rgba(0,0,0,0.1); }
-    .criterion { margin-bottom: 20px; }
-    .criterion label { font-weight: bold; display: block; margin-bottom: 5px; }
-    .criterion p { margin: 5px 0; font-size: 0.95em; color: #555; }
-    .criterion select { width: 100%; padding: 5px; }
+    .group-block h2 { color: #007acc; border-bottom: 2px solid #eef; padding-bottom: 8px; margin-top: 0; }
+    
+    .criterion { margin-bottom: 25px; border-bottom: 1px solid #f0f0f0; padding-bottom: 15px; }
+    .criterion:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+    .criterion label { font-weight: bold; display: block; margin-bottom: 5px; font-size: 1.05em; }
+    .criterion p { margin: 5px 0; font-size: 0.9em; color: #666; }
+    
+    .rm-score-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 15px; margin-top: 10px; background: #fcfcfc; padding: 12px; border: 1px solid #eaeaea; border-radius: 6px; }
+    .rm-score-col label { font-size: 0.85em; color: #555; font-weight: normal; margin-bottom: 2px; display: block; }
+    .rm-score-col select, .rm-score-col input { width: 100%; padding: 6px; border-radius: 4px; border: 1px solid #ccc; font-size: 0.9em; box-sizing: border-box; }
+
     #results, #styleBlock, #recommendationBlock {
-      margin-top: 30px;
+      margin-top: 20px;
       padding: 15px;
       border-radius: 8px;
     }
     #results { background-color: #e0ffe0; border: 1px solid #0c0; }
     #styleBlock { background-color: #eef; border: 1px solid #77c; }
     #recommendationBlock { background-color: #fff8e1; border: 1px solid #ffc107; }
-    button { padding: 10px 20px; font-size: 16px; background-color: #007acc; color: white; border: none; border-radius: 5px; cursor: pointer; }
+
+    .action-container { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 5px rgba(0,0,0,0.1); margin-top: 30px; text-align: center; }
+    .action-container select { width: 100%; max-width: 500px; padding: 10px; margin-top: 8px; border-radius: 4px; border: 1px solid #ccc; font-size: 1em; }
+    
+    button { padding: 12px 25px; font-size: 16px; background-color: #007acc; color: white; border: none; border-radius: 5px; cursor: pointer; display: inline-block; margin-top: 15px; }
     button:hover { background-color: #005fa3; }
+    .copy-btn { background-color: #27ae60; margin-left: 10px; }
+    .copy-btn:hover { background-color: #219653; }
+    .save-btn { background-color: #e67e22; margin-left: 10px; }
+    .save-btn:hover { background-color: #d35400; }
+
+    @media (max-width: 768px) {
+      .rm-score-grid { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
 
   <h1>🧾 Оцінка та діагностика стилю РМ</h1>
 
-  <div id="formContainer">
-    <!-- Сюди JavaScript динамічно вставить всі критерії -->
+  <!-- Шапка: Дата, Супервайзер, РМ -->
+  <div class="meta-block">
+    <div class="meta-row">
+      <div class="meta-field">
+        <label for="evalDate">Дата оцінки:</label>
+        <input type="date" id="evalDate">
+      </div>
+      <div class="meta-field">
+        <label for="supervisorName">Супервайзер:</label>
+        <input type="text" id="supervisorName" placeholder="Введіть ПІБ супервайзера">
+      </div>
+      <div class="meta-field">
+        <label for="rmName">Ім'я РМ:</label>
+        <input type="text" id="rmName" placeholder="Введіть ПІБ РМ">
+      </div>
+    </div>
   </div>
 
-  <button onclick="calculateEvaluation()">🔍 Проаналізувати</button>
+  <div id="formContainer">
+    <!-- Сюди динамічно вставчаються критерії -->
+  </div>
+
+  <div class="action-container">
+    <button onclick="calculateEvaluation()">🔍 Проаналізувати результати</button>
+    
+    <div id="actionFocusContainer" style="display:none; margin-top: 20px; text-align: left; max-width: 600px; margin-left: auto; margin-right: auto;">
+      <label for="focusSkillSelect" style="font-weight: bold; color: #d35400; display: block; margin-bottom: 5px;">🎯 Оберіть навик для відпрацювання (фокус розвитку):</label>
+      <select id="focusSkillSelect">
+        <option value="">-- Оберіть навик із зони розвитку --</option>
+      </select>
+    </div>
+    
+    <div>
+      <button class="copy-btn" id="copyBtn" style="display:none;" onclick="copyRecommendations()">📋 Скопіювати рекомендації</button>
+      <button class="save-btn" id="saveBtn" style="display:none;" onclick="saveToDatabase()">💾 Зберегти в базу даних</button>
+    </div>
+  </div>
 
   <div id="results"></div>
   <div id="styleBlock"></div>
   <div id="recommendationBlock"></div>
-  <div style="text-align: center; margin-top: 20px;">
-    <p>Після заповнення всіх критеріїв натисніть кнопку "🔍 Проаналізувати" для отримання результатів.</p>
-    <button class="btn" type="button"><a style="text-decoration: none; color: white;"  href="./portfolio standart.html">Назад</a></button>
-  </div>
+
+  <!-- Підключаємо файл з вашими критеріями -->
   <script src="criteria.js"></script>
+  
   <script>
-   document.addEventListener("DOMContentLoaded", () => {
-  const container = document.getElementById("formContainer");
+    document.addEventListener("DOMContentLoaded", () => {
+      const container = document.getElementById("formContainer");
 
-  const grouped = {};
-  evaluationCriteria.forEach(item => {
-    if (!grouped[item.group]) grouped[item.group] = [];
-    grouped[item.group].push(item);
-  });
+      const grouped = {};
+      evaluationCriteria.forEach(item => {
+        if (!grouped[item.group]) grouped[item.group] = [];
+        grouped[item.group].push(item);
+      });
 
-  for (const groupName in grouped) {
-    const groupBlock = document.createElement("div");
-    groupBlock.className = "group-block";
-    const title = document.createElement("h2");
-    title.textContent = `🔹 ${groupName}`;
-    groupBlock.appendChild(title);
+      for (const groupName in grouped) {
+        const groupBlock = document.createElement("div");
+        groupBlock.className = "group-block";
+        const title = document.createElement("h2");
+        title.textContent = "🔹 " + groupName;
+        groupBlock.appendChild(title);
 
-    grouped[groupName].forEach(crit => {
-      const div = document.createElement("div");
-      div.className = "criterion";
+        grouped[groupName].forEach(crit => {
+          const div = document.createElement("div");
+          div.className = "criterion";
 
-      const label = document.createElement("label");
-      label.htmlFor = crit.id;
-      label.textContent = crit.title;
+          const label = document.createElement("label");
+          label.textContent = crit.title;
 
-      const desc = document.createElement("p");
-      desc.textContent = crit.description;
+          const desc = document.createElement("p");
+          desc.textContent = crit.description;
 
-      const select = document.createElement("select");
-      select.id = crit.id;
-      select.innerHTML = `<option value="">Не оцінено</option>` +
-        Object.entries(crit.levels).map(
-          ([key, val]) => `<option value="${key}">${key} – ${val}</option>`
-        ).join("");
+          let critOptions = '<option value="">-- Не оцінено --</option>';
+          for (let k in crit.levels) {
+            critOptions += '<option value="' + k + '">Рівень ' + k + ' – ' + crit.levels[k] + '</option>';
+          }
 
-      div.appendChild(label);
-      div.appendChild(desc);
-      div.appendChild(select);
-      groupBlock.appendChild(div);
+          const grid = document.createElement("div");
+          grid.className = "rm-score-grid";
+
+          const box1 = document.createElement("div");
+          box1.className = "rm-score-col";
+          box1.innerHTML = 
+            '<label>Оцінка:</label>' +
+            '<select id="' + crit.id + '_score">' + critOptions + '</select>';
+
+          const box2 = document.createElement("div");
+          box2.className = "rm-score-col";
+          box2.innerHTML = 
+            '<label>Коментар / Спостереження:</label>' +
+            '<input type="text" id="' + crit.id + '_comment" placeholder="Введіть коментар...">';
+
+          grid.appendChild(box1);
+          grid.appendChild(box2);
+
+          div.appendChild(label);
+          div.appendChild(desc);
+          div.appendChild(grid);
+          groupBlock.appendChild(div);
+        });
+
+        container.appendChild(groupBlock);
+      }
     });
 
-    container.appendChild(groupBlock);
-  }
+    function determineStyle() {
+      const avg = arr => arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : 0;
+      const getScores = ids => ids.map(id => {
+        const el = document.getElementById(id + "_score");
+        return el && el.value !== "" ? parseInt(el.value) : 0;
+      });
 
-  // Створюємо кнопку копіювання
-  const copyBtn = document.createElement("button");
-  copyBtn.textContent = "📋 Скопіювати рекомендації";
-  copyBtn.onclick = copyRecommendations;
-  document.body.appendChild(copyBtn);
-});
+      const groups = {
+        control: ['prep_1', 'prep_2', 'correction_1', 'visit_1'],
+        coaching: ['prep_3', 'trust_1', 'correction_2', 'practice_1'],
+        support: ['trust_1', 'trust_2', 'practice_2'],
+        delegation: ['prep_4', 'correction_3', 'post_2']
+      };
 
-function determineStyle() {
-  const avg = arr => arr.reduce((a, b) => a + b, 0) / arr.length;
-  const getScores = ids => ids.map(id => parseInt(document.getElementById(id)?.value) || 0);
+      const averages = {};
+      for (const key in groups) {
+        averages[key] = avg(getScores(groups[key]));
+      }
 
-  const groups = {
-    control: ['prep_1', 'prep_2', 'correction_1', 'visit_1'],
-    coaching: ['prep_3', 'trust_1', 'correction_2', 'practice_1'],
-    support: ['trust_1', 'trust_2', 'practice_2'],
-    delegation: ['prep_4', 'correction_3', 'post_2']
-  };
+      const sorted = Object.entries(averages).sort((a, b) => b[1] - a[1]);
+      const maxKey = sorted.length ? sorted[0][0] : "";
+      
+      const styleMap = {
+        control: "Директивний",
+        coaching: "Розвиваючий",
+        support: "Підтримуючий",
+        delegation: "Делегуючий"
+      };
 
-  const averages = {};
-  for (const key in groups) {
-    averages[key] = avg(getScores(groups[key]));
-  }
-
-  const maxKey = Object.entries(averages).sort((a, b) => b[1] - a[1])[0][0];
-  const styleMap = {
-    control: "Директивний",
-    coaching: "Розвиваючий",
-    support: "Підтримуючий",
-    delegation: "Делегуючий"
-  };
-
-  return styleMap[maxKey] || "Невизначено";
-}
-
-function calculateEvaluation() {
-  let total = 0, count = 0;
-  const lowCriteria = [];
-
-  evaluationCriteria.forEach(crit => {
-    const val = parseInt(document.getElementById(crit.id).value);
-    if (!isNaN(val)) {
-      total += val;
-      count++;
-      if (val > 0 && val < 3) lowCriteria.push(crit);
+      return styleMap[maxKey] || "Невизначено";
     }
-  });
 
-  const avg = count ? (total / count).toFixed(2) : "—";
-  document.getElementById("results").innerHTML = `📊 Загальна оцінка: <strong>${avg} / 5</strong>`;
+    let lastEvaluationData = null;
 
-  const style = determineStyle();
-  document.getElementById("styleBlock").innerHTML = `🧭 Стиль управління: <strong>${style}</strong>`;
+    function calculateEvaluation() {
+      const evalDate = document.getElementById("evalDate").value || "Не вказана";
+      const supervisorName = document.getElementById("supervisorName").value.trim() || "Не вказано";
+      const rmName = document.getElementById("rmName").value.trim() || "Не вказано";
 
-  const recMap = {
-    "Директивний": "Зверни увагу на розвиток самостійності у ТПРК та м'якший емоційний контакт.",
-    "Розвиваючий": "Сильна сторона — навчання. Важливо не забувати про контроль і результат.",
-    "Підтримуючий": "Добре працюєш з довірою. Додай більше структури для оцінки навичок.",
-    "Делегуючий": "Високий рівень автономії. Перевіряй, чи достатньо зворотного зв’язку.",
-    "Невизначено": "Оцінка змішана — рекомендується пройти детальну діагностику або спостереження."
-  };
+      let total = 0, count = 0;
+      const lowCriteria = [];
+      const criteriaDetails = [];
+      const focusSelect = document.getElementById("focusSkillSelect");
+      focusSelect.innerHTML = '<option value="">-- Оберіть навик із зони розвитку --</option>';
 
-  let output = `<p><strong>📌 Загальна рекомендація:</strong> ${recMap[style] || "—"}</p>`;
+      evaluationCriteria.forEach(crit => {
+        const scoreEl = document.getElementById(crit.id + "_score");
+        const commentEl = document.getElementById(crit.id + "_comment");
+        const commentText = commentEl ? commentEl.value.trim() : "";
+        
+        let score = scoreEl && scoreEl.value !== "" ? parseInt(scoreEl.value) : null;
 
-  if (lowCriteria.length) {
-    output += `<strong>🔧 Критерії з низькою оцінкою (менше-3):</strong><ul>`;
-    lowCriteria.forEach(item => {
-      const lvl = item.levels["1"] || item.levels["2"];
-      output += `<li><strong>${item.title}</strong> — ${lvl}</li>`;
-    });
-    output += `</ul>`;
-  } else {
-    output += `<p>✅ Усі критерії оцінені на рівні 3 і вище.</p>`;
-  }
+        if (score !== null) {
+          total += score;
+          count++;
 
-  document.getElementById("recommendationBlock").innerHTML = output;
-}
+          if (score < 3) {
+            lowCriteria.push({ 
+              title: crit.title, 
+              score: score, 
+              comment: commentText 
+            });
+            
+            const opt = document.createElement("option");
+            opt.value = crit.title;
+            opt.textContent = crit.title + " (Бал: " + score + ")";
+            focusSelect.appendChild(opt);
+          }
+        }
 
-// 📋 Копіювання тексту рекомендацій
-function copyRecommendations() {
-  const output = document.getElementById("recommendationBlock").innerText;
-  navigator.clipboard.writeText(output).then(() => {
-    alert("Рекомендації скопійовано до буфера 📝");
-  }).catch(() => {
-    alert("Не вдалося скопіювати текст 😔");
-  });
-}
+        criteriaDetails.push({
+          title: crit.title,
+          score: score !== null ? score : "—",
+          comment: commentText
+        });
+      });
 
-</script>
+      if (count === 0) {
+        alert("Будь ласка, оцініть хоча б кілька критеріїв перед аналізом!");
+        return;
+      }
 
-<script src="headfoot.js"></script>
+      const overallAvg = (total / count).toFixed(2);
+      const style = determineStyle();
+
+      lastEvaluationData = {
+        evalDate: evalDate,
+        supervisorName: supervisorName,
+        rmName: rmName,
+        overallAvg: overallAvg,
+        levelDesc: style,
+        focusSkill: "",
+        detailsJSON: JSON.stringify(criteriaDetails, null, 2)
+      };
+
+      document.getElementById("results").innerHTML = 
+        "📊 <strong>Загальна інформація:</strong><br>" +
+        "📅 Дата: " + evalDate + " | 👁️ Супервайзер: " + supervisorName + " | 👤 РМ: " + rmName + "<br><br>" +
+        "⭐ <strong>Загальний середній бал:</strong> " + overallAvg + " / 5 (оцінено критеріїв: " + count + " з " + evaluationCriteria.length + ")";
+
+      document.getElementById("styleBlock").innerHTML = "🧭 <strong>Стиль управління:</strong> " + style;
+
+      const recMap = {
+        "Директивний": "Зверни увагу на розвиток самостійності у МП та м'якший емоційний контакт.",
+        "Розвиваючий": "Сильна сторона — навчання. Важливо не забувати про контроль і результат.",
+        "Підтримуючий": "Добре працюєш з довірою. Додай більше структури для оцінки навичок.",
+        "Делегуючий": "Високий рівень автономії. Перевіряй, чи достатньо зворотного зв’язку.",
+        "Невизначено": "Оцінка змішана — рекомендується пройти детальну діагностику або спостереження."
+      };
+
+      let output = "<p><strong>📌 Загальна рекомендація:</strong> " + (recMap[style] || "—") + "</p>";
+
+      if (lowCriteria.length > 0) {
+        output += "<br><strong>🔧 Критерії з низькою оцінкою (менше 3):</strong><ul>";
+        lowCriteria.forEach(item => {
+          output += "<li><strong>" + item.title + "</strong> — Бал: " + item.score;
+          if (item.comment) {
+            output += "<br><em>Коментар: " + item.comment + "</em>";
+          }
+          output += "</li><br>";
+        });
+        output += "</ul>";
+        document.getElementById("actionFocusContainer").style.display = "block";
+      } else {
+        output += "<p>✅ Усі критерії оцінені на рівні 3 і вище.</p>";
+        document.getElementById("actionFocusContainer").style.display = "none";
+      }
+
+      document.getElementById("recommendationBlock").innerHTML = output;
+      document.getElementById("copyBtn").style.display = "inline-block";
+      document.getElementById("saveBtn").style.display = "inline-block";
+      document.getElementById("results").scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function copyRecommendations() {
+      const resultsText = document.getElementById("results").innerText;
+      const styleText = document.getElementById("styleBlock").innerText;
+      const recText = document.getElementById("recommendationBlock").innerText;
+      const focusSkill = document.getElementById("focusSkillSelect").value;
+      
+      let fullText = resultsText + "\n" + styleText + "\n\n" + recText;
+      if (focusSkill) {
+        fullText += "\n🎯 Обраний фокус для відпрацювання: " + focusSkill;
+      }
+      
+      navigator.clipboard.writeText(fullText).then(() => {
+        alert("Рекомендації та результати скопійовано до буфера 📝");
+      }).catch(() => {
+        alert("Не вдалося скопіювати текст 😔");
+      });
+    }
+
+    function saveToDatabase() {
+      if (!lastEvaluationData) {
+        alert("Спочатку натисніть «Проаналізувати результати»!");
+        return;
+      }
+
+      const focusSkill = document.getElementById("focusSkillSelect").value;
+      lastEvaluationData.focusSkill = focusSkill ? focusSkill : "Не обрано";
+
+      const btn = document.getElementById("saveBtn");
+      btn.textContent = "⏳ Зберігається...";
+      btn.disabled = true;
+
+      const scriptURL = "https://script.google.com/macros/s/AKfycbxMEYj8xDVDdxJ7mFZADeFlqeQB0RgO4yYRcB-l_2Vqa7t8D9x6ect8sNZrKvRyk0QLqg/exec";
+
+      fetch(scriptURL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(lastEvaluationData)
+      })
+      .then(() => {
+        alert("✅ Дані успішно збережено до аркуша «Оцінка РМ» у вашій Google Таблиці!");
+        btn.textContent = "💾 Збережено у базі";
+      })
+      .catch((error) => {
+        console.error("Помилка:", error);
+        alert("❌ Сталася помилка при збереженні.");
+        btn.textContent = "💾 Зберегти в базу даних";
+        btn.disabled = false;
+      });
+    }
+  </script>
 </body>
 </html>

@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>L&D Бізнес-Тренінговий Дашборд</title>
+  <!-- Підключаємо Chart.js та SheetJS для генерації Excel -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f6f9; padding: 20px; color: #333; margin: 0; }
+    h1 { text-align: center; color: #2c3e50; margin-bottom: 25px; font-size: 2em; }
+    
+    .nav-container { display: flex; justify-content: center; align-items: center; margin-bottom: 25px; gap: 10px; flex-wrap: wrap; }
+    .tabs { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+    .tab-btn { padding: 12px 22px; font-size: 14px; cursor: pointer; border: none; background: #e0e6ed; border-radius: 6px; font-weight: bold; color: #4a5568; transition: all 0.2s ease; }
+    .tab-btn:hover { background: #cbd5e1; }
+    .tab-btn.active { background: #007acc; color: white; box-shadow: 0 3px 6px rgba(0,122,204,0.3); }
+
+    .report-btn { color: white; border: none; padding: 12px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: opacity 0.2s; font-size: 13px; }
+    .report-btn:hover { opacity: 0.85; }
+
+    .excel-btn { background-color: #27ae60; color: white; border: none; padding: 12px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; display: inline-flex; align-items: center; gap: 8px; transition: background 0.2s; font-size: 14px; text-decoration: none; }
+    .excel-btn:hover { background-color: #219653; }
+
+    .section { display: none; background: #fff; padding: 25px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 30px; }
+    .section.active { display: block; }
+
+    h2 { color: #1e293b; font-size: 1.4em; margin-top: 0; margin-bottom: 10px; }
+    p.desc { color: #64748b; font-size: 0.95em; margin-bottom: 20px; font-style: italic; }
+
+    table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.9em; }
+    th, td { border: 1px solid #e2e8f0; padding: 12px 10px; text-align: left; }
+    th { background-color: #007acc; color: white; font-weight: 600; }
+    tr:nth-child(even) { background-color: #f8fafc; }
+    tr:hover { background-color: #f1f5f9; }
+
+    .chart-container { position: relative; width: 100%; max-width: 800px; margin: 20px auto; height: 380px; }
+    .filter-box { margin-bottom: 20px; display: flex; gap: 15px; align-items: center; flex-wrap: wrap; justify-content: space-between; }
+    .filter-controls { display: flex; gap: 15px; align-items: center; flex-wrap: wrap; }
+    .filter-box select, .filter-box input, .filter-controls select { padding: 9px 12px; font-size: 0.95em; border-radius: 6px; border: 1px solid #cbd5e1; min-width: 220px; background-color: #fff; }
+    
+    .search-panel { background: #f8fafc; padding: 15px; border-radius: 8px; margin-bottom: 15px; display: flex; gap: 15px; flex-wrap: wrap; align-items: center; border: 1px solid #e2e8f0; }
+    .charts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 20px; margin-bottom: 25px; }
+  </style>
+</head>
+<body>
+
+  <h1>🎯 L&D Бізнес-Тренінговий Дашборд</h1>
+
+  <!-- Вкладки навігації та кнопка Excel в одному ряду -->
+  <div class="nav-container">
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('rm-skills')">1. Аналіз МП (Групи)</button>
+      <button class="tab-btn" onclick="switchTab('radar-section')">2. Профіль МП (Павутинка)</button>
+      <button class="tab-btn" onclick="switchTab('training-groups')">3. Тренінг-групи МП</button>
+      <button class="tab-btn" onclick="switchTab('history')">4. Історія МП</button>
+      <button class="tab-btn" onclick="switchTab('rm-history')">5. Аналіз та Історія РМ</button>
+    </div>
+    <button class="report-btn" onclick="triggerReport('weekly')" style="background: #2980b9;">📊 Тижневий звіт</button>
+      <button class="report-btn" onclick="triggerReport('monthly')" style="background: #8e44ad;">📈 Місячний звіт</button>
+      <button class="report-btn" onclick="triggerReport('quarterly')" style="background: #d35400;">🚀 Квартальний звіт</button>
+    <button class="excel-btn" onclick="exportExpandedExcel()">📥 Скачати розгорнутий Excel</button>
+  </div>
+
+  <!-- РОЗДІЛ 1: АНАЛІЗ МП ПО ГРУПАХ НАВИЧОК -->
+  <div id="rm-skills" class="section active">
+    <h2>🔍 Діагностика підлеглих МП по групах навичок</h2>
+    <p class="desc">Оцінка ефективності команди в розрізі ключових блоків стандартів візиту МП.</p>
+    
+    <div class="filter-controls">
+      <label for="targetRMSelect"><strong>Оберіть Регіонального Менеджера (РМ):</strong></label>
+      <select id="targetRMSelect" onchange="renderRMGroupAnalysis()">
+        <option value="all">Усі РМ по компанії</option>
+      </select>
+    </div>
+    
+    <div class="chart-container" style="margin-top: 20px;">
+      <canvas id="rmGroupChart"></canvas>
+    </div>
+  </div>
+
+  <!-- РОЗДІЛ 2: ПАВУТИНКА МП -->
+  <div id="radar-section" class="section">
+    <h2>🕸️ Профіль компетенцій МП (Павутинка)</h2>
+    <p class="desc">Багатокутна діаграма показує збалансованість підготовки та польових дій МП.</p>
+    <div class="filter-controls" style="margin-bottom: 20px;">
+      <label for="radarTargetSelect"><strong>Оберіть співробітника (МП):</strong></label>
+      <select id="radarTargetSelect" onchange="renderRadarChart()">
+        <option value="all">Середнє по компанії</option>
+      </select>
+    </div>
+    <div class="chart-container">
+      <canvas id="radarChart"></canvas>
+    </div>
+  </div>
+
+  <!-- РОЗДІЛ 3: АВТОМАТИЧНЕ ФОРМУВАННЯ ТРЕНІНГ-ГРУП -->
+  <div id="training-groups" class="section">
+    <h2>🎓 Автоматичне формування тренінгових груп МП</h2>
+    <p class="desc">Формування списку учасників для цільового тренінгу за блоком, де бал просідає нижче 3.0.</p>
+    <div class="filter-controls" style="margin-bottom: 15px;">
+      <label for="groupFilterSelect"><strong>Оберіть блок для тренінгу:</strong></label>
+      <select id="groupFilterSelect" onchange="renderTrainingGroupList()">
+        <option value="Підготовка">Підготовка</option>
+        <option value="Побудова відносин">Побудова відносин</option>
+        <option value="Актуалізація потреб">Актуалізація потреб</option>
+        <option value="Презентація">Презентація</option>
+        <option value="Робота із запереченнями">Робота із запереченнями</option>
+        <option value="Закриття візиту">Закриття візиту</option>
+        <option value="Мерчендайзинг">Мерчендайзинг</option>
+        <option value="Адміністрування">Адміністрування</option>
+      </select>
+    </div>
+    <div id="trainingGroupResults"></div>
+  </div>
+
+  <!-- РОЗДІЛ 4: ІСТОРІЯ ТА ДИНАМІКА МП -->
+  <div id="history" class="section">
+    <h2>📈 Динаміка та історія оцінок візитів МП</h2>
+    <div class="filter-controls" style="margin-bottom: 15px;">
+      <label for="mpHistorySelect"><strong>Оберіть МП для перегляду тренду:</strong></label>
+      <select id="mpHistorySelect" onchange="updateMPHistoryChart()">
+        <option value="all">Усі МП (Середнє)</option>
+      </select>
+    </div>
+    <div class="chart-container">
+      <canvas id="mpHistoryChart"></canvas>
+    </div>
+
+    <h3>📜 Реєстр звітів подвійних візитів МП</h3>
+    <div class="search-panel">
+      <input type="text" id="tableSearchInput" placeholder="🔍 Пошук (ПІБ МП, місто, ЛПЗ, лікар)..." onkeyup="filterHistoryTable()" style="flex: 1; min-width: 250px;">
+      <select id="tableRMFilter" onchange="filterHistoryTable()">
+        <option value="all">Всі РМ / Тренери</option>
+      </select>
+      <input type="date" id="tableDateFilter" onchange="filterHistoryTable()" title="Фільтр за датою">
+    </div>
+
+    <table id="mpTable">
+      <thead>
+        <tr>
+          <th>Дата</th>
+          <th>МП</th>
+          <th>РМ / Тренер</th>
+          <th>Візити (Місто / ЛПЗ)</th>
+          <th>Бал</th>
+          <th>Рівень</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <!-- РОЗДІЛ 5: АНАЛІЗ ТА ІСТОРІЯ РМ (7 УПРАВЛІНСЬКИХ БЛОКІВ) -->
+  <div id="rm-history" class="section">
+    <h2>📈 Динаміка, Павутинка та Історія оцінок РМ</h2>
+    <p class="desc">Комплексний аналіз коучингових та управлінських компетенцій Регіональних Менеджерів.</p>
+    
+    <div class="filter-controls" style="margin-bottom: 20px;">
+      <label for="rmHistorySelect"><strong>Оберіть РМ для аналізу:</strong></label>
+      <select id="rmHistorySelect" onchange="updateRMCharts()">
+        <option value="all">Усі РМ (Середнє)</option>
+      </select>
+    </div>
+    
+    <div class="charts-grid">
+      <div class="chart-container" style="height: 320px;">
+        <canvas id="rmHistoryChart"></canvas>
+      </div>
+      <div class="chart-container" style="height: 320px;">
+        <canvas id="rmRadarChart"></canvas>
+      </div>
+    </div>
+
+    <h3>📜 Реєстр оцінок управлінських візитів РМ</h3>
+    <div class="search-panel">
+      <input type="text" id="rmSearchInput" placeholder="🔍 Пошук по РМ або супервайзеру..." onkeyup="filterRMTable()" style="flex: 1; min-width: 250px;">
+      <input type="date" id="rmDateFilter" onchange="filterRMTable()" title="Фільтр за датою">
+    </div>
+
+    <table id="rmTable">
+      <thead>
+        <tr>
+          <th>Дата</th>
+          <th>Супервайзер</th>
+          <th>Ім'я РМ</th>
+          <th>Бал</th>
+          <th>Стиль управління</th>
+          <th>Фокус розвитку</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <script>
+    const webAppURL = "https://script.google.com/macros/s/AKfycbxMEYj8xDVDdxJ7mFZADeFlqeQB0RgO4yYRcB-l_2Vqa7t8D9x6ect8sNZrKvRyk0QLqg/exec";
+
+    let rawRMData = [], rawMPData = [];
+    let parsedMPRecords = [], parsedRMRecords = [];
+    
+    let rmGroupChartInstance = null;
+    let radarChartInstance = null;
+    let mpHistoryChartInstance = null;
+    let rmHistoryChartInstance = null;
+    let rmRadarChartInstance = null;
+
+    const mpGroupsList = [
+      "Підготовка", "Побудова відносин", "Актуалізація потреб", 
+      "Презентація", "Робота із запереченнями", "Закриття візиту", 
+      "Мерчендайзинг", "Адміністрування"
+    ];
+
+    const rmGroupsList = [
+      "Підготовка", "Встановлення довірливих відносин", "Підготовка до візиту", 
+      "Оцінка візиту", "Корекція поведінки", "Відпрацювання навику", "Післявізитний аналіз"
+    ];
+
+    document.addEventListener("DOMContentLoaded", () => {
+      fetchData();
+    });
+
+    function switchTab(tab) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      document.getElementById(tab).classList.add('active');
+      document.querySelector(`[onclick="switchTab('${tab}')"]`).classList.add('active');
+    }
+
+    function fetchData() {
+      fetch(webAppURL)
+        .then(res => res.json())
+        .then(data => {
+          rawRMData = data.rmData || [];
+          rawMPData = data.mpData || [];
+
+          parseData();
+          initFilters();
+          renderRMGroupAnalysis();
+          renderRadarChart();
+          renderTrainingGroupList();
+          renderMPHistory();
+          renderRMHistory();
+        })
+        .catch(err => console.error("Помилка завантаження даних:", err));
+    }
+
+    function getMPGroupTitle(title) {
+      if (!title) return "Адміністрування";
+      let t = title.toLowerCase();
+      if (t.includes("мерчендайзинг") || t.includes("полиц") || t.includes("face") || t.includes("мерч") || t.includes("наявність товару") || t.includes("розміщення") || t.includes("планограм") || t.includes("викладку")) return "Мерчендайзинг";
+      if (t.includes("закриття") || t.includes("домовленості") || t.includes("резюме") || t.includes("підсумк") || t.includes("наступн")) return "Закриття візиту";
+      if (t.includes("збирати інформацію") || t.includes("промо-матеріали") || t.includes("цілі за методологією") || t.includes("лояльності") || t.includes("підготов")) return "Підготовка";
+      if (t.includes("представити") || t.includes("портретом пацієнта") || t.includes("контакт") || t.includes("атмосфер")) return "Побудова відносин";
+      if (t.includes("актуалізувати") || t.includes("потреби") || t.includes("spin") || t.includes("слухання")) return "Актуалізація потреб";
+      if (t.includes("хпв") || t.includes("повідомлення") || t.includes("сигнали готовності") || t.includes("промоматеріали")) return "Презентація";
+      if (t.includes("маркери заперечень") || t.includes("типи заперечень") || t.includes("5п") || t.includes("запереч")) return "Робота із запереченнями";
+      return "Адміністрування";
+    }
+
+    function getRMGroupByName(title) {
+      if (!title) return "Підготовка";
+      let t = title.toLowerCase();
+      if (t.includes("інформацією про рівень навичок") || t.includes("інформацією про рівень мотивації") || t.includes("підтримка розвитку") || t.includes("ставить мету")) return "Підготовка";
+      if (t.includes("довірливих відносин") || t.includes("декларація мети")) return "Встановлення довірливих відносин";
+      if (t.includes("територію") || t.includes("планів розвитку бізнесу") || t.includes("історії роботи") || t.includes("правил поведінки")) return "Підготовка до візиту";
+      if (t.includes("поведінка менеджера") || t.includes("досягнення мети візиту")) return "Оцінка візиту";
+      if (t.includes("навику для розвитку") || t.includes("техніки розвитку") || t.includes("впровадження техніки")) return "Корекція поведінки";
+      if (t.includes("теоретична підготовка") || t.includes("практичне відпрацювання")) return "Відпрацювання навику";
+      if (t.includes("аналіз розвитку") || t.includes("постановка дз") || t.includes("точки контролю")) return "Післявізитний аналіз";
+      return "Підготовка";
+    }
+
+    function parseData() {
+      parsedMPRecords = [];
+      if (rawMPData.length > 1) {
+        rawMPData.slice(1).forEach(r => {
+          let details = [];
+          try { details = JSON.parse(r[12] || "[]"); } catch(e) {}
+
+          const groupMap = {};
+          mpGroupsList.forEach(g => groupMap[g] = { sum: 0, count: 0, comments: [] });
+
+          let calculatedTotal = 0, calculatedCount = 0;
+          details.forEach(d => {
+            let g = getMPGroupTitle(d.title);
+            if (groupMap[g]) {
+              let scoreVal = parseFloat(d.avg !== undefined ? d.avg : d.score);
+              if (!isNaN(scoreVal)) {
+                groupMap[g].sum += scoreVal;
+                groupMap[g].count++;
+                calculatedTotal += scoreVal;
+                calculatedCount++;
+                if (d.comment) groupMap[g].comments.push(d.comment);
+              }
+            }
+          });
+
+          let finalAvg = calculatedCount > 0 ? calculatedTotal / calculatedCount : 0;
+          let rawAvg = r[9];
+          if (rawAvg && !String(rawAvg).includes("-") && !isNaN(parseFloat(rawAvg))) {
+            let parsed = parseFloat(rawAvg);
+            if (parsed > 0 && parsed <= 5) finalAvg = parsed;
+          }
+
+          parsedMPRecords.push({
+            date: r[0], mpName: r[1], rmName: r[2],
+            city1: r[3], lpu1: r[4], doc1: r[5],
+            city2: r[6], lpu2: r[7], doc2: r[8],
+            overallAvg: parseFloat(finalAvg.toFixed(2)),
+            levelDesc: r[10], focusSkill: r[11],
+            details: details, groupMap: groupMap
+          });
+        });
+      }
+
+      parsedRMRecords = [];
+      if (rawRMData.length > 1) {
+        rawRMData.slice(1).forEach(r => {
+          let details = [];
+          for (let col = 3; col < r.length; col++) {
+            try {
+              let parsed = JSON.parse(r[col]);
+              if (Array.isArray(parsed) && parsed.length > 0) {
+                details = parsed;
+                break;
+              }
+            } catch(e) {}
+          }
+
+          const groupMap = {};
+          rmGroupsList.forEach(g => groupMap[g] = { sum: 0, count: 0 });
+
+          let rmTotal = 0, rmCount = 0;
+          details.forEach(d => {
+            let g = d.group || getRMGroupByName(d.title);
+            if (groupMap[g]) {
+              let scoreVal = parseFloat(d.score !== undefined ? d.score : d.avg);
+              if (!isNaN(scoreVal)) {
+                groupMap[g].sum += scoreVal;
+                groupMap[g].count++;
+                rmTotal += scoreVal;
+                rmCount++;
+              }
+            }
+          });
+
+          let finalRMAvg = rmCount > 0 ? rmTotal / rmCount : 0;
+          let rawRMAvg = r[3];
+          if (rawRMAvg && !String(rawRMAvg).includes("-") && !isNaN(parseFloat(rawRMAvg))) {
+            let parsed = parseFloat(rawRMAvg);
+            if (parsed > 0 && parsed <= 5) finalRMAvg = parsed;
+          }
+
+          parsedRMRecords.push({
+            date: r[0], supervisor: r[1], rmName: r[2],
+            overallAvg: parseFloat(finalRMAvg.toFixed(2)),
+            style: r[4], focusSkill: r[5],
+            details: details, groupMap: groupMap
+          });
+        });
+      }
+    }
+ // Універсальна функція для красивого виведення дати (ДД.ММ.РРРР)
+    function formatDate(dateInput) {
+      if (!dateInput) return "—";
+      // Якщо рядок містить ISO-формат з часом
+      let d = new Date(dateInput);
+      if (!isNaN(d.getTime())) {
+        // Використовуємо локаль для коректного відображення без зсуву часових поясів
+        let day = String(d.getUTCDate()).padStart(2, '0');
+        let month = String(d.getUTCMonth() + 1).padStart(2, '0');
+        let year = d.getUTCFullYear();
+        return `${day}.${month}.${year}`;
+      }
+      // Якщо це вже звичайний рядок на зразок "2026-09-17"
+      let parts = String(dateInput).split("T")[0].split("-");
+      if (parts.length === 3) {
+        return `${parts[2]}.${parts[1]}.${parts[0]}`;
+      }
+      return dateInput;
+    }
+    function initFilters() {
+      const rmSelect = document.getElementById("targetRMSelect");
+      const radarSelect = document.getElementById("radarTargetSelect");
+      const mpHistSelect = document.getElementById("mpHistorySelect");
+      const tableRMFilter = document.getElementById("tableRMFilter");
+      const rmHistSelect = document.getElementById("rmHistorySelect");
+
+      const rmSet = new Set(), mpSet = new Set(), rmEvalSet = new Set();
+      parsedMPRecords.forEach(rec => { if(rec.rmName) rmSet.add(rec.rmName); if(rec.mpName) mpSet.add(rec.mpName); });
+      parsedRMRecords.forEach(rec => { if(rec.rmName) rmEvalSet.add(rec.rmName); });
+
+      rmSet.forEach(rm => { rmSelect.add(new Option(rm, rm)); tableRMFilter.add(new Option(rm, rm)); });
+      mpSet.forEach(mp => { radarSelect.add(new Option(mp, mp)); mpHistSelect.add(new Option(mp, mp)); });
+      rmEvalSet.forEach(rm => { rmHistSelect.add(new Option(rm, rm)); });
+    }
+
+    // --- Функція генерації та скачування розгорнутого Excel файлу ---
+    function exportExpandedExcel() {
+      // 1. Формуємо розгорнутий лист для МП
+      const mpRows = [];
+      parsedMPRecords.forEach(r => {
+        let rowObj = {
+          "Дата оцінки": r.date,
+          "Ім'я МП": r.mpName,
+          "Ім'я РМ": r.rmName,
+          "Візит 1: Місто": r.city1,
+          "Візит 1: ЛПЗ": r.lpu1,
+          "Візит 1: Лікар": r.doc1,
+          "Візит 2: Місто": r.city2,
+          "Візит 2: ЛПЗ": r.lpu2,
+          "Візит 2: Лікар": r.doc2,
+          "Загальний середній бал": r.overallAvg,
+          "Оцінка рівня": r.levelDesc,
+          "Обраний фокус розвитку": r.focusSkill
+        };
+        // Розгортаємо деталі (критерії)
+        r.details.forEach(d => {
+          rowObj[d.title + " (Бал)"] = d.avg !== undefined ? d.avg : (d.score !== undefined ? d.score : "—");
+          rowObj[d.title + " (Коментар)"] = d.comment || "";
+        });
+        mpRows.push(rowObj);
+      });
+
+      // 2. Формуємо розгорнутий лист для РМ
+      const rmRows = [];
+      parsedRMRecords.forEach(r => {
+        let rowObj = {
+          "Дата оцінки": r.date,
+          "Супервайзер": r.supervisor,
+          "Ім'я РМ": r.rmName,
+          "Загальний середній бал": r.overallAvg,
+          "Стиль управління": r.style,
+          "Обраний фокус розвитку": r.focusSkill
+        };
+        r.details.forEach(d => {
+          rowObj[d.title + " (Бал)"] = d.score !== undefined ? d.score : "—";
+          rowObj[d.title + " (Коментар)"] = d.comment || "";
+        });
+        rmRows.push(rowObj);
+      });
+
+      // Створюємо книгу Excel
+      const wb = XLSX.utils.book_new();
+      const wsMP = XLSX.utils.json_to_sheet(mpRows);
+      const wsRM = XLSX.utils.json_to_sheet(rmRows);
+
+      XLSX.utils.book_append_sheet(wb, wsMP, "Звіти МП");
+      XLSX.utils.book_append_sheet(wb, wsRM, "Оцінки РМ");
+
+      // Завантажуємо файл
+      XLSX.writeFile(wb, "LD_Expanded_Report.xlsx");
+    }
+
+    // Рендеринг графіків та таблиць
+    function renderRMGroupAnalysis() {
+      const selectedRM = document.getElementById("targetRMSelect").value;
+      const filtered = selectedRM === "all" ? parsedMPRecords : parsedMPRecords.filter(r => r.rmName === selectedRM);
+      const stats = {};
+      mpGroupsList.forEach(g => stats[g] = { sum: 0, count: 0 });
+
+      filtered.forEach(rec => {
+        for (let g in rec.groupMap) {
+          if (stats[g]) {
+            stats[g].sum += rec.groupMap[g].sum;
+            stats[g].count += rec.groupMap[g].count;
+          }
+        }
+      });
+
+      const averages = mpGroupsList.map(g => stats[g].count > 0 ? (stats[g].sum / stats[g].count).toFixed(2) : 0);
+      const ctx = document.getElementById("rmGroupChart").getContext("2d");
+      if (rmGroupChartInstance) rmGroupChartInstance.destroy();
+
+      rmGroupChartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: mpGroupsList,
+          datasets: [{
+            label: 'Середній бал по блоку',
+            data: averages,
+            backgroundColor: averages.map(v => v < 3 ? 'rgba(231, 76, 60, 0.75)' : 'rgba(41, 128, 185, 0.75)'),
+            borderColor: averages.map(v => v < 3 ? '#c0392b' : '#2980b9'),
+            borderWidth: 1
+          }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, scales: { y: { min: 1, max: 5 } } }
+      });
+    }
+
+    function renderRadarChart() {
+      const targetMP = document.getElementById("radarTargetSelect").value;
+      const filtered = targetMP === "all" ? parsedMPRecords : parsedMPRecords.filter(r => r.mpName === targetMP);
+      const stats = {};
+      mpGroupsList.forEach(g => stats[g] = { sum: 0, count: 0 });
+
+      filtered.forEach(rec => {
+        for (let g in rec.groupMap) {
+          if (stats[g]) {
+            stats[g].sum += rec.groupMap[g].sum;
+            stats[g].count += rec.groupMap[g].count;
+          }
+        }
+      });
+
+      const dataValues = mpGroupsList.map(g => stats[g].count > 0 ? (stats[g].sum / stats[g].count).toFixed(2) : 0);
+      const ctx = document.getElementById("radarChart").getContext("2d");
+      if (radarChartInstance) radarChartInstance.destroy();
+
+      radarChartInstance = new Chart(ctx, {
+        type: 'radar',
+        data: {
+          labels: mpGroupsList,
+          datasets: [{
+            label: targetMP === "all" ? 'Середнє по компанії' : targetMP,
+            data: dataValues,
+            backgroundColor: 'rgba(0, 122, 204, 0.2)',
+            borderColor: '#007acc',
+            pointBackgroundColor: '#007acc',
+            borderWidth: 2
+          }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, scales: { r: { min: 0, max: 5, ticks: { stepSize: 1 } } } }
+      });
+    }
+
+// 3. ФОРМУВАННЯ ТРЕНІНГ-ГРУП (з відформатованою датою)
+    function renderTrainingGroupList() {
+      const selectedGroup = document.getElementById("groupFilterSelect").value;
+      const container = document.getElementById("trainingGroupResults");
+      container.innerHTML = "";
+      const weak = {};
+
+      parsedMPRecords.forEach(rec => {
+        if (rec.groupMap[selectedGroup]) {
+          let avg = rec.groupMap[selectedGroup].count > 0 ? rec.groupMap[selectedGroup].sum / rec.groupMap[selectedGroup].count : 5;
+          if (avg < 3) {
+            weak[rec.mpName] = {
+              rm: rec.rmName,
+              score: avg.toFixed(2),
+              comments: rec.groupMap[selectedGroup].comments.join("; ") || "—",
+              date: rec.date
+            };
+          }
+        }
+      });
+
+      const students = Object.entries(weak);
+      if (students.length === 0) {
+        container.innerHTML = `<p style="color: #27ae60; font-weight: bold; margin-top: 15px;">✅ Немає співробітників із дефіцитом у цьому блоці (середній бал &lt; 3.0).</p>`;
+        return;
+      }
+
+      let html = `<div style="background: #eef9ff; padding: 15px; border-radius: 8px; border: 1px solid #bce8f1; margin-top: 15px;">
+        <h3 style="margin-top:0; color:#2980b9;">📌 Сформована група (${students.length} учасників) для блоку «${selectedGroup}»</h3>
+        <table><thead><tr><th>МП</th><th>РМ</th><th>Бал блоку</th><th>Коментарі</th><th>Дата оцінки</th></tr></thead><tbody>`;
+      
+      students.forEach(([mp, info]) => {
+        // Застосовуємо formatDate для красивого виведення дати
+        html += `<tr><td><strong>${mp}</strong></td><td>${info.rm}</td><td><span style="color:#e74c3c;font-weight:bold;">${info.score}</span></td><td><em>${info.comments}</em></td><td>${formatDate(info.date)}</td></tr>`;
+      });
+      
+      container.innerHTML = html + `</tbody></table></div>`;
+    }
+
+    function renderMPHistory() {
+      updateMPHistoryChart();
+      populateMPTable(parsedMPRecords);
+    }
+
+    function populateMPTable(records) {
+      const tbody = document.querySelector("#mpTable tbody");
+      tbody.innerHTML = "";
+      records.forEach(r => {
+        tbody.innerHTML += `<tr><td>${formatDate(r.date)}</td><td><strong>${r.mpName}</strong></td><td>${r.rmName}</td><td>${r.city1} / ${r.lpu1}</td><td><strong>${r.overallAvg}</strong></td><td>${r.levelDesc}</td></tr>`;
+      });
+    }
+
+    function filterHistoryTable() {
+      const s = document.getElementById("tableSearchInput").value.toLowerCase();
+      const rm = document.getElementById("tableRMFilter").value;
+      const d = document.getElementById("tableDateFilter").value;
+
+      populateMPTable(parsedMPRecords.filter(r => 
+        (rm === "all" || r.rmName === rm) && 
+        (!d || r.date === d) && 
+        (!s || r.mpName.toLowerCase().includes(s) || r.city1.toLowerCase().includes(s) || r.lpu1.toLowerCase().includes(s))
+      ));
+    }
+
+    function updateMPHistoryChart() {
+      const mp = document.getElementById("mpHistorySelect").value;
+      const rows = mp === "all" ? parsedMPRecords : parsedMPRecords.filter(r => r.mpName === mp);
+      rows.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+      const ctx = document.getElementById("mpHistoryChart").getContext("2d");
+      if (mpHistoryChartInstance) mpHistoryChartInstance.destroy();
+
+      mpHistoryChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: rows.map(r => formatDate(r.date)),
+          datasets: [{
+            label: 'Середній бал візитів',
+            data: rows.map(r => r.overallAvg),
+            borderColor: '#27ae60',
+            backgroundColor: 'rgba(39, 174, 96, 0.1)',
+            borderWidth: 2,
+            fill: true,
+            tension: 0.1
+          }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, scales: { y: { min: 1, max: 5 } } }
+      });
+    }
+
+    function renderRMHistory() {
+      updateRMCharts();
+      populateRMTable(parsedRMRecords);
+    }
+
+    function populateRMTable(records) {
+      const tbody = document.querySelector("#rmTable tbody");
+      tbody.innerHTML = "";
+      records.forEach(r => {
+        tbody.innerHTML += `<tr><td>${formatDate(r.date)}</td><td>${r.supervisor}</td><td><strong>${r.rmName}</strong></td><td><strong>${r.overallAvg}</strong></td><td>${r.style}</td><td>${r.focusSkill || '—'}</td></tr>`;
+      });
+    }
+
+    function filterRMTable() {
+      const s = document.getElementById("rmSearchInput").value.toLowerCase();
+      const d = document.getElementById("rmDateFilter").value;
+
+      populateRMTable(parsedRMRecords.filter(r => 
+        (!d || r.date === d) && 
+        (!s || r.rmName.toLowerCase().includes(s) || r.supervisor.toLowerCase().includes(s))
+      ));
+    }
+
+    function updateRMCharts() {
+      const rm = document.getElementById("rmHistorySelect").value;
+      const rows = rm === "all" ? parsedRMRecords : parsedRMRecords.filter(r => r.rmName === rm);
+      rows.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+      const ctxLine = document.getElementById("rmHistoryChart").getContext("2d");
+      if (rmHistoryChartInstance) rmHistoryChartInstance.destroy();
+
+      rmHistoryChartInstance = new Chart(ctxLine, {
+        type: 'line',
+        data: {
+          labels: rows.map(r => formatDate(r.date)),
+          datasets: [{
+            label: 'Динаміка оцінок РМ',
+            data: rows.map(r => r.overallAvg),
+            borderColor: '#8e44ad',
+            backgroundColor: 'rgba(142, 68, 173, 0.1)',
+            borderWidth: 2,
+            fill: true,
+            tension: 0.1
+          }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, scales: { y: { min: 1, max: 5 } } }
+      });
+
+      const stats = {};
+      rmGroupsList.forEach(g => stats[g] = { sum: 0, count: 0 });
+
+      rows.forEach(rec => {
+        for (let g in rec.groupMap) {
+          if (stats[g]) {
+            stats[g].sum += rec.groupMap[g].sum;
+            stats[g].count += rec.groupMap[g].count;
+          }
+        }
+      });
+
+      const radarVals = rmGroupsList.map(g => stats[g].count > 0 ? (stats[g].sum / stats[g].count).toFixed(2) : 0);
+
+      const ctxRadar = document.getElementById("rmRadarChart").getContext("2d");
+      if (rmRadarChartInstance) rmRadarChartInstance.destroy();
+
+      rmRadarChartInstance = new Chart(ctxRadar, {
+        type: 'radar',
+        data: {
+          labels: rmGroupsList,
+          datasets: [{
+            label: rm === "all" ? 'Середнє по РМ' : rm,
+            data: radarVals,
+            backgroundColor: 'rgba(142, 68, 173, 0.2)',
+            borderColor: '#8e44ad',
+            pointBackgroundColor: '#8e44ad'
+          }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, scales: { r: { min: 0, max: 5, ticks: { stepSize: 1 } } } }
+      });
+    }
+function triggerReport(periodType) {
+      const periodNames = {
+        'weekly': 'тижневий',
+        'monthly': 'місячний',
+        'quarterly': 'квартальний'
+      };
+      
+      if (confirm(`Створити ${periodNames[periodType]} звіт у Google Презентаціях?`)) {
+        // Відкриваємо вкладку-заглушку одразу, щоб браузер її не заблокував
+        const newWindow = window.open("", "_blank");
+        newWindow.document.write("<h3>⏳ Генеруємо презентацію, зачекайте кілька секунд...</h3>");
+
+        fetch(`${webAppURL}?action=generateReport&type=${periodType}`)
+          .then(res => res.json())
+          .then(data => {
+            if (data && data.url) {
+              // Перенаправляємо відкриту вкладку на готову презентацію Google Slides
+              newWindow.location.href = data.url;
+            } else {
+              newWindow.close();
+              alert("❌ Помилка: Не вдалося отримати посилання на презентацію.");
+            }
+          })
+          .catch(err => {
+            console.error("Помилка генерації:", err);
+            newWindow.close();
+            alert("❌ Сталася помилка при зверненні до сервера генерації звітів.");
+          });
+      }
+    }
+  </script>
+</body>
+</html>

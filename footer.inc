@@ -5,7 +5,7 @@
           <a class="logo footer__logo" href="index.html"><img class="footer__logo-img" src="./images/logo-white.png" alt="logo" width="200"></a>
           <ul class="contacts contacts--footer">
             <li class="contacts__contact contacts__contact--footer">
-              <address class="contacts__post"><p>Україна, Київська обл.,</p> <p>03110 м.Київ,</p> <p> вул. Солом'янська 3, офіс 41</p></address>
+              <address class="contacts__post"><p>Україна, Київська обл.,</p> <p>03110 м.Київ,</p><p> вул. Солом'янська 3,</p><p>офіс 41</p></address>
             </li>
             <li class="contacts__contact contacts__contact--footer">
               <a class="contacts__contact-mail contacts__contact-mail--footer"

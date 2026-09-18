@@ -1934,7 +1934,7 @@ margin-bottom: 6px;
   bottom: 20px;
   right: 50px;
   z-index: 999;
-  background-color: #69f369;
+  background-color: #069606;
   color: white;
   border: none;
   padding: 10px 14px;
@@ -2058,7 +2058,7 @@ html {
       border-radius: 0px;
       background-color: #ffffff;
       overflow: hidden;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      box-shadow: 0 6px 7px rgba(0,0,0,0.25);
     }
 
     .spoiler-header {

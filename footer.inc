@@ -35,7 +35,7 @@
                 </svg></a>
             </li>
             <li class="social__item social__item--footer">
-              <a class="social__link social__link--footer link" href="https://www.facebook.com/Pharmasco/" target="_blank" rel="noopener noreferrer"
+              <a class="social__link social__link--footer link" href="https://www.facebook.com/behealth.company/" target="_blank" rel="noopener noreferrer"
                 aria-label="фейсбук иконка">
                 <svg class="social__icon social__icon--footer" width="20px" height="20px">
                   <use href="./images/sprite.svg#icon-facebook"></use>

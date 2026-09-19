@@ -27,12 +27,10 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     };
 
-    // Слухаємо одразу кілька подій, щоб зловити найпершу дію користувача
     const triggerEvents = ["click", "scroll", "wheel", "touchstart"];
 
     const handleFirstInteraction = () => {
       playWithFadeIn();
-      // Видаляємо слухачі після першого спрацьовування
       triggerEvents.forEach(evt => {
         window.removeEventListener(evt, handleFirstInteraction);
         document.body.removeEventListener(evt, handleFirstInteraction);
@@ -45,7 +43,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // 2. Інтеграція форми із затуханням звуку (фейдаут 1.5 сек) перед редиректом
+  // 2. Обробка форми: перевірка пошти, візуальний ефект "безодні", затухання звуку та перехід
   const loginForm = document.getElementById("loginForm");
   
   if (loginForm) {
@@ -72,9 +70,13 @@ document.addEventListener("DOMContentLoaded", () => {
       if (emailsList.includes(email)) {
         localStorage.setItem("allowedEmail", email);
 
+        // Запускаємо візуальний ефект занурення (зум-ін у темряву)
+        document.body.classList.add("abyss-effect");
+
+        // Запускаємо плавне затухання звуку
         if (!audio.paused && audio.volume > 0) {
           let currentVolume = audio.volume;
-          const fadeDuration = 2500; // 1.5 секунди затухання
+          const fadeDuration = 1500; 
           const steps = 30;
           const stepTime = fadeDuration / steps;
           const volumeStep = currentVolume / steps;
@@ -85,15 +87,32 @@ document.addEventListener("DOMContentLoaded", () => {
             } else {
               audio.volume = 0;
               clearInterval(fadeOutInterval);
-              window.location.href = "./portfolio news.html";
             }
           }, stepTime);
-        } else {
-          window.location.href = "./portfolio news.html";
         }
+
+        // Робимо перехід на сторінку новин після завершення анімації (через 1.2 секунди)
+        setTimeout(() => {
+          window.location.href = "./portfolio news.html";
+        }, 1200);
+
       } else {
         alert("Доступ заборонено!");
       }
     });
   }
+
+  // 3. Ефект безодні для звичайних посилань (якщо є на сторінці)
+  document.querySelectorAll("a.atext").forEach(element => {
+    element.addEventListener("click", function(e) {
+      const href = this.getAttribute("href");
+      if (href && href !== "#") {
+        e.preventDefault();
+        document.body.classList.add("abyss-effect");
+        setTimeout(() => {
+          window.location.href = href;
+        }, 1200);
+      }
+    });
+  });
 });

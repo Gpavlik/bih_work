@@ -2252,3 +2252,19 @@ details.spoiler-group .spoiler-content > .works-cards {
   padding-right: 0px;  /* Відступ справа */
   margin: 0;
 }
+
+/* Базові налаштування для плавного переходу сторінки */
+body {
+  transition: transform 1.7s cubic-bezier(0.25, 1, 0.5, 1), 
+              opacity 1.7s ease, 
+              filter 1.7s ease;
+  overflow: hidden; /* Щоб під час зуму не з'являлися зайві полоси прокрутки */
+  background-color: #000; /* Чорний фоновий фон для переходу в темряву */
+}
+
+/* Клас ефекту: наближення (zoom-in), легкий поворот на 30-40 градусів і розчинення в темряві */
+body.abyss-effect {
+  transform: scale(2.5) rotate(35deg);
+  opacity: 0;
+  filter: blur(8px);
+}

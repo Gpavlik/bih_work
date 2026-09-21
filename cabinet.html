@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="ua">
+
+<head>
+  <link rel="shortcut icon" href="https://behealth.com.ua/assets/img/favicon.ico" type="img/png">
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Особистий кабінет | Академія</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@700&family=Roboto:wght@400;500;700;900&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/modern-normalize/1.1.0/modern-normalize.css"
+    integrity="sha512-Y0MM+V6ymRKN2zStTqzQ227DWhhp4Mzdo6gnlRnuaNCbc+YN/ZH0sBCLTM4M0oSy9c9VKiCvd4Jk44aCLrNS5Q=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="./css/main.css" />
+  <style>
+    .cabinet-hero {
+      padding-top: 40px;
+      padding-bottom: 40px;
+    }
+    .cabinet-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 30px;
+      margin-top: 30px;
+    }
+    .cabinet-card {
+      background: var(--bg-card, #ffffff);
+      border: 1px solid #e1e1e1;
+      border-radius: 8px;
+      padding: 25px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .cabinet-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 15px rgba(0,0,0,0.1);
+    }
+    .cabinet-card h3 {
+      font-size: 20px;
+      margin-bottom: 15px;
+      color: var(--text-color, #212121);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .cabinet-card p, .cabinet-card ul {
+      font-size: 14px;
+      line-height: 1.6;
+      color: #757575;
+    }
+    .cabinet-card ul {
+      list-style-type: none;
+      padding-left: 0;
+      margin-top: 10px;
+    }
+    .cabinet-card li {
+      margin-bottom: 10px;
+      padding: 8px 12px;
+      background: #f8fafc;
+      border-radius: 6px;
+      border: 1px solid #e2e8f0;
+    }
+    .cabinet-link {
+      display: inline-block;
+      margin-top: 5px;
+      color: #ffffff;
+      background: #2196F3;
+      padding: 6px 12px;
+      border-radius: 4px;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+    }
+    .cabinet-link:hover {
+      background: #1976D2;
+      text-decoration: none;
+    }
+    .logout-btn {
+      background-color: #f44336;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: background 0.2s;
+    }
+    .logout-btn:hover {
+      background-color: #d32f2f;
+    }
+    .task-badge {
+      display: inline-block;
+      background: #e3f2fd;
+      color: #1976d2;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  
+  <div id="header-container"></div>
+  
+  <main>
+    <section class="cabinet-hero">
+      <div class="container">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px;">
+          <div>
+            <h1 class="title" style="font-size: 32px; margin-bottom: 10px;">Особистий кабінет</h1>
+            <p class="subtitle" id="welcomeUserText">Вітаємо у навчальному просторі академії!</p>
+          </div>
+          <button class="logout-btn" id="logoutBtn" type="button">Вийти з кабінету</button>
+        </div>
+
+        <div class="cabinet-grid">
+          
+          <!-- 1. Профіль користувача -->
+          <div class="cabinet-card">
+            <h3>👤 Профіль користувача</h3>
+            <p><strong>Email:</strong> <span id="userEmailField">завантаження...</span></p>
+            <p><strong>Статус доступу:</strong> <span style="color: green; font-weight: 500;">Активний (Партнер)</span></p>
+            <p style="margin-top: 10px;">Доступ до платформи надано на основі корпоративної верифікації.</p>
+          </div>
+
+          <!-- 2. Призначені завдання / тренінги / продукти -->
+          <div class="cabinet-card" style="border-left: 4px solid #2196F3;">
+            <h3>📋 Призначені активності та ДЗ</h3>
+            <div id="activeTaskContainer">
+              <span class="task-badge">Навчальний план</span>
+              <div id="assignedCoursesList" style="max-height: 220px; overflow-y: auto;">
+                <p style="color: #757575;">Завантаження призначень...</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. Навчальні матеріали та модулі -->
+          <div class="cabinet-card">
+            <h3>📚 Матеріали та модулі</h3>
+            <p>Швидкий доступ до баз знань та каталогів:</p>
+            <ul>
+              <li style="border: none; padding: 4px 0; background: transparent;"><a href="./portfolio news.html" class="cabinet-link" style="margin: 0; background: #64748b;">Головні новини та оновлення</a></li>
+              <li style="border: none; padding: 4px 0; background: transparent;"><a href="./portfolio products.html" class="cabinet-link" style="margin: 0; background: #2980b9;">Довідники препаратів</a></li>
+              <li style="border: none; padding: 4px 0; background: transparent;"><a href="./portfolio trenings.html" class="cabinet-link" style="margin: 0; background: #27ae60;">Каталог тренінгів</a></li>
+            </ul>
+          </div>
+
+          <!-- 4. Історія та прогрес -->
+          <div class="cabinet-card">
+            <h3>📈 Історія та прогрес</h3>
+            <p>Ваші досягнення в навчальному модулі:</p>
+            <p style="margin-top: 10px;"><strong>Пройдено сценаріїв візитів:</strong> <span id="visitedCount">0</span> / 30</p>
+            <p><strong>Статус тестування:</strong> <span id="testStatus" style="color: #757575;">Очікує на проходження</span></p>
+            <a href="./portfolio trenings.html" class="cabinet-link" style="background: #007acc; margin-top: 15px;">Перейти до тренінгів &rarr;</a>
+          </div>
+
+        </div>
+      </div>
+    </section>
+  </main>
+
+ <div id="footer-container"></div>
+
+  <!-- Скрипт логіки кабінету -->
+  <script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwSr6AILZMxNmPhAVeFFQtTVuRnKXIdxxiYo-b3Ank1_TBB18iNJLHQvpbpMSiyeVMBUQ/exec";
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      const allowedEmail = localStorage.getItem("allowedEmail");
+      if (!allowedEmail) {
+        window.location.href = "./index.html";
+        return;
+      }
+
+      // Виводимо пошту у блок профілю
+      const emailField = document.getElementById("userEmailField");
+      if (emailField) {
+        emailField.textContent = allowedEmail;
+      }
+
+      let completedModules = 0;
+      const totalModules = 30;
+
+      // Отримуємо дані з Google Таблиці через Apps Script (GET)
+      try {
+        const response = await fetch(`${SCRIPT_URL}?email=${encodeURIComponent(allowedEmail)}`);
+        const result = await response.json();
+
+        if (result.status === "success") {
+          completedModules = result.completedModules || 0;
+          
+          // Рендеримо призначені курси / продукти / запрошення
+          const coursesContainer = document.getElementById("assignedCoursesList");
+          if (result.courses && result.courses.length > 0) {
+            coursesContainer.innerHTML = "";
+            result.courses.forEach(item => {
+              let displayTitle = item.courseUrl;
+              let linkHref = item.courseUrl;
+
+              // Якщо це повноцінне текстове запрошення або пряме посилання
+              if (item.courseUrl.startsWith("http") || item.courseUrl.startsWith("./")) {
+                displayTitle = `Перейти до матеріалу / події`;
+              }
+
+              coursesContainer.innerHTML += `
+                <li>
+                  <div style="font-weight: 500; color: #2c3e50; margin-bottom: 4px; word-break: break-word;">${item.courseUrl}</div>
+                  <span style="font-size: 11px; color: #64748b; display: block; margin-bottom: 6px;">Статус: ${item.status}</span>
+                  ${item.courseUrl.startsWith("http") || item.courseUrl.startsWith("./") ? 
+                    `<a href="${linkHref}" target="_blank" class="cabinet-link">Відкрити матеріали &rarr;</a>` : ''}
+                </li>
+              `;
+            });
+          } else {
+            coursesContainer.innerHTML = `<p style="color: #757575; font-size: 13px;">Наразі немає нових призначень від керівника.</p>`;
+          }
+        }
+      } catch (error) {
+        console.error("Помилка завантаження даних кабінету:", error);
+        document.getElementById("assignedCoursesList").innerHTML = `<p style="color: #e74c3c; font-size: 13px;">Помилка завантаження даних з сервера.</p>`;
+      }
+
+      // Оновлюємо інтерфейс прогресу
+      updateProgressUI(completedModules, totalModules);
+
+      // Кнопка виходу
+      const logoutBtn = document.getElementById("logoutBtn");
+      if (logoutBtn) {
+        logoutBtn.addEventListener("click", () => {
+          localStorage.removeItem("allowedEmail");
+          window.location.href = "./index.html";
+        });
+      }
+    });
+
+    function updateProgressUI(current, total) {
+      const visitedCountSpan = document.getElementById("visitedCount");
+      const testStatusSpan = document.getElementById("testStatus");
+      if (visitedCountSpan) visitedCountSpan.textContent = current;
+      if (testStatusSpan) {
+        testStatusSpan.textContent = current > 0 ? "У процесі навчання" : "Очікує на проходження";
+        testStatusSpan.style.color = current > 0 ? "#2196F3" : "#757575";
+      }
+    }
+  </script>
+
+  <script src="./js/menu.js"></script>
+  <script src="headfoot.js"></script>
+  <script src="theme-toggle.js"></script>
+  <script src="tracking.js"></script>
+</body>
+</html>

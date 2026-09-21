@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="uk">
+
+<head>
+  <link rel="shortcut icon" href="https://behealth.com.ua/assets/img/favicon.ico" type="img/png">
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Виконання навчального завдання</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@700&family=Roboto:wght@400;500;700;900&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/modern-normalize/1.1.0/modern-normalize.css"
+    integrity="sha512-Y0MM+V6ymRKN2zStTqzQ227DWhhp4Mzdo6gnlRnuaNCbc+YN/ZH0sBCLTM4M0oSy9c9VKiCvd4Jk44aCLrNS5Q=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="./css/main.css" />
+  <link rel="stylesheet" href="./css/styles.css">
+</head>
+<body>
+  <div id="header-container"></div>
+  <main>
+    <section class="works">
+      <div class="container">
+        <h2 style="margin-bottom: 20px; text-align: center;">Виконання навчального завдання</h2>
+        
+        <!-- Інформаційний блок про завдання -->
+        <div id="taskInfoBlock" style="background: #eef; padding: 20px; border-radius: 8px; margin-bottom: 25px;">
+          <p><strong>🎯 Навик (фокус):</strong> <span id="taskSkill">Завантаження...</span></p>
+          <p><strong>👤 Призначив (РМ):</strong> <span id="taskRm">—</span></p>
+          <p><strong>👤 Виконує (МП):</strong> <span id="taskMp">—</span></p>
+          <p><strong>📅 Дата призначення:</strong> <span id="taskDate">—</span></p>
+          <p><strong>💊 Обрані продукти / теми:</strong> <span id="taskProducts">—</span></p>
+        </div>
+
+        <!-- Форма для звіту співробітника -->
+        <form id="submitTaskForm">
+          <div style="margin-bottom: 20px;">
+            <label for="mpComment" style="font-weight: bold; display: block; margin-bottom: 8px;">
+              ✍️ Ваш звіт / результати виконання завдання (відповіді, приклади, заперечення):
+            </label>
+            <textarea id="mpComment" rows="8" required placeholder="Введіть сюди ваші напрацювання по виконанню завдання..." style="width: 100%; padding: 12px; border-radius: 4px; border: 1px solid #ccc; font-family: inherit; font-size: 1em; box-sizing: border-box;"></textarea>
+          </div>
+
+          <div style="margin-bottom: 25px;">
+            <label for="mpLink" style="font-weight: bold; display: block; margin-bottom: 8px;">
+              🔗 Посилання на додаткові матеріали / таблицю (необов'язково):
+            </label>
+            <input type="url" id="mpLink" placeholder="https://docs.google.com/..." style="width: 100%; padding: 10px; border-radius: 4px; border: 1px solid #ccc; font-size: 1em; box-sizing: border-box;">
+          </div>
+
+          <ul class="button">
+            <li class="button-section">
+              <button class="btn" type="submit" id="sendReportBtn">📤 Надіслати на перевірку РМ та тренеру</button>
+            </li>
+            <li class="button-section">
+              <button class="btn" type="button">
+                <a style="text-decoration: none; font-size: smaller;" class="text__work" href="cabinet.html">Назад у кабінет</a>
+              </button>
+            </li>
+          </ul>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <div id="footer-container"></div>
+
+  <script src="./js/menu.js"></script>
+  <script src="theme-toggle.js"></script>
+  <script src="tracking.js"></script>
+  <script src="validation.js"></script>
+  <script src="user.js"></script>
+
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      // Підтягуємо дані завдання та учасників з localStorage
+      document.getElementById('taskSkill').textContent = localStorage.getItem("currentTaskSkill") || localStorage.getItem("currentSkill") || "Знання продуктів";
+      document.getElementById('taskRm').textContent = localStorage.getItem("currentRmName") || "Олександр Волянюк";
+      document.getElementById('taskMp').textContent = localStorage.getItem("currentMpName") || localStorage.getItem("allowedEmail") || "Медичний представник";
+      document.getElementById('taskDate').textContent = localStorage.getItem("currentTaskDate") || new Date().toLocaleDateString('uk-UA');
+      document.getElementById('taskProducts').textContent = localStorage.getItem("currentTaskProducts") || "Згідно з планом";
+    });
+
+    document.getElementById('submitTaskForm').addEventListener('submit', (event) => {
+      event.preventDefault();
+
+      const mpComment = document.getElementById('mpComment').value.trim();
+      const mpLink = document.getElementById('mpLink').value.trim();
+      const mpName = localStorage.getItem("currentMpName") || localStorage.getItem("allowedEmail") || "Медичний представник";
+      const rmName = localStorage.getItem("currentRmName") || "Олександр Волянюк";
+      const skillName = document.getElementById('taskSkill').textContent;
+      const products = document.getElementById('taskProducts').textContent;
+
+      if (!mpComment) {
+        alert("Будь ласка, заповніть звіт перед відправкою!");
+        return;
+      }
+
+      // Формуємо пакет даних для відправки на бекенд (Google Apps Script)
+      const reportData = {
+        type: "taskReport",
+        mpName: mpName,
+        rmName: rmName,
+        skill: skillName,
+        products: products,
+        reportText: mpComment,
+        reportLink: mpLink || "Відсутнє",
+        status: "Очікує перевірки",
+        dateSubmitted: new Date().toLocaleDateString('uk-UA')
+      };
+
+      const btn = document.getElementById('sendReportBtn');
+      btn.textContent = "⏳ Надсилається звіт...";
+      btn.disabled = true;
+
+      // URL вашого Google Apps Script бекенду
+      const scriptURL = "https://script.google.com/macros/s/AKfycbwSr6AILZMxNmPhAVeFFQtTVuRnKXIdxxiYo-b3Ank1_TBB18iNJLHQvpbpMSiyeVMBUQ/exec";
+
+      fetch(scriptURL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(reportData)
+      })
+      .then(() => {
+        alert("✅ Ваш звіт успішно надіслано Регіональному менеджеру та тренеру на перевірку!");
+        window.location.href = "cabinet.html";
+      })
+      .catch((error) => {
+        console.error("Помилка:", error);
+        alert("❌ Сталася помилка при надсиланні. Спробуйте ще раз.");
+        btn.textContent = "📤 Надіслати на перевірку РМ та тренеру";
+        btn.disabled = false;
+      });
+    });
+  </script><script src="headfoot.js"></script>
+  <script src="scroll.js"></script>
+  <script src="scrbtn.js"></script>
+</body>
+</html>

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="uk">
-<head><link rel="shortcut icon" href="https://behealth.com.ua/assets/img/favicon.ico" type="img/png">
+<head>
+  <link rel="shortcut icon" href="https://behealth.com.ua/assets/img/favicon.ico" type="img/png">
   <meta charset="UTF-8">
   <title>Діагностика роботи регіонального менеджера</title>
   <style>
@@ -10,7 +11,7 @@
     .meta-block { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 5px rgba(0,0,0,0.1); margin-bottom: 30px; }
     .meta-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; }
     .meta-field label { font-weight: bold; display: block; margin-bottom: 5px; font-size: 0.95em; color: #444; }
-    .meta-field input { width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #ccc; box-sizing: border-box; font-size: 0.95em; }
+    .meta-field input, .meta-field select { width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #ccc; box-sizing: border-box; font-size: 0.95em; }
 
     .group-block { margin-bottom: 40px; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 5px rgba(0,0,0,0.1); }
     .group-block h2 { color: #007acc; border-bottom: 2px solid #eef; padding-bottom: 8px; margin-top: 0; }
@@ -60,12 +61,15 @@
         <input type="date" id="evalDate">
       </div>
       <div class="meta-field">
-        <label for="supervisorName">Супервайзер:</label>
-        <input type="text" id="supervisorName" placeholder="Введіть ПІБ супервайзера">
+        <label for="supervisorNameDisplay">Супервайзер:</label>
+        <input type="text" id="supervisorNameDisplay" readonly style="background-color: #e9ecef; font-weight: bold;">
+        <input type="hidden" id="supervisorName">
       </div>
       <div class="meta-field">
-        <label for="rmName">Ім'я РМ:</label>
-        <input type="text" id="rmName" placeholder="Введіть ПІБ РМ">
+        <label for="rmNameSelect">Регіональний менеджер (РМ):</label>
+        <select id="rmNameSelect" required>
+          <option value="">-- Оберіть РМ --</option>
+        </select>
       </div>
     </div>
   </div>
@@ -94,13 +98,34 @@
   <div id="styleBlock"></div>
   <div id="recommendationBlock"></div>
 
-  <!-- Підключаємо файл з вашими критеріями -->
+  <!-- Підключаємо довідник користувачів та критерії -->
+  <script src="user.js"></script>
   <script src="criteria.js"></script>
   
   <script>
     document.addEventListener("DOMContentLoaded", () => {
-      const container = document.getElementById("formContainer");
+      // Автоматичне визначення супервайзера з localStorage
+      const currentUserEmail = localStorage.getItem("allowedEmail") || "p.hrytsenko@pharmasco.com";
+      const currentUserName = users[currentUserEmail] || "Павло Гриценко";
 
+      document.getElementById("supervisorNameDisplay").value = currentUserName;
+      document.getElementById("supervisorName").value = currentUserName;
+
+      // Динамічне заповнення списку РМ для цього супервайзера
+      const rmSelect = document.getElementById("rmNameSelect");
+      const managedEmails = SupervisorToManager[currentUserEmail] || [];
+
+      managedEmails.forEach(email => {
+        if (users[email]) {
+          const opt = document.createElement("option");
+          opt.value = users[email];
+          opt.textContent = users[email];
+          rmSelect.appendChild(opt);
+        }
+      });
+
+      // Заповнення критеріїв
+      const container = document.getElementById("formContainer");
       const grouped = {};
       evaluationCriteria.forEach(item => {
         if (!grouped[item.group]) grouped[item.group] = [];
@@ -194,7 +219,12 @@
     function calculateEvaluation() {
       const evalDate = document.getElementById("evalDate").value || "Не вказана";
       const supervisorName = document.getElementById("supervisorName").value.trim() || "Не вказано";
-      const rmName = document.getElementById("rmName").value.trim() || "Не вказано";
+      const rmName = document.getElementById("rmNameSelect").value;
+
+      if (!rmName) {
+        alert("Будь ласка, оберіть Регіонального менеджера (РМ) з випадаючого списку!");
+        return;
+      }
 
       let total = 0, count = 0;
       const lowCriteria = [];
@@ -322,7 +352,7 @@
       btn.textContent = "⏳ Зберігається...";
       btn.disabled = true;
 
-      const scriptURL = "https://script.google.com/macros/s/AKfycbxMEYj8xDVDdxJ7mFZADeFlqeQB0RgO4yYRcB-l_2Vqa7t8D9x6ect8sNZrKvRyk0QLqg/exec";
+      const scriptURL = "https://script.google.com/macros/s/AKfycbwSr6AILZMxNmPhAVeFFQtTVuRnKXIdxxiYo-b3Ank1_TBB18iNJLHQvpbpMSiyeVMBUQ/exec";
 
       fetch(scriptURL, {
         method: "POST",

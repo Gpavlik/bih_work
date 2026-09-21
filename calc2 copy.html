@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="uk">
-<head><link rel="shortcut icon" href="https://behealth.com.ua/assets/img/favicon.ico" type="img/png">
+<head>
+  <link rel="shortcut icon" href="https://behealth.com.ua/assets/img/favicon.ico" type="img/png">
   <meta charset="UTF-8">
   <title>Діагностика навичок та оцінка візитів (ПВ ТПРК)</title>
   <style>
@@ -67,12 +68,15 @@
         <input type="date" id="evalDate">
       </div>
       <div class="meta-field">
-        <label for="mpName">Ім'я МП:</label>
-        <input type="text" id="mpName" placeholder="Введіть ПІБ МП">
+        <label for="mpNameSelect">Співробітник (МП):</label>
+        <select id="mpNameSelect" required>
+          <option value="">-- Оберіть МП --</option>
+        </select>
       </div>
       <div class="meta-field">
-        <label for="rmName">Ім'я РМ / Тренера:</label>
-        <input type="text" id="rmName" placeholder="Введіть ПІБ РМ">
+        <label for="rmNameDisplay">Регіональний менеджер (РМ):</label>
+        <input type="text" id="rmNameDisplay" readonly style="background-color: #e9ecef; font-weight: bold;">
+        <input type="hidden" id="rmName">
       </div>
     </div>
 
@@ -134,6 +138,9 @@
   <div id="results"></div>
   <div id="styleBlock"></div>
   <div id="recommendationBlock"></div>
+
+  <!-- Підключаємо довідник користувачів -->
+  <script src="user.js"></script>
 
   <script>
     const evaluationCriteria = [
@@ -236,8 +243,8 @@
         "levels": {
           "1": "МП не використовує алгоритми виявлення, не керує розмовою.",
           "2": "МП не керує розмовою, ставить різні типи запитань, але не актуалізує потребу повністю.",
-          "3": "МП керує бесідою, задає питання, але актуалізує портрет лише в 3-4 випадках з 7.",
-          "4": "МП демонструє високий рівень управління бесідою, актуалізує портрет у 5 випадках з 7.",
+          "3": "МП керує бісідою, задає питання, але актуалізує портрет лише в 3-4 випадках з 7.",
+          "4": "МП демонструє високий рівень управління бісідою, актуалізує портрет у 5 випадках з 7.",
           "5": "Задані МП запитання завжди чітко виявляють актуальні портрети пацієнта."
         }
       },
@@ -465,8 +472,38 @@
     ];
 
     document.addEventListener("DOMContentLoaded", () => {
-      const container = document.getElementById("formContainer");
+      // 1. Автоматичне визначення поточного РМ з localStorage
+      const currentUserEmail = localStorage.getItem("allowedEmail") || "a.volaniuk@pharmasco.com";
+      const currentUserName = users[currentUserEmail] || "Олександр Волянюк";
 
+      document.getElementById("rmNameDisplay").value = currentUserName;
+      document.getElementById("rmName").value = currentUserName;
+
+      // 2. Заповнення випадаючого списку підлеглих МП для цього РМ з managerToEmployees
+      const mpSelect = document.getElementById("mpNameSelect");
+      const subordinateEmails = managerToEmployees[currentUserEmail] || [];
+
+      subordinateEmails.forEach(email => {
+        if (users[email]) {
+          const opt = document.createElement("option");
+          opt.value = users[email];
+          opt.textContent = users[email];
+          mpSelect.appendChild(opt);
+        }
+      });
+
+      // Запасний варіант: якщо у списку нікого немає, показуємо всіх МП
+      if (subordinateEmails.length === 0) {
+        for (let email in users) {
+          const opt = document.createElement("option");
+          opt.value = users[email];
+          opt.textContent = users[email];
+          mpSelect.appendChild(opt);
+        }
+      }
+
+      // 3. Заповнення блоків критеріїв
+      const container = document.getElementById("formContainer");
       const grouped = {};
       evaluationCriteria.forEach(item => {
         if (!grouped[item.group]) grouped[item.group] = [];
@@ -530,12 +567,17 @@
       }
     });
 
-    let lastEvaluationData = null; // Зберігаємо дані останнього розрахунку для відправки
+    let lastEvaluationData = null;
 
     function calculateEvaluation() {
       const evalDate = document.getElementById("evalDate").value || "Не вказана";
-      const mpName = document.getElementById("mpName").value.trim() || "Не вказано";
-      const rmName = document.getElementById("rmName").value.trim() || "Не вказано";
+      const mpName = document.getElementById("mpNameSelect").value;
+      const rmName = document.getElementById("rmName").value;
+
+      if (!mpName) {
+        alert("Будь ласка, оберіть співробітника (МП) з випадаючого списку!");
+        return;
+      }
 
       const city1 = document.getElementById("meta_city1").value.trim() || "—";
       const lpu1 = document.getElementById("meta_lpu1").value.trim() || "—";
@@ -606,7 +648,6 @@
       else if (overallAvg >= 3.0) levelDesc = "Середній робочий рівень";
       else levelDesc = "Потребує розвитку / Нижче середнього";
 
-      // Зберігаємо об'єкт для відправки на бекенд
       lastEvaluationData = {
         evalDate: evalDate,
         mpName: mpName,
@@ -619,7 +660,7 @@
         doc2: doc2,
         overallAvg: overallAvg,
         levelDesc: levelDesc,
-        focusSkill: "", // заповниться при збереженні
+        focusSkill: "",
         detailsJSON: JSON.stringify(criteriaDetails, null, 2)
       };
 
@@ -674,33 +715,76 @@
       });
     }
 
+    // Словник відповідності фокусів та сторінок ДЗ
+    const skillToPageMap = {
+      "Знання продуктів": "PV1.html",
+      " SMART": "PV2.html",
+      "ХПВ": "PV3.html",
+      "Укладання кількісної угоди": "PV4_2.html",
+      "Виявлення потреби": "PV5.html",
+      "Відкриті запитання": "PV5a.html",
+      "Уточнюючі та закриті запитання": "PV5b.html",
+      "Презентація під потребу": "PV6.html",
+      "Робота із запереченнями": "PV7.html",
+      "Банк заперечень": "PV7a_2.html",
+      "Приєднання": "PV7b.html",
+      "Прояснення": "PV7c.html",
+      "Виявлення конкурентів": "PV8.html",
+      "Заміщення конкурента": "PV8b.html",
+      "Small talk": "PV9.html",
+      "Декларація мети візиту": "PV10.html"
+    };
+
     function saveToDatabase() {
       if (!lastEvaluationData) {
         alert("Спочатку натисніть «Проаналізувати результати»!");
         return;
       }
 
-      const focusSkill = document.getElementById("focusSkillSelect").value;
-      lastEvaluationData.focusSkill = focusSkill ? focusSkill : "Не обрано";
+      const focusSkillSelect = document.getElementById("focusSkillSelect");
+      const focusSkill = focusSkillSelect.value;
+      
+      if (!focusSkill) {
+        alert("Будь ласка, оберіть навик для відпрацювання (фокус розвитку)!");
+        focusSkillSelect.focus();
+        return;
+      }
+
+      lastEvaluationData.focusSkill = focusSkill;
+
+      // 📌 Зберігаємо імена РМ та МП у localStorage для подальших сторінок ДЗ (PV1-PV10)
+      localStorage.setItem("currentRmName", lastEvaluationData.rmName);
+      localStorage.setItem("currentMpName", lastEvaluationData.mpName);
 
       const btn = document.getElementById("saveBtn");
       btn.textContent = "⏳ Зберігається...";
       btn.disabled = true;
 
-      // URL вашого веб-додатка Apps Script
-      const scriptURL = "https://script.google.com/macros/s/AKfycbxMEYj8xDVDdxJ7mFZADeFlqeQB0RgO4yYRcB-l_2Vqa7t8D9x6ect8sNZrKvRyk0QLqg/exec";
+      const scriptURL = "https://script.google.com/macros/s/AKfycbwSr6AILZMxNmPhAVeFFQtTVuRnKXIdxxiYo-b3Ank1_TBB18iNJLHQvpbpMSiyeVMBUQ/exec";
 
       fetch(scriptURL, {
         method: "POST",
-        mode: "no-cors", // Потрібно для Google Apps Script крос-доменних запитів
-        headers: {
-          "Content-Type": "application/json"
-        },
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(lastEvaluationData)
       })
       .then(() => {
         alert("✅ Дані успішно збережено до вашої Google Таблиці!");
-        btn.textContent = "💾 Збережено у базі";
+        
+        // Визначаємо сторінку для перенаправлення за обраним фокусом
+        let targetPage = "portfolio PV.html"; // дефолтна сторінка на випадок відсутності збігу
+        for (const [key, page] of Object.entries(skillToPageMap)) {
+          if (focusSkill.includes(key)) {
+            targetPage = page;
+            break;
+          }
+        }
+
+        // Перенаправлення на сторінку ДЗ через 1 секунду після збереження
+        setTimeout(() => {
+          window.location.href = targetPage;
+        }, 1000);
+
       })
       .catch((error) => {
         console.error("Помилка:", error);

@@ -22,12 +22,12 @@ document.addEventListener("DOMContentLoaded", () => {
           }, 150);
 
         }).catch(error => {
-          console.log("Автозапуск очікує дії користувача...", error);
+          console.log("Автозапуск заблоковано браузером, чекаємо взаємодії...", error);
         });
       }
     };
 
-    const triggerEvents = ["click", "scroll", "wheel", "touchstart"];
+    const triggerEvents = ["click", "scroll", "wheel", "touchstart", "keydown"];
 
     const handleFirstInteraction = () => {
       playWithFadeIn();
@@ -43,7 +43,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // 2. Обробка форми: перевірка пошти, візуальний ефект "безодні", затухання звуку та перехід
+  // 2. Обробка форми входу: перевірка пошти, ефект безодні, плавне затухання звуку та редірект
   const loginForm = document.getElementById("loginForm");
   
   if (loginForm) {
@@ -51,7 +51,7 @@ document.addEventListener("DOMContentLoaded", () => {
       event.preventDefault();
 
       const emailInput = document.getElementById("emailInput");
-      const email = emailInput ? emailInput.value.trim() : "";
+      const email = emailInput ? emailInput.value.trim().toLowerCase() : "";
 
       const emailsList = [
           "o.krasnikov@pharmasco.com", "m.pohribna@pharmasco.com", "i.bohuslavets@pharmasco.com", 
@@ -70,10 +70,14 @@ document.addEventListener("DOMContentLoaded", () => {
       if (emailsList.includes(email)) {
         localStorage.setItem("allowedEmail", email);
 
-        // Запускаємо візуальний ефект занурення (зум-ін у темряву)
+        // Визначаємо куди спрямувати користувача (адмінка чи кабінет)
+        const adminEmails = ["p.hrytsenko@pharmasco.com", "admin"]; 
+        const targetPage = adminEmails.includes(email) ? "./admin.html" : "./cabinet.html";
+
+        // Візуальний ефект занурення
         document.body.classList.add("abyss-effect");
 
-        // Запускаємо плавне затухання звуку
+        // Плавне затухання звуку перед переходом
         if (!audio.paused && audio.volume > 0) {
           let currentVolume = audio.volume;
           const fadeDuration = 1500; 
@@ -91,9 +95,9 @@ document.addEventListener("DOMContentLoaded", () => {
           }, stepTime);
         }
 
-        // Робимо перехід на сторінку новин після завершення анімації (через 1.2 секунди)
+        // Перехід на сторінку через 1.2 секунди
         setTimeout(() => {
-          window.location.href = "./portfolio news.html";
+          window.location.href = targetPage;
         }, 1200);
 
       } else {
@@ -102,7 +106,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // 3. Ефект безодні для звичайних посилань (якщо є на сторінці)
+  // 3. Ефект безодні для звичайних посилань
   document.querySelectorAll("a.atext").forEach(element => {
     element.addEventListener("click", function(e) {
       const href = this.getAttribute("href");

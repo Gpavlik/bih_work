@@ -1,11 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="uk">
 
-<head><link rel="shortcut icon" href="https://behealth.com.ua/assets/img/favicon.ico" type="img/png">
+<head>
+  <link rel="shortcut icon" href="https://behealth.com.ua/assets/img/favicon.ico" type="img/png">
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Завдання</title>
+  <title>Завдання: Виявлення конкурентів</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@700&family=Roboto:wght@400;500;700;900&display=swap"
@@ -16,230 +17,59 @@
   <link rel="stylesheet" href="./css/main.css" />
   <link rel="stylesheet" href="./css/styles.css">
 
-<!-- Google tag (gtag.js) -->
-
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-5BZZCV5DRK"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag("js", new Date());
-  gtag("config", "G-5BZZCV5DRK");
-</script>
-<script>
-  const email = localStorage.getItem("allowedEmail");
-  if (email) {
-    gtag("set", "user_properties", {
-      user_id: email
-    });
-  }
-</script>
-<script>
-  function sha256(input) {
-    const encoder = new TextEncoder();
-    const data = encoder.encode(input);
-    return crypto.subtle.digest("SHA-256", data).then(hash => {
-      return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
-    });
-  }
-</script>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-5BZZCV5DRK"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag("js", new Date());
+    gtag("config", "G-5BZZCV5DRK");
+  </script>
 </head>
 <body>
   <div id="header-container"></div>
   <main>
     <section class="works">
       <div class="container">
-      <h2 style="margin-bottom: 20px; text-align: center;"> Форма навчального завдання з виявлення конкурентів</h2>
-      <h2 style="margin-bottom: 20px; text-align: center;">Четвертий навик другого пріоритету</h2>
+        <h2 style="margin-bottom: 20px; text-align: center;">Форма навчального завдання з виявлення конкурентів</h2>
+        <h2 style="margin-bottom: 20px; text-align: center;">Четвертий навик другого пріоритету</h2>
+        
+        <!-- Блок інформації про учасників -->
+        <div id="participantsInfo" style="background: #eef; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center; font-weight: bold;">
+          👤 Менеджер (РМ): <span id="displayRmName">—</span> | 🎯 Співробітник (МП): <span id="displayMpName">—</span>
+        </div>
+
         <h3 style="margin-bottom: 20px ; line-height: 1.5; color: #949494;">Для відпрацювання навику виявлення конкурентів:<br>🟢1. Перевірте знання співробітника стосовно того хто такий конкурент, як його можна виявляти<br>🟢2. Після цього перейдіть до відпрацювання відкритих запитань для виявлення конкурентів, чи техніці заміщення конкурентів</h3>
+        
         <ul class="button">
           <li class="button-section" style="margin-bottom: 2px;"><button class="btn" type="button"><a href="./PV8a.html" style="text-decoration: none; font-size: smaller;" class="text__work">Виявлення конкурентів</a></button></li>
           <li class="button-section" style="margin-bottom: 2px;"><button class="btn" type="button"><a href="./PV8b.html" style="text-decoration: none; font-size: smaller;" class="text__work">Заміщення конкурентів</a></button></li>
-          <li class="button-section" style="margin-bottom: 2px;"><button class="btn" type="button"><a style="text-decoration: none; font-size: smaller;" class="text__work" href="./portfolio PV.html" target="_blank" rel="noopener noreferrer">Назад</a></button></li>
+          <li class="button-section" style="margin-bottom: 2px;"><button class="btn" type="button"><a style="text-decoration: none; font-size: smaller;" class="text__work" href="./portfolio PV.html">Назад</a></button></li>
         </ul>
       </div>
-  </div>
-</section>
-</main>
+    </section>
+  </main>
+  
   <div id="footer-container"></div>
+  
   <script src="./js/menu.js"></script>
   <script src="theme-toggle.js"></script>
   <script src="tracking.js"></script>
   <script src="validation.js"></script>
   <script src="user.js"></script>
   
-<script>
-  const productList = [
-    { code: "obj1", name: "Biossays 240 Plus" },
-    { code: "obj2", name: "DH36" },
-    { code: "obj3", name: "DF50" },
-    { code: "obj4", name: "UN73" },
-    { code: "obj5", name: "VISION Pro" },
-    { code: "obj6", name: "LS1100" },
-    { code: "obj7", name: "CITOLAB Reader 300" },
-    { code: "obj8", name: "MINI ISE" },
-    { code: "obj9", name: "AFT-800G, AFT-800H" },
-    { code: "obj10", name: "GCRYO-S® Painless" },
-    { code: "obj14", name: "DP-C16" },
-    { code: "obj15", name: "CA-1200" }, 
-    { code: "obj16", name: "Преаналітика" },
-    { code: "Test1", name: "ULTRA®" },
-    { code: "Test2", name: "DUET®" },
-    { code: "Test3", name: "SECRET®" },
-    { code: "Test4", name: "SOLO mini®" },
-    { code: "Test5", name: "CITOLAB™ pH" },
-    { code: "Test6", name: "Actim® PROM" },
-    { code: "Test7", name: "CITO TEST® COVID-19 Ag" },
-    { code: "Test8", name: "CITO TEST® ГРИП" },
-    { code: "Test9", name: "CITO TEST® COMBO" },
-    { code: "Test10", name: "CITO TEST® Strep А" },
-    { code: "Test11", name: "Hospital group" },
-    { code: "Test12", name: "CITO TEST® Гепатит В та С" },
-    { code: "Test13", name: "CITO TEST® ROTA" },
-    { code: "Test14", name: "CITO TEST® ХЕЛІКОБАКТЕР" },
-    { code: "Test15", name: "SNIPER®" },
-    { code: "Test16", name: "CITOLAB™ K" }
-  ];
-  window.addEventListener('DOMContentLoaded', () => {
-    const managerSelect = document.getElementById('managerSelect');
-    const employeeSelect = document.getElementById('employeeSelect');
-    const currentUserElement = document.getElementById('currentUser');
-    const currentManagerName = currentUserElement.textContent.trim();
-    const dropdown = document.getElementById('productDropdown');
-    const toggle = document.getElementById('dropdownToggle');
-    const hiddenInput = document.getElementById('selectedProducts');
-    const deadlineInput = document.getElementById('deadline');
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      const rmName = localStorage.getItem("currentRmName") || "Олександр Волянюк";
+      const mpName = localStorage.getItem("currentMpName") || "Не вказано";
 
-    const currentManagerEmail = Object.keys(users).find(email => users[email] === currentManagerName);
-
-    for (const [email, name] of Object.entries(users)) {
-      if (managerToEmployees[email]) {
-        const option = document.createElement('option');
-        option.value = email;
-        option.textContent = name;
-        managerSelect.appendChild(option);
-      }
-    }
-
-    if (currentManagerEmail && managerToEmployees[currentManagerEmail]) {
-      managerSelect.value = currentManagerEmail;
-      managerSelect.disabled = true;
-
-      const employees = managerToEmployees[currentManagerEmail];
-      employeeSelect.innerHTML = '';
-      for (const email of employees) {
-        const option = document.createElement('option');
-        option.value = email;
-        option.textContent = users[email];
-        employeeSelect.appendChild(option);
-      }
-    }
-
-    managerSelect.addEventListener('change', () => {
-      const selectedManager = managerSelect.value;
-      const employees = managerToEmployees[selectedManager] || [];
-      employeeSelect.innerHTML = '';
-      for (const email of employees) {
-        const option = document.createElement('option');
-        option.value = email;
-        option.textContent = users[email];
-        employeeSelect.appendChild(option);
-      }
+      document.getElementById('displayRmName').textContent = rmName;
+      document.getElementById('displayMpName').textContent = mpName;
     });
+  </script>
 
-    productList.forEach(product => {
-      const label = document.createElement('label');
-      const checkbox = document.createElement('input');
-      checkbox.type = 'checkbox';
-      checkbox.value = product.code;
-      checkbox.dataset.name = product.name;
-      label.appendChild(checkbox);
-      label.appendChild(document.createTextNode(' ' + product.name));
-      dropdown.appendChild(label);
-    });
-
-    toggle.addEventListener('click', () => {
-      dropdown.classList.toggle('hidden');
-    });
-
-    document.addEventListener('click', (e) => {
-      if (!dropdown.contains(e.target) && e.target !== toggle) {
-        dropdown.classList.add('hidden');
-      }
-    });
-
-    dropdown.addEventListener('change', () => {
-      const selected = Array.from(dropdown.querySelectorAll('input[type="checkbox"]:checked'));
-      hiddenInput.value = selected.map(cb => cb.value).join(',');
-      toggle.textContent = selected.length > 0
-        ? `Обрано: ${selected.map(cb => cb.dataset.name).join(', ')}`
-        : 'Оберіть продукти ▼';
-    });
-
-    // Автоматичний дедлайн
-    const today = new Date();
-    const deadline = new Date(today);
-    deadline.setDate(today.getDate() + 14);
-    deadlineInput.value = deadline.toISOString().split('T')[0];
-  });
-
-  document.getElementById('trainingForm').addEventListener('submit', (event) => {
-    event.preventDefault();
-
-    const skill = document.getElementById('skill').value;
-    const managerEmail = document.getElementById('managerSelect').value;
-    const employeeEmail = document.getElementById('employeeSelect').value;
-    const managerName = users[managerEmail];
-    const employeeName = users[employeeEmail];
-
-    const today = new Date();
-    const deadlineDate = new Date(today);
-    deadlineDate.setDate(today.getDate() + 14);
-    const deadlineMinusOne = new Date(today);
-    deadlineMinusOne.setDate(today.getDate() + 7);
-
-    const deadlineStr = deadlineDate.toLocaleDateString('uk-UA');
-    const deadlineMinusOneStr = deadlineMinusOne.toLocaleDateString('uk-UA');
-    const todayStr = today.toLocaleDateString('uk-UA');
-
-    const codes = document.getElementById('selectedProducts').value.split(',').filter(Boolean);
-    const names = codes.map(code => {
-      const p = productList.find(p => p.code === code);
-      return p ? p.name : code;
-    });
-
-    if (codes.length > 10) {
-      alert(`Забагато продуктів (${codes.length}). Максимум 10.`);
-      return;
-    }
-
-    const productLinks = codes.map((code, i) =>
-      `🔹 https://gpavlik.github.io/farm_work/${code} (${names[i]})`
-    ).join('\n');
-
-    const subject = `Навчальне завдання ${employeeName} з навику ${skill} ${todayStr}`;
-    const body = `Шановна(ий) ${employeeName},
-
-Прошу виконати домашнє завдання з навику "${skill}" до ${deadlineMinusOneStr}
-🔹 https://mysite.ua/skills/${skill}
-
-Також завдання зі знання наступних продуктів:
-${productLinks}
-Дедлайн: ${deadlineStr}
-
-З повагою,
-${managerName}`;
-
-    const mailtoLink = `mailto:${employeeEmail}?cc=${managerEmail},trainer@pharmasco.com,head@pharmasco.com`
-      + `&subject=${encodeURIComponent(subject)}`
-      + `&body=${encodeURIComponent(body)}`;
-
-    console.log("MAILTO:", mailtoLink);
-    window.location.href = mailtoLink;
-  });
-</script>
-<script src="headfoot.js"></script>
-<script src="scroll.js"></script>
-<script src="scrbtn.js"></script>
+  <script src="headfoot.js"></script>
+  <script src="scroll.js"></script>
+  <script src="scrbtn.js"></script>
 </body>
-
 </html>

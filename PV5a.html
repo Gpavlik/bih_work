@@ -1,11 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="uk">
 
-<head><link rel="shortcut icon" href="https://behealth.com.ua/assets/img/favicon.ico" type="img/png">
+<head>
+  <link rel="shortcut icon" href="https://behealth.com.ua/assets/img/favicon.ico" type="img/png">
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Завдання</title>
+  <title>Завдання: Виявлення потреб партнера</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@700&family=Roboto:wght@400;500;700;900&display=swap"
@@ -16,257 +17,60 @@
   <link rel="stylesheet" href="./css/main.css" />
   <link rel="stylesheet" href="./css/styles.css">
 
-<!-- Google tag (gtag.js) -->
-
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-5BZZCV5DRK"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag("js", new Date());
-  gtag("config", "G-5BZZCV5DRK");
-</script>
-<script>
-  const email = localStorage.getItem("allowedEmail");
-  if (email) {
-    gtag("set", "user_properties", {
-      user_id: email
-    });
-  }
-</script>
-<script>
-  function sha256(input) {
-    const encoder = new TextEncoder();
-    const data = encoder.encode(input);
-    return crypto.subtle.digest("SHA-256", data).then(hash => {
-      return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
-    });
-  }
-</script>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-5BZZCV5DRK"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag("js", new Date());
+    gtag("config", "G-5BZZCV5DRK");
+  </script>
 </head>
 <body>
   <div id="header-container"></div>
   <main>
     <section class="works">
       <div class="container">
-      <h2 style="margin-bottom: 20px; text-align: center;">Форма навчального завдання: "Виявлення потреби партнера - відкриті запитання"</h2>
-      <h2 style="margin-bottom: 20px; text-align: center;">Перший етап відпрацювання навику</h2>
-      <h3 style="margin-bottom: 20px ; line-height: 1.5; color: #949494;">Для відпрацювання навику виявлення потреби:<br>🟢1. Перевірте знання співробітника що таке відкриті запитання і як їх можна створювати<br>🟢2. Пропишіть 4-5 відкритих запитання для виявленя груп потреб на наступний візит РАЗОМ зі співробітником.<br>🟢3. Перевірте чи вдалося виявити групи потреб партнера на візиті.<br>🟢4. Запропонуйте співробітнику обрати відкриті запитання для виявлення груп потреб по кожному продукту на наступний візит САМОСТІЙНО. <br>🟢5. Перевірте виявлення груп потреб після візиту.<br>🟢6. Дайте зворотній зв'язок про успіхи співробітника в виявлені груп потреб і обраних запитаннях.<br>🟢7. Повторюйте пункти 4-6 до кінця дня.</h3>
-      <h3 style="margin-bottom: 20px ; line-height: 1.5; color: #949494;">При наданні ДЗ по навику виявлення потреби:<br>🟢 Попросіть співробітника розширити перелік відкритих запитань для виявлення груп потреб.</h3>
-        <form id="trainingForm">
-    <!--<label>Навик:
-      <select id="skill">
-        <option value="Мета по SMART">Мета по смарт</option>
-        <option value="ХПВ">ХПВ</option>
-        <option value="Виявлення потреби">Виявлення потреби</option>
-      </select>
-    </label><br><br>-->
+        <h2 style="margin-bottom: 20px; text-align: center;">Форма навчального завдання з виявлення потреб партнера</h2>
+        <h2 style="margin-bottom: 20px; text-align: center;">Перший навик другого пріоритету</h2>
+        
+        <!-- Блок інформації про учасників -->
+        <div id="participantsInfo" style="background: #eef; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center; font-weight: bold;">
+          👤 Менеджер (РМ): <span id="displayRmName">—</span> | 🎯 Співробітник (МП): <span id="displayMpName">—</span>
+        </div>
 
-    <div class="custom-dropdown">
-      <label>
-  <div id="dropdownToggle" class="dropdown-toggle">Оберіть продукти</div>
-  <div id="productDropdown" class="dropdown-menu hidden">
-    <!-- JS сюди вставить чекбокси -->
-  </div>
-  </label><br>
-</div>
-
-<!-- Прихований input, куди передаються значення -->
-<input type="hidden" id="selectedProducts">
-
-    <label>Менеджер:
-      <select id="managerSelect"></select>
-    </label><br><br>
-
-    <label>Співробітник:
-      <select id="employeeSelect"></select>
-    </label><br><br>
-
-    <!--<label>Дедлайн:
-      <input type="date" id="deadline" required>
-    </label><br><br>-->
-<ul class="button">
-    <li class="button-section"></li><button class="btn" type="submit">Надіслати завдання</button></li>
-    <li class="button-section"></li><button class="btn" type="button"><a style="text-decoration: none; font-size: smaller;" class="text__work" href="./portfolio PV.html">Назад</a></button>
-</ul>
-</form>
-  </div>
-</section>
-</main>
+        <h3 style="margin-bottom: 20px ; line-height: 1.5; color: #949494;">Для відпрацювання навику виявлення потреби:<br>🟢1. Перевірте знання співробітника стосовно того що таке потреба і група потреб, як їх можна виявляти<br>🟢2. Після цього перейдіть до відпрацювання відкритих, чи уточнюючих і закритих запитань для виявлення потреб</h3>
+        
+        <ul class="button">
+          <li class="button-section" style="margin-bottom: 2px;"><button class="btn" type="button"><a href="./PV5a.html" style="text-decoration: none; font-size: smaller;" class="text__work">Відкриті запитання</a></button></li>
+          <li class="button-section" style="margin-bottom: 2px;"><button class="btn" type="button"><a href="./PV5b.html" style="text-decoration: none; font-size: smaller;" class="text__work">Уточнюючі та закриті запитання</a></button></li>
+          <li class="button-section" style="margin-bottom: 2px;"><button class="btn" type="button"><a style="text-decoration: none; font-size: smaller;" class="text__work" href="./portfolio PV.html">Назад</a></button></li>
+        </ul>
+      </div>
+    </section>
+  </main>
+  
   <div id="footer-container"></div>
+  
   <script src="./js/menu.js"></script>
   <script src="theme-toggle.js"></script>
   <script src="tracking.js"></script>
   <script src="validation.js"></script>
- <script src="user.js"></script>
-<script>
-  const productList = [
-    { code: "obj1", name: "Biossays 240 Plus" },
-    { code: "obj2", name: "DH36" },
-    { code: "obj3", name: "DF50" },
-    { code: "obj4", name: "UN73" },
-    { code: "obj5", name: "VISION Pro" },
-    { code: "obj6", name: "LS1100" },
-    { code: "obj7", name: "CITOLAB Reader 300" },
-    { code: "obj8", name: "MINI ISE" },
-    { code: "obj9", name: "AFT-800G, AFT-800H" },
-    { code: "obj10", name: "GCRYO-S® Painless" },
-    { code: "obj14", name: "DP-C16" },
-    { code: "obj15", name: "CA-1200" }, 
-    { code: "obj16", name: "Преаналітика" },
-    { code: "Test1", name: "ULTRA®" },
-    { code: "Test2", name: "DUET®" },
-    { code: "Test3", name: "SECRET®" },
-    { code: "Test4", name: "SOLO mini®" },
-    { code: "Test5", name: "CITOLAB™ pH" },
-    { code: "Test6", name: "Actim® PROM" },
-    { code: "Test7", name: "CITO TEST® COVID-19 Ag" },
-    { code: "Test8", name: "CITO TEST® ГРИП" },
-    { code: "Test9", name: "CITO TEST® COMBO" },
-    { code: "Test10", name: "CITO TEST® Strep А" },
-    { code: "Test11", name: "Hospital group" },
-    { code: "Test12", name: "CITO TEST® Гепатит В та С" },
-    { code: "Test13", name: "CITO TEST® ROTA" },
-    { code: "Test14", name: "CITO TEST® ХЕЛІКОБАКТЕР" },
-    { code: "Test15", name: "SNIPER®" },
-    { code: "Test16", name: "CITOLAB™ K" }
-  ];
+  <script src="user.js"></script>
+  
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      // Зчитуємо дані РМ та МП з localStorage
+      const rmName = localStorage.getItem("currentRmName") || "Олександр Волянюк";
+      const mpName = localStorage.getItem("currentMpName") || "Не вказано";
 
-  window.addEventListener('DOMContentLoaded', () => {
-    const managerSelect = document.getElementById('managerSelect');
-    const employeeSelect = document.getElementById('employeeSelect');
-    const currentUserElement = document.getElementById('currentUser');
-    const dropdown = document.getElementById('productDropdown');
-    const toggle = document.getElementById('dropdownToggle');
-    const hiddenInput = document.getElementById('selectedProducts');
-
-    const currentManagerName = currentUserElement?.textContent.trim();
-    const currentManagerEmail = Object.keys(users).find(email => users[email] === currentManagerName);
-
-    for (const [email, name] of Object.entries(users)) {
-      if (managerToEmployees[email]) {
-        const option = new Option(name, email);
-        managerSelect.appendChild(option);
-      }
-    }
-
-    const fillEmployees = (managerEmail) => {
-      const employees = managerToEmployees[managerEmail] || [];
-      employeeSelect.innerHTML = '';
-      employees.forEach(email => {
-        const option = new Option(users[email], email);
-        employeeSelect.appendChild(option);
-      });
-    };
-
-    if (currentManagerEmail && managerToEmployees[currentManagerEmail]) {
-      managerSelect.value = currentManagerEmail;
-      managerSelect.disabled = true;
-      fillEmployees(currentManagerEmail);
-    }
-
-    managerSelect.addEventListener('change', () => {
-      fillEmployees(managerSelect.value);
+      document.getElementById('displayRmName').textContent = rmName;
+      document.getElementById('displayMpName').textContent = mpName;
     });
+  </script>
 
-    productList.forEach(product => {
-      const label = document.createElement('label');
-      const checkbox = document.createElement('input');
-      checkbox.type = 'checkbox';
-      checkbox.value = product.code;
-      checkbox.dataset.name = product.name;
-      label.appendChild(checkbox);
-      label.append(' ' + product.name);
-      dropdown.appendChild(label);
-    });
-
-    toggle.addEventListener('click', () => {
-      dropdown.classList.toggle('hidden');
-    });
-
-    document.addEventListener('click', (e) => {
-      if (!dropdown.contains(e.target) && e.target !== toggle) {
-        dropdown.classList.add('hidden');
-      }
-    });
-
-    dropdown.addEventListener('change', () => {
-      const selected = Array.from(dropdown.querySelectorAll('input[type="checkbox"]:checked'));
-      hiddenInput.value = selected.map(cb => cb.value).join(',');
-      toggle.textContent = selected.length
-        ? `Обрано: ${selected.map(cb => cb.dataset.name).join(', ')}`
-        : 'Оберіть продукти ▼';
-    });
-  });
-
-  document.getElementById('trainingForm').addEventListener('submit', (event) => {
-    event.preventDefault();
-
-    const managerEmail = document.getElementById('managerSelect').value;
-    const employeeEmail = document.getElementById('employeeSelect').value;
-    const managerName = users[managerEmail];
-    const employeeName = users[employeeEmail];
-
-    const today = new Date();
-    const todayStr = today.toLocaleDateString('uk-UA');
-    const deadline = new Date(today);
-    deadline.setDate(deadline.getDate() + 7);
-    const deadlineStr = deadline.toLocaleDateString('uk-UA');
-
-    const deadline14 = new Date(today);
-    deadline14.setDate(deadline14.getDate() + 14);
-    const deadline14Str = deadline14.toLocaleDateString('uk-UA');
-
-    const codes = document.getElementById('selectedProducts').value.split(',').filter(Boolean);
-    const names = codes.map(code => {
-      const p = productList.find(p => p.code === code);
-      return p ? p.name : code;
-    });
-
-    if (codes.length > 5) {
-      alert(`Забагато продуктів (${codes.length}). Максимум 5.`);
-      return;
-    }
-
-    const productText = names.map(name => `🔹 ${name}`).join('\n');
-
-    const subject = `Навчальне завдання ${employeeName} по ПВ від ${todayStr}`;
-    const body = `Добрий день, ${employeeName}!
-Надсилаю завдання по ПВ від ${todayStr}:
-
-1. Ознайомся, будь ласка, з матеріалами тренінгу по структурі візиту з розділу "Виявлення потреби партнера - відкриті запитання" за посиланням:
-https://gpavlik.github.io/farm_work/trening1.html презентація - сторінка 25
-2. Напиши 10 різноманітних відкритих запитань для виявлення груп потреб по продуктах для візиту до партнерів:
-3. Надішли їх на мій е-мейл з копією керівнику відділу продажів та тренеру до ${deadlineStr}.
-4. Задавай відкриті запитання для виявлення груп потреб по продуктах на всіх візитах до партнерів. 
-5. Записуй всі виявлені групи потреб, що вдалося виявити по кожному продукту на візиті в блокноті до ${deadline14Str}.
-6. Відзвонись мені ${deadline14Str} о 18:00 зі зворотнім зв'язком по виявленню груп потреб на візитах до партнерів.
-
-В разі виникнення питань по завданню, звертайся до мене або до тренера.
-
-Бажаю успіху в навчанні і продажах!
-
-З повагою,  
-${managerName}`;
-
-    const emlContent =
-      "data:message/rfc822 eml;charset=utf-8," +
-      `To: ${employeeEmail}\n` +
-      `Cc: ${managerEmail}, y.holovan@pharmasco.com, p.hrytsenko@pharmasco.com\n` +
-      `Subject: ${subject}\n` +
-      `X-Unsent: 1\n` +
-      `Content-Type: text/plain; charset=utf-8\n\n` +
-      body;
-
-    const encodedUri = encodeURI(emlContent);
-    const link = document.createElement("a");
-    link.href = encodedUri;
-    link.download = `${employeeName}_завдання.eml`;
-    document.body.appendChild(link);
-    link.click();
-  });
-</script>
-<script src="headfoot.js"></script>
-<script src="scroll.js"></script>
-<script src="scrbtn.js"></script>
+  <script src="headfoot.js"></script>
+  <script src="scroll.js"></script>
+  <script src="scrbtn.js"></script>
 </body>
 </html>

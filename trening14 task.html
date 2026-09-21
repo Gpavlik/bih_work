@@ -1,11 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="uk">
 
-<head><link rel="shortcut icon" href="https://behealth.com.ua/assets/img/favicon.ico" type="img/png">
+<head>
+  <link rel="shortcut icon" href="https://behealth.com.ua/assets/img/favicon.ico" type="img/png">
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Завдання</title>
+  <title>Завдання: Тайм-менеджмент</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@700&family=Roboto:wght@400;500;700;900&display=swap"
@@ -17,7 +18,6 @@
   <link rel="stylesheet" href="./css/styles.css">
 
 <!-- Google tag (gtag.js) -->
-
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-5BZZCV5DRK"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -25,55 +25,105 @@
   gtag("js", new Date());
   gtag("config", "G-5BZZCV5DRK");
 </script>
-<script>
-  const email = localStorage.getItem("allowedEmail");
-  if (email) {
-    gtag("set", "user_properties", {
-      user_id: email
-    });
-  }
-</script>
-<script>
-  function sha256(input) {
-    const encoder = new TextEncoder();
-    const data = encoder.encode(input);
-    return crypto.subtle.digest("SHA-256", data).then(hash => {
-      return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
-    });
-  }
-</script>
 </head>
 <body>
   <div id="header-container"></div>
   <main>
     <section class="works">
       <div class="container">
-        <h2 class="title" style="color: black; text-align: center; font-size: 20px; margin-bottom: 30px;">Тайм менеджмент</h2>
+        <h2 class="title" style="color: black; text-align: center; font-size: 22px; margin-bottom: 20px;">Завдання до тренінгу: Тайм-менеджмент</h2>
+        
+        <!-- Блок інформації про співробітника -->
+        <div style="background: #eef; padding: 12px; border-radius: 6px; margin-bottom: 25px; text-align: center; font-size: 0.95em;">
+          👤 Виконує співробітник: <strong id="displayMpName">Завантаження...</strong>
+        </div>
+
         <p class="ttx">🟢 Створіть календарний план втілення проекту на своїй території в якому задіяно мінімум 4 особи.</p>
-<p class="ttx">🟢 Розподіліть задачі між співробітниками за хронологією та взаємозалежністю.</p>
-<p class="ttx">🟢 Встановіть точки контролю.</p>
-<p class="ttx">🟢 Продумайте запобіжні заходи на випадок зриву дедлайну.</p>
+        <p class="ttx">🟢 Розподіліть задачі між співробітниками за хронологією та взаємозалежністю[cite: 17].</p>
+        <p class="ttx">🟢 Встановіть точки контролю[cite: 17].</p>
+        <p class="ttx">🟢 Продумайте запобіжні заходи на випадок зриву дедлайну[cite: 17].</p>
 
-<form action="https://formspree.io/f/mnnvzeyl" method="POST">
-  <label for="task time management">Відповідь на завдання </label><br>
-  <input type="file" name="upload" style="margin-top: 10px" required><br><br>
-  <input type="email" name="_replyto" autofocus placeholder="Ваш email" required><br><br>
-  <input type="text" name="name" autofocus placeholder="Ваше ім'я" required><br><br>
-  <input type="submit" class="btn" value="Відправити">
-  <button class="btn" type="button"><a style="text-decoration: none; font-size: smaller;" class="text__work" href="./trening14.html">Назад</a></button>
-</form>
-
-</div>
-  </section>
-
+        <form id="trainingTaskForm" style="margin-top: 30px;">
+          <label for="taskReportText" style="font-weight: bold; display: block; margin-bottom: 8px;">Відповідь на завдання (календарний план, розподіл задач, точки контролю та ризики):</label><br>
+          <textarea id="taskReportText" class="form" name="taskReportText" rows="18" style="width: 100%; padding: 12px; border-radius: 4px; border: 1px solid #cbd5e1; font-family: inherit; box-sizing: border-box;" placeholder="Введіть ваш календарний план та деталі виконання..." required></textarea><br><br>
+          
+          <ul class="button" style="display: flex; gap: 15px; list-style: none; padding: 0;">
+            <li class="button-section"><button type="submit" id="submitTaskBtn" class="btn">📤 Надіслати на перевірку РМ та супервайзеру</button></li>
+            <li class="button-section"><button class="btn" type="button"><a style="text-decoration: none; font-size: smaller;" class="text__work" href="./trening14.html">Назад</a></button></li>
+          </ul>
+        </form>
+      </div>
+    </section>
   </main>
+  
   <div id="footer-container"></div>
+  
+  <script src="./user.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const userEmail = localStorage.getItem("allowedEmail");
+      let mpName = "Медичний представник";
+
+      if (userEmail && typeof users !== 'undefined' && users[userEmail]) {
+        mpName = users[userEmail];
+      }
+
+      document.getElementById("displayMpName").textContent = mpName;
+
+      const form = document.getElementById("trainingTaskForm");
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const reportText = document.getElementById("taskReportText").value.trim();
+        if (!reportText) {
+          alert("Будь ласка, заповніть відповідь на завдання!");
+          return;
+        }
+
+        const submitBtn = document.getElementById("submitTaskBtn");
+        submitBtn.textContent = "⏳ Надсилається звіт...";
+        submitBtn.disabled = true;
+
+        const taskData = {
+          type: "taskReport",
+          mpName: mpName,
+          rmName: "Призначений керівник",
+          skill: "Тренінг: Тайм-менеджмент",
+          products: "Тренінгове завдання №14",
+          reportText: reportText,
+          reportLink: "Відсутнє",
+          status: "Очікує перевірки",
+          dateSubmitted: new Date().toLocaleDateString('uk-UA')
+        };
+
+        const scriptURL = "https://script.google.com/macros/s/AKfycbwSr6AILZMxNmPhAVeFFQtTVuRnKXIdxxiYo-b3Ank1_TBB18iNJLHQvpbpMSiyeVMBUQ/exec";
+
+        try {
+          await fetch(scriptURL, {
+            method: "POST",
+            mode: "no-cors",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(taskData)
+          });
+
+          alert("✅ Ваше завдання успішно надіслано в систему на перевірку керівнику та супервайзеру!");
+          window.location.href = "./cabinet.html";
+        } catch (error) {
+          console.error("Помилка:", error);
+          alert("❌ Сталася помилка при надсиланні. Спробуйте ще раз.");
+          submitBtn.textContent = "📤 Надіслати на перевірку РМ та супервайзеру";
+          submitBtn.disabled = false;
+        }
+      });
+    });
+  </script>
+
   <script src="./js/menu.js"></script>
   <script src="theme-toggle.js"></script>
   <script src="tracking.js"></script>
-<script src="headfoot.js"></script>
-<script src="scroll.js"></script>
-<script src="scrbtn.js"></script>
+  <script src="headfoot.js"></script>
+  <script src="scroll.js"></script>
+  <script src="scrbtn.js"></script>
 </body>
 
 </html>

@@ -21,14 +21,14 @@
           <h2 class="social__title">приєднуйтесь</h2>
           <ul class="social__list social__list--footer">
             <li class="social__item social__item--footer">
-              <a class="social__link social__link--footer link" href="https://www.instagram.com/pharmascocom/" target="_blank" rel="noopener noreferrer"
+              <a class="social__link social__link--footer link" href="" target="_blank" rel="noopener noreferrer"
                 aria-label="инстаграм иконка">
                 <svg class="social__icon social__icon--footer" width="20px" height="20px">
                   <use href="./images/sprite.svg#icon-instagram"></use>
                 </svg></a>
             </li>
             <li class="social__item social__item--footer">
-              <a class="social__link social__link--footer link" href="https://www.youtube.com/@Pharmasco" target="_blank" rel="noopener noreferrer"
+              <a class="social__link social__link--footer link" href="" target="_blank" rel="noopener noreferrer"
                 aria-label="твиттер иконка">
                 <svg class="social__icon social__icon--footer" width="20px" height="20px">
                   <use href="./images/uoytube.svg"></use>

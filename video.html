@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Шаблони для вбудовування відео</title>
+  <style>
+    body {
+      font-family: Roboto, sans-serif;
+      background-color: #f8fafc;
+      color: #334155;
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+    h1, h2 {
+      color: #0f172a;
+    }
+    .template-card {
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    }
+    pre {
+      background: #1e293b;
+      color: #e2e8f0;
+      padding: 15px;
+      border-radius: 6px;
+      overflow-x: auto;
+      font-size: 14px;
+    }
+    .video-container {
+      position: relative;
+      padding-bottom: 56.25%;
+      height: 0;
+      overflow: hidden;
+      max-width: 100%;
+      background: #000;
+      border-radius: 8px;
+      margin-top: 15px;
+    }
+    .video-container iframe,
+    .video-container video {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🎬 Шаблони для вбудовування відео на сторінки платформи</h1>
+  <p>Використовуйте ці готові шаблони, щоб відео відтворювалося прямо на сторінці (без перенаправлення на YouTube чи Google Диск).</p>
+
+  <!-- Шаблон 1: YouTube -->
+  <div class="template-card">
+    <h2>1. Плеєр для YouTube</h2>
+    <p>Дозволяє вбудувати відео з YouTube без зайвих рекомендацій та логотипів наприкінці.</p>
+    <pre>&lt;div class="video-container"&gt;
+  &lt;iframe src="https://www.youtube-nocookie.com/embed/ІДЕНТИФІКАТОР_ВІДЕО?rel=0&modestbranding=1" 
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+          allowfullscreen&gt;
+  &lt;/iframe&gt;
+&lt;/div&gt;</pre>
+  </div>
+
+  <!-- Шаблон 2: Google Диск -->
+  <div class="template-card">
+    <h2>2. Плеєр для Google Диска</h2>
+    <p>Для файлів, що лежать на Google Диску (посилання має містити <code>/preview</code> на кінці замість <code>/view</code>).</p>
+    <pre>&lt;div class="video-container"&gt;
+  &lt;iframe src="https://drive.google.com/file/d/ID_ФАЙЛУ/preview" 
+          allow="autoplay; encrypted-media" 
+          allowfullscreen&gt;
+  &lt;/iframe&gt;
+&lt;/div&gt;</pre>
+  </div>
+
+  <!-- Шаблон 3: Нативний HTML5 плеєр -->
+    <div class="template-card">
+    <h2>3. Нативний HTML5-плеєр (для серверних файлів .mp4)</h2>
+    <p>Ідеально для власних відеофайлів, що зберігаються безпосередньо на хостингу.</p>
+    <pre>&lt;div class="video-container"&gt;
+  &lt;video controls poster="./img/poster.jpg"&gt;
+    &lt;source src="./path/to/video.mp4" type="video/mp4"&gt;
+    Ваш браузер не підтримує тег відео.
+  &lt;/video&gt;
+&lt;/div&gt;</pre>
+  </div>
+
+</body>
+</html>

@@ -54,24 +54,18 @@ document.addEventListener("DOMContentLoaded", () => {
       const email = emailInput ? emailInput.value.trim().toLowerCase() : "";
 
       const emailsList = [
-          "o.krasnikov@pharmasco.com", "m.pohribna@pharmasco.com", "i.bohuslavets@pharmasco.com", 
-          "k.skriabina@pharmasco.com", "a.alekseenko@pharmasco.com", "t.demus@pharmasco.com", 
-          "o.leonova@pharmasco.com", "t.sazonova@pharmasco.com", "i.babenko@pharmasco.com", 
-          "i.melnychuk@pharmasco.com", "t.klimenko@pharmasco.com", "i.pryhodko@pharmasco.com", 
-          "d.zahorodnyy@pharmasco.com", "t.romanovska@pharmasco.com", "m.kulynska@pharmasco.com", 
-          "o.polishchuk@pharmasco.com", "d.prykhodko@pharmasco.com", "a.volaniuk@pharmasco.com", 
-          "v.tuluchenko@pharmasco.com", "i.shlapak@pharmasco.com", "o.levchenko@pharmasco.com", 
-          "p.hrytsenko@pharmasco.com", "u.oleynik@pharmasco.com", "v.skopichenko@pharmasco.com", 
-          "m.skopichenko@pharmasco.com", "s.skopychenko@pharmasco.com", "g.kuznetsova@pharmasco.com", 
-          "v.popadiuk@pharmasco.com", "v.torishnyak@pharmasco.com", "k.prokhorenko@pharmasco.com", 
-          "y.bebko@pharmasco.com", "v.haptenko@pharmasco.com", "a.khodakovskyi@pharmasco.com", "admin"
+          "rm1", "rm2", "rm3", 
+          "mp11", "mp12", "mp13", 
+          "mp21", "mp22", "mp23", 
+          "mp31", "mp32", "mp33", 
+          "admin"
       ];
 
       if (emailsList.includes(email)) {
         localStorage.setItem("allowedEmail", email);
 
         // Визначаємо куди спрямувати користувача (адмінка чи кабінет)
-        const adminEmails = ["p.hrytsenko@pharmasco.com", "admin"]; 
+        const adminEmails = ["rm1", "rm2", "rm3", "admin"]; 
         const targetPage = adminEmails.includes(email) ? "./admin.html" : "./cabinet.html";
 
         // Візуальний ефект занурення

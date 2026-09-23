@@ -12,7 +12,8 @@ const users = {
   "mp23": "МП23",
   "mp31": "МП31",
   "mp32": "МП32",
-  "mp33": "МП33"
+  "mp33": "МП33",
+  "admin": "Тренер"
 };
 
 const managerToEmployees = {

@@ -50,9 +50,9 @@
         <p style="margin: 5px 0 0 0; color: #64748b; font-size: 0.9em;">Керування активностями, призначення тренінгів та контроль завдань команди</p>
       </div>
       <div class="nav-links">
-        <a href="./calc3 analis.html" class="nav-btn" target="_blank">📊 Дашборд аналітики</a>
+        <a href="./calc3 analis.html" style="display: none;" id="analyticsBtn" class="nav-btn" target="_blank" >📊 Дашборд аналітики</a>
         <a href="./cabinet.html" class="nav-btn">👤 Мій кабінет</a>
-        <button id="logoutAdminBtn" style="background: #e74c3c; color: white; border: none; padding: 8px 14px; border-radius: 4px; cursor: pointer; font-weight: 500;">Вийти</button>
+        <button style="background: #e74c3c; color: white; border: none; padding: 8px 14px; border-radius: 4px; cursor: pointer; font-weight: 500;"><a onclick="showPasswordPrompt(event, './portfolio PV.html')" style="text-decoration: none; font-size: smaller;" class="text__work" href="./portfolio PV.html">Перейти до оцінки ПВ</a></button>
       </div>
     </div>
 
@@ -97,13 +97,17 @@
               <option value="trening23.html">Pharm-unit work (Тренінг з роботи в аптечному юніті)</option>
             </select>
           </div>
+          <div class="form-group">
+            <label for="deadlineTrain">Дедлайн виконання:</label>
+            <input type="date" id="deadlineTrain" required>
+          </div>
           <button type="submit" class="btn-action">📌 Призначити тренінг</button>
         </form>
       </div>
 
-      <!-- 2. Призначення вивчення продукту -->
+     <!-- 2. Призначення вивчення продукту (з множинним вибором) -->
       <div class="admin-card">
-        <h3>💊 Призначити вивчення продукту</h3>
+        <h3>💊 Призначити вивчення продуктів</h3>
         <form id="assignProductForm">
           <div class="form-group">
             <label for="targetUserEmailProd">Співробітник:</label>
@@ -112,8 +116,8 @@
             </select>
           </div>
           <div class="form-group">
-            <label for="selectProduct">Оберіть продукт з каталогу:</label>
-            <select id="selectProduct">
+            <label for="selectProduct">Оберіть продукти (утримуйте Ctrl / Cmd для вибору кількох):</label>
+            <select id="selectProduct" multiple style="height: 150px;" required>
               <optgroup label="Жіноче здоров'я">
                 <option value="argisDuo.html">Аргіс ДУО свічки №10</option>
                 <option value="bilord.html">Білорд</option>
@@ -163,11 +167,15 @@
               </optgroup>
             </select>
           </div>
-          <button type="submit" class="btn-action" style="background: #2980b9;">📌 Призначити продукт</button>
+          <div class="form-group">
+            <label for="deadlineProd">Дедлайн виконання:</label>
+            <input type="date" id="deadlineProd" required>
+          </div>
+          <button type="submit" class="btn-action" style="background: #2980b9;">📌 Призначити продукти</button>
         </form>
       </div>
 
-      <!-- 3. НОВЕ: Запросити на тренінг (онлайн / офлайн) -->
+      <!-- 3. Запросити на тренінг (онлайн / офлайн) -->
       <div class="admin-card">
         <h3>📅 Запросити на тренінг (Онлайн / Офлайн)</h3>
         <form id="inviteTrainingForm">
@@ -180,7 +188,7 @@
           <div class="form-group">
             <label for="selectLiveTraining">Запланований тренінг / подія:</label>
             <select id="selectLiveTraining">
-              <option value="https://docs.google.com/spreadsheets/d/1GfeebQH67JT0rTjtEi-m_lLT6YwmYft3/edit?usp=sharing">График запланованих тренінгів (Google Таблиця)</option>
+              <option value="https://docs.google.com/spreadsheets/d/1GfeebQH67JT0rTjtEi-m_lLT6YwmYft3/edit?usp=sharing">Графік запланованих тренінгів (Google Таблиця)</option>
               <option value="online_session_1">Онлайн-сесія з практичного коучингу</option>
               <option value="offline_workshop_1">Регіональний офлайн-воркшоп команди</option>
             </select>
@@ -189,7 +197,7 @@
         </form>
       </div>
 
-      <!-- 4. НОВЕ: Призначити вивчення стандартів -->
+      <!-- 4. Призначити вивчення стандартів -->
       <div class="admin-card">
         <h3>📋 Вивчення стандартів та інструкцій</h3>
         <form id="assignStandardForm">
@@ -212,6 +220,10 @@
               <option value="./stand2.html">Корисні книги для саморозвитку</option>
             </select>
           </div>
+          <div class="form-group">
+            <label for="deadlineStand">Дедлайн виконання:</label>
+            <input type="date" id="deadlineStand" required>
+          </div>
           <button type="submit" class="btn-action" style="background: #d35400;">📁 Призначити стандарт</button>
         </form>
       </div>
@@ -233,7 +245,7 @@
               <th>Середній бал</th>
               <th>Фокус розвитку</th>
             </tr>
-          </thead>
+          </thead
           <tbody>
             <tr><td colspan="6" style="text-align: center; color: #888;">Завантаження даних...</td></tr>
           </tbody>
@@ -245,9 +257,89 @@
 
   <div id="footer-container"></div>
 
- <script src="user.js"></script>
+  <script src="user.js"></script>
   <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwSr6AILZMxNmPhAVeFFQtTVuRnKXIdxxiYo-b3Ank1_TBB18iNJLHQvpbpMSiyeVMBUQ/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwHH90cAKBQBr94_X1EeIwyaKv8xjowOagm48hguizZIlQjWsz10fwchWBduPLWdNXMhQ/exec";
+
+    // Словник для перетворення технічних назв файлів у гарні людські назви
+    const trainingNamesMap = {
+      "trening1.html": "Visit structure (Базовий тренінг МП)",
+      "trening2.html": "Decision-maker (Тренінг по роботі з ЛПР)",
+      "trening3.html": "Presentation (Тренінг з презентації продукту)",
+      "trening4.html": "Business emailing (Тренінг з ділового листування)",
+      "trening5.html": "Handling objections (Робота з запереченнями)",
+      "trening6.html": "Dealing with competitor (Робота з конкурентами)",
+      "trening7.html": "Reviews writing (Тренінг з написання відгуків)",
+      "trening8.html": "Sales management (Тренінг з управління продажами)",
+      "trening9.html": "Targeting (Створення партнерської бази)",
+      "trening10.html": "Situational leadership (Ситуаційне лідерство)",
+      "trening11.html": "People development (Розвиток персоналу)",
+      "trening12.html": "Negotiation process (Тренінг з ведення переговорів)",
+      "trening13.html": "Presentation making (Тренінг з підготовки презентацій)",
+      "trening14.html": "Time management (Тренінг з тайм-менеджменту)",
+      "trening15.html": "Quality control (Тренінг з контролю якості)",
+      "trening16.html": "Call sales (Тренінг з дистанційного продажу)",
+      "trening17.html": "Discounts offering (Тренінг по роботі зі знижками)",
+      "trening18.html": "Conference activities (Тренінг по роботі на конференціях)",
+      "trening19.html": "Needs (Тренінг з визначення потреб)",
+      "Trening20.html": "Пропозиції (до бізнес тренера)",
+      "trening21.html": "Pharmacovigilance (Тренінг з фармаконагляду)",
+      "trening22.html": "Effective communication (Тренінг з ефективної комунікації)",
+      "trening23.html": "Pharm-unit work (Тренінг з роботи в аптечному юніті)",
+      // Продукти
+      "argisDuo.html": "Аргіс ДУО свічки №10",
+      "bilord.html": "Білорд",
+      "veriksa.html": "Верікса",
+      "dekaboost2000.html": "ДеКаБуст 2000",
+      "pregnemag.html": "Прегнемаг",
+      "feminozyd.html": "Фемінозид",
+      "helivayn.html": "Хелівайн",
+      "cyklofitForte.html": "Циклофіт Форте №30",
+      "ixindol.html": "Іксіндол №30",
+      "bravol.html": "Бравол",
+      "valeoprost.html": "Валеопрост",
+      "voger.html": "Вогер №30",
+      "zagest.html": "Загест №30",
+      "staton.html": "Статон",
+      "aneza.html": "Анеза",
+      "kalbind.html": "Кальбінд",
+      "liberaForte.html": "Лібера Форте №30",
+      "libera.html": "Лібера №30",
+      "renohels.html": "Ренохелс №30",
+      "uropak36.html": "УроПак-36 №30",
+      "butrykol.html": "Бутрикол №10",
+      "esbulardi.html": "Есбуларді",
+      "eupatileks.html": "Еупатілекс",
+      "mastykozyn.html": "Мастикозин",
+      "pantofytol.html": "Пантофітол",
+      "travitafer.html": "Травітафер №30",
+      "glykomycel.html": "Глікоміцел",
+      "liberaArginin.html": "Лібера Аргінін №30",
+      "selefiks.html": "Селефікс",
+      "spirona.html": "Спірона",
+      "tarnityn.html": "Тарнітин",
+      "tirbizod.html": "Тірбізод",
+      "shugard.html": "Шугард №30",
+      "gippomycel.html": "Гіппоміцел",
+      "neyromineriy.html": "Нейромінерій"
+    };
+
+    // Допоміжна функція для отримання гарної назви
+    window.formatTrainingDisplay = function(rawUrl) {
+      if (!rawUrl) return "Завдання";
+      // Якщо це повноцінний текст із календаря/тренінгу
+      if (rawUrl.includes("📌") || rawUrl.includes("📅")) return rawUrl;
+      
+      // Витягуємо ім'я файлу з посилання
+      const fileName = rawUrl.split('/').pop().split('?')[0];
+      const displayName = trainingNamesMap[fileName] || fileName;
+      
+      // Якщо це посилання (файл або http), робимо клікабельним
+      if (rawUrl.startsWith("http") || rawUrl.endsWith(".html") || rawUrl.endsWith(".pdf")) {
+        return `<a href="${rawUrl}" target="_blank" style="color: #007acc; text-decoration: underline; font-weight: 500;">📖 ${displayName}</a>`;
+      }
+      return displayName;
+    };
 
     document.addEventListener("DOMContentLoaded", async () => {
       const allowedEmail = localStorage.getItem("allowedEmail");
@@ -257,7 +349,6 @@
         return;
       }
 
-      // Заповнюємо випадаючі списки співробітниками поточного керівника (тільки ПІБ)
       const assignedEmails = managerToEmployees[allowedEmail] || [];
       const selectElements = [
         document.getElementById("targetUserEmailTrain"), 
@@ -276,42 +367,35 @@
         });
       });
 
-      // --- ЛОГІКА МОДАЛЬНОГО ВІКНА ЗАПРОШЕННЯ НА ТРЕНІНГ ---
+      // --- МОДАЛКА ЗАПРОШЕННЯ ---
       const inviteModal = document.getElementById("inviteModal");
       const inviteFormCard = document.getElementById("inviteTrainingForm");
       const closeModalBtn = document.getElementById("closeInviteModal");
       let selectedEmpEmail = "";
       let selectedEmpName = "";
 
-      // Відкриття модалки при сабміті карточки запрошення
       inviteFormCard.addEventListener("submit", (e) => {
         e.preventDefault();
         selectedEmpEmail = document.getElementById("targetUserEmailInvite").value;
         selectedEmpName = document.getElementById("targetUserEmailInvite").selectedOptions[0].textContent;
 
-        if (!selectedEmpEmail) {
-          alert("Оберіть співробітника!");
-          return;
-        }
-
-        // Показуємо модальне вікно
+        if (!selectedEmpEmail) { alert("Оберіть співробітника!"); return; }
         inviteModal.style.display = "flex";
       });
 
-      // Закриття модалки
       closeModalBtn.addEventListener("click", () => {
         inviteModal.style.display = "none";
       });
 
-      // Обробка відправки форми з модалки
       document.getElementById("modalInviteForm").addEventListener("submit", async (e) => {
         e.preventDefault();
         const theme = document.getElementById("inviteTheme").value.trim();
         const dateTime = document.getElementById("inviteDateTime").value;
         const location = document.getElementById("inviteLocation").value.trim();
 
-        // Формуємо красивий рядок із даними про тренінг для збереження у систему
-        const trainingDetailsText = `📌 Тренінг: "${theme}" | 📅 Дата/Час: ${dateTime} | 📍 Де: ${location}`;
+        // Форматування дати для календаря (YYYY-MM-DD з dateTime)
+        const datePart = dateTime.split("T")[0];
+        const trainingDetailsText = `📌 Тренінг: "${theme}" | 📅 Дедлайн: ${datePart} (Час: ${dateTime.split("T")[1]}) | 📍 Де: ${location}`;
 
         try {
           await fetch(SCRIPT_URL, {
@@ -321,7 +405,7 @@
             body: JSON.stringify({ action: "assignTraining", email: selectedEmpEmail, trainingUrl: trainingDetailsText })
           });
           
-          alert(`✅ Запрошення на тренінг успішно надіслано співробітнику: ${selectedEmpName}!`);
+          alert(`✅ Запрошення успішно надіслано: ${selectedEmpName}!`);
           inviteModal.style.display = "none";
           document.getElementById("modalInviteForm").reset();
           inviteFormCard.reset();
@@ -330,138 +414,140 @@
         }
       });
 
-      // Обробка призначення тренінгу з каталогу
+      // Обробка призначення тренінгу з дедлайном
       document.getElementById("assignTrainingForm").addEventListener("submit", async (e) => {
         e.preventDefault();
         const email = document.getElementById("targetUserEmailTrain").value;
         const training = document.getElementById("selectTraining").value;
+        const deadline = document.getElementById("deadlineTrain").value;
         const empName = document.getElementById("targetUserEmailTrain").selectedOptions[0].textContent;
 
         if (!email) { alert("Оберіть співробітника!"); return; }
+        if (!deadline) { alert("Оберіть дедлайн!"); return; }
+
+        const trainingNameReadable = trainingNamesMap[training] || training;
+        const textPayload = `📌 Тренінг: ${trainingNameReadable} | 📅 Дедлайн: ${deadline} | посилання:${training}`;
 
         try {
           await fetch(SCRIPT_URL, {
             method: "POST",
             mode: "no-cors",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ action: "assignTraining", email: email, trainingUrl: training })
+            body: JSON.stringify({ action: "assignTraining", email: email, trainingUrl: textPayload })
           });
-          alert(`✅ Тренінг успішно призначено співробітнику: ${empName}!`);
+          alert(`✅ Тренінг успішно призначено (${empName}, дедлайн: ${deadline})!`);
           document.getElementById("assignTrainingForm").reset();
         } catch (error) {
           alert("❌ Помилка при призначенні тренінгу.");
         }
       });
 
-      // Обробка призначення продукту
+      // Обробка призначення кількох продуктів з дедлайном
       document.getElementById("assignProductForm").addEventListener("submit", async (e) => {
         e.preventDefault();
         const email = document.getElementById("targetUserEmailProd").value;
-        const productUrl = document.getElementById("selectProduct").value;
+        const productSelect = document.getElementById("selectProduct");
+        const deadline = document.getElementById("deadlineProd").value;
         const empName = document.getElementById("targetUserEmailProd").selectedOptions[0].textContent;
 
+        // Збираємо всі обрані опції
+        const selectedOptions = Array.from(productSelect.selectedOptions);
+        
         if (!email) { alert("Оберіть співробітника!"); return; }
+        if (selectedOptions.length === 0) { alert("Оберіть хоча б один продукт!"); return; }
+        if (!deadline) { alert("Оберіть дедлайн!"); return; }
+
+        // Формуємо масиви назв та посилань для обраних продуктів
+        const productNames = selectedOptions.map(opt => trainingNamesMap[opt.value] || opt.textContent);
+        const productValues = selectedOptions.map(opt => opt.value);
+
+        const textPayload = `💊 Вивчення продуктів: ${productNames.join(", ")} | 📅 Дедлайн: ${deadline} | посилання:${productValues.join(",")}`;
 
         try {
           await fetch(SCRIPT_URL, {
             method: "POST",
             mode: "no-cors",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ action: "assignTraining", email: email, trainingUrl: productUrl })
+            body: JSON.stringify({ action: "assignTraining", email: email, trainingUrl: textPayload })
           });
-          alert(`✅ Вивчення продукту успішно призначено співробітнику: ${empName}!`);
+          alert(`✅ Вивчення продуктів (${productNames.length} шт.) успішно призначено (${empName}, дедлайн: ${deadline})!`);
           document.getElementById("assignProductForm").reset();
         } catch (error) {
-          alert("❌ Помилка при призначенні продукту.");
+          alert("❌ Помилка при призначенні продуктів.");
         }
       });
 
-      // Обробка призначення стандартів
+      // Обробка призначення стандартів з дедлайном
       document.getElementById("assignStandardForm").addEventListener("submit", async (e) => {
         e.preventDefault();
         const email = document.getElementById("targetUserEmailStand").value;
         const standardUrl = document.getElementById("selectStandard").value;
+        const deadline = document.getElementById("deadlineStand").value;
         const empName = document.getElementById("targetUserEmailStand").selectedOptions[0].textContent;
 
         if (!email) { alert("Оберіть співробітника!"); return; }
+        if (!deadline) { alert("Оберіть дедлайн!"); return; }
+
+        const textPayload = `📋 Стандарт / Інструкція | 📅 Дедлайн: ${deadline} | посилання:${standardUrl}`;
 
         try {
           await fetch(SCRIPT_URL, {
             method: "POST",
             mode: "no-cors",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ action: "assignTraining", email: email, trainingUrl: standardUrl })
+            body: JSON.stringify({ action: "assignTraining", email: email, trainingUrl: textPayload })
           });
-          alert(`✅ Стандарт успішно призначено співробітнику: ${empName}!`);
+          alert(`✅ Стандарт успішно призначено (${empName}, дедлайн: ${deadline})!`);
           document.getElementById("assignStandardForm").reset();
         } catch (error) {
           alert("❌ Помилка при призначенні стандарту.");
         }
       });
 
-      // Завантаження останніх звітів у таблицю
-      try {
-        const response = await fetch(SCRIPT_URL);
-        const data = await response.json();
-        const mpData = data.mpData || [];
-
-        if (mpData.length > 1) {
-          const tbody = document.querySelector("#adminRecentTable tbody");
-          tbody.innerHTML = "";
-          const recentRows = mpData.slice(1).reverse().slice(0, 10);
-          
-          recentRows.forEach(r => {
-            tbody.innerHTML += `
-              <tr>
-                <td>${r[0] || '—'}</td>
-                <td><strong>${r[1] || '—'}</strong></td>
-                <td>${r[2] || '—'}</td>
-                <td>${r[3] || '—'} / ${r[4] || '—'}</td>
-                <td><strong style="color: #27ae60;">${r[9] || '—'}</strong></td>
-                <td><em>${r[11] || '—'}</em></td>
-              </tr>
-            `;
-          });
-        }
-      } catch (err) {
-        console.error("Помилка завантаження таблиці:", err);
-      }
-
-      // Кнопка виходу
+      // Вихід
       document.getElementById("logoutAdminBtn").addEventListener("click", () => {
         localStorage.removeItem("allowedEmail");
         window.location.href = "./index.html";
       });
     });
+    // Перевірка прав доступу до дашборду аналітики
+      const allowedEmail = localStorage.getItem("allowedEmail");
+      const analyticsBtn = document.getElementById("analyticsBtn");
+      
+      // Якщо це адміністратор — показуємо кнопку, якщо РМ — залишаємо прихованою
+      if (allowedEmail === "admin" && analyticsBtn) {
+        analyticsBtn.style.display = "inline-block";
+      }
   </script>
 
   <script src="./js/menu.js"></script>
   <script src="headfoot.js"></script>
   <script src="theme-toggle.js"></script>
   <script src="tracking.js"></script>
+
   <!-- МОДАЛЬНЕ ВІКНО ДЛЯ ЗАПРОШЕННЯ НА ТРЕНІНГ -->
-<div id="inviteModal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); align-items: center; justify-content: center;">
-  <div style="background: #fff; padding: 30px; border-radius: 8px; width: 100%; max-width: 500px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); position: relative;">
-    <h3 style="margin-top: 0; color: #8e44ad; margin-bottom: 20px;">📅 Запрошення на тренінг</h3>
-    <form id="modalInviteForm">
-      <div class="form-group">
-        <label for="inviteTheme">Тема тренінгу:</label>
-        <input type="text" id="inviteTheme" placeholder="Наприклад: Майстерність комунікації" required>
-      </div>
-      <div class="form-group">
-        <label for="inviteDateTime">Дата та час:</label>
-        <input type="datetime-local" id="inviteDateTime" required>
-      </div>
-      <div class="form-group">
-        <label for="inviteLocation">Посилання на Zoom або адреса проведення:</label>
-        <input type="text" id="inviteLocation" placeholder="https://zoom.us/j/... або офіс компанії" required>
-      </div>
-      <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
-        <button type="button" id="closeInviteModal" style="background: #cbd5e1; border: none; padding: 10px 16px; border-radius: 4px; cursor: pointer; font-weight: 500;">Скасувати</button>
-        <button type="submit" class="btn-action" style="background: #8e44ad; width: auto;">📤 Надіслати запрошення</button>
-      </div>
-    </form>
+  <div id="inviteModal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); align-items: center; justify-content: center;">
+    <div style="background: #fff; padding: 30px; border-radius: 8px; width: 100%; max-width: 500px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); position: relative;">
+      <h3 style="margin-top: 0; color: #8e44ad; margin-bottom: 20px;">📅 Запрошення на тренінг</h3>
+      <form id="modalInviteForm">
+        <div class="form-group">
+          <label for="inviteTheme">Тема тренінгу:</label>
+          <input type="text" id="inviteTheme" placeholder="Наприклад: Майстерність комунікації" required>
+        </div>
+        <div class="form-group">
+          <label for="inviteDateTime">Дата та час:</label>
+          <input type="datetime-local" id="inviteDateTime" required>
+        </div>
+        <div class="form-group">
+          <label for="inviteLocation">Посилання на Zoom або адреса проведення:</label>
+          <input type="text" id="inviteLocation" placeholder="https://zoom.us/j/... або офіс компанії" required>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+          <button type="button" id="closeInviteModal" style="background: #cbd5e1; border: none; padding: 10px 16px; border-radius: 4px; cursor: pointer; font-weight: 500;">Скасувати</button>
+          <button type="submit" class="btn-action" style="background: #8e44ad; width: auto;">📤 Надіслати запрошення</button>
+        </div>
+      </form>
+    </div>
   </div>
-</div>
 </body>
 </html>

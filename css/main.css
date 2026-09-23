@@ -2040,8 +2040,8 @@ html {
 }
 .weather-today {
   position: absolute;
-  top: 45px;
-  right: 20%;
+  top: 72%;
+  right: 13%;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -2268,4 +2268,10 @@ body.abyss-effect {
   opacity: 0;
   filter: blur(8px);
   background-color: #000 !important;
+}
+
+.weather-today img {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
 }

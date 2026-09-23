@@ -1,641 +1,658 @@
 <!DOCTYPE html>
 <html lang="uk">
-<head><link rel="shortcut icon" href="https://behealth.com.ua/assets/img/favicon.ico" type="img/png">
+<head>
+  <link rel="shortcut icon" href="https://behealth.com.ua/assets/img/favicon.ico" type="img/png">
   <meta charset="UTF-8">
   <title>Календар задач</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@700&family=Roboto:wght@400;500;700;900&display=swap"
-    rel="stylesheet" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/modern-normalize/1.1.0/modern-normalize.css"
-    integrity="sha512-Y0MM+V6ymRKN2zStTqzQ227DWhhp4Mzdo6gnlRnuaNCbc+YN/ZH0sBCLTM4M0oSy9c9VKiCvd4Jk44aCLrNS5Q=="
-    crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@700&family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/modern-normalize/1.1.0/modern-normalize.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <link rel="stylesheet" href="./css/main.css" />
-  
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-  <style>
-    main {
-      font-family: Arial, sans-serif;
-      background: #f4f4f4;
-      margin-top: 0px;
-      padding: 0px;
-      opacity: 1;
+<style>
+  main {
+    font-family: Arial, sans-serif;
+    background: #f4f4f4;
+    margin-top: -32px;
+    /* ДОДАНО: відступи знизу, щоб відштовхнути футер */ 
+    margin-bottom: 72px; 
+    min-height: calc(100vh - 150px);
+    opacity: 1;
     transform: translateY(40px);
     transition: all 2s ease-out;
-    
-    }
-    main.loaded {
-  animation: breathe 2s ease-out;
+  }
+  
+  main.loaded {
+    animation: breathe 2s ease-out;
   }
 
-@keyframes breathe {
-  0% { transform: scale(0.9) translateY(40px); opacity: 0; }
-  50% { transform: scale(1.05) translateY(-10px); opacity: 0.8; }
-  100% { transform: scale(1) translateY(0); opacity: 1; }
-}
-
-.calendar-container {
-  max-width: 1200px;
-  margin: auto;
-  position: relative;
-  overflow: hidden;
-      padding: 10px;
-    }
-
-    #calendarBackground {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-size: cover;
-  background-position: center;
-  opacity: 0.9;
-  z-index: 0;
-  transition: opacity 1s ease-in-out, background-image 1s ease-in-out;
-}
-
-#calendarBackground.loaded {
-  opacity: 0.9;
-}
-    #calendar {
-      position: relative;
-      z-index: 1;
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 8px;
-    }
-
-    .calendar-header {
-      text-align: center;
-      margin-bottom: 10px;
-      position: relative;
-      z-index: 2;
-    }
-
-    .weekday {
-      text-align: center;
-      font-weight: bold;
-      padding: 5px;
-      background: #e5fdd1;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-    }
-
-    .day {
-      background: #fff;
-      border: 1px solid #ccc;
-      border-radius: 10px;
-      padding: 5px;
-      min-height: 150px;
-      cursor: pointer;
-      transition: box-shadow 0.3s ease;
-      opacity: 0.8;
-    }
-
-    .day:hover {
-      box-shadow: 0 0 5px 5px #ffc0cbce;
-    }
-
-    .day strong {
-      display: block;
-      margin-bottom: 5px;
-    }
-
-    .day.weekend {
-      background-color: #ffe5e5;
-    }
-
-    .day.has-tasks {
-      background-color: #dbeafe;
-    }
-
-    .day.all-done {
-      background-color: #d1e7dd;
-    }
-
-    .task {
-      font-size: 12px;
-      margin: 3px 0;
-      background: #d1ecf1;
-      padding: 2px 4px;
-      border-radius: 3px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .task-text {
-      flex-grow: 1;
-      margin-right: 5px;
-    }
-
-    .task-text.done {
-      text-decoration: line-through;
-      color: gray;
-    }
-
-    button {
-      background: #25a72b;
-      color: white;
-      border: 1px solid #ccc;
-      padding: 2px 5px;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 14px;
-      margin-top: 5px;
-    }
-
-    button:hover {
-      background: #218a24;
-    }
-
-    button:active {
-      outline: none;
-      box-shadow: 0 0 0 3px #25a72b;
-    }
-
-    .modal {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.5);
-      display: none;
-      justify-content: center;
-      align-items: center;
-      z-index: 10;
-    }
-
-    .modal-content {
-      background: white;
-      padding: 20px;
-      border-radius: 5px;
-      width: 350px;
-    }
-
-    .modal-content h3 {
-      margin-top: 0;
-    }
-
-    input[type="text"] {
-      width: 100%;
-      margin-top: 5px;
-      padding: 5px;
-      font-size: 14px;
-      border-radius: 5px;
-    }
-
-    .filter {
-      margin-top: 10px;
-      text-align: center;
-    }
-
-    .edit-input {
-      width: 100%;
-      font-size: 12px;
-      margin-top: 3px;
-    }
-
-    span {
-      font-weight: bold;
-      font-size: large;
-      color: #25a72b;
-    }
-    .today-highlight {
-  border: 2px solid #25a72b;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(6px);
-  border-radius: 8px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-  animation: pulse 1.5s infinite;
-}
-
-@keyframes pulse {
-  0% { box-shadow: 0 0 0 5px rgba(15, 190, 30, 0.603); }
-  70% { box-shadow: 0 0 0 10px rgba(15, 190, 30, 0); }
-  100% { box-shadow: 0 0 0 3px rgba(15, 190, 30, 0); }
-}
-
-  </style>
-<script type="module">
-  // Імпортуємо потрібні модулі
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-analytics.js";
-  import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
-
-  // Конфігурація Firebase
-  const firebaseConfig = {
-    apiKey: "AIzaSyA2Gr8WYApA8STh3N4OUGOID9h9QCa6L5g",
-    authDomain: "calendarstand.firebaseapp.com",
-    projectId: "calendarstand",
-    storageBucket: "calendarstand.firebasestorage.app",
-    messagingSenderId: "435487300190",
-    appId: "1:435487300190:web:4c161f304e54fb0aa5b2cf",
-    measurementId: "G-ZKRJCVX1J4"
-  };
-
-  // Ініціалізація Firebase
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-  const db = getFirestore(app); // 🔥 Ось тут ініціалізуємо Firestore
-
-  // 📥 Зчитування задач
-  async function loadTasks(year, month) {
-    const key = `tasks-${year}-${month}`;
-    const ref = doc(db, "calendar", key);
-    const snapshot = await getDoc(ref);
-    return snapshot.exists() ? snapshot.data() : {};
+  @keyframes breathe {
+    0% { transform: scale(0.9) translateY(40px); opacity: 0; }
+    50% { transform: scale(1.05) translateY(-10px); opacity: 0.8; }
+    100% { transform: scale(1) translateY(0); opacity: 1; }
   }
 
-  // 📤 Збереження задач
-  async function saveTasks(year, month, tasks) {
-    const key = `tasks-${year}-${month}`;
-    const ref = doc(db, "calendar", key);
-    await setDoc(ref, tasks);
+  .calendar-container {
+    max-width: 1200px;
+    /* ДОДАНО: 60px відступу знизу, щоб календар не торкався футера */
+    margin: 0 auto 60px auto; 
+    position: relative;
+    overflow: hidden;
+    padding: 10px;
   }
 
-  // Завантажити задачі
-  loadTasks(currentYear, currentMonth).then(tasks => {
-    console.log("Завантажено задачі:", tasks);
-  });
+  #calendarBackground {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    opacity: 0.9;
+    z-index: 0;
+    transition: opacity 1s ease-in-out, background-image 1s ease-in-out;
+  }
 
-  // Зберегти задачі
-  const newTasks = {
-    "2025-08-20": {
-      task: "Зустріч з дизайнером",
-      emotion: "натхнення",
-      weather: "сонячно",
-      done: false
-    }
-  };
-  saveTasks(currentYear, currentMonth, newTasks).then(() => {
-    console.log("Задачі збережено!");
-  });
-</script>
-<script src='./weather.js'></script>
+  #calendarBackground.loaded {
+    opacity: 0.9;
+  }
+
+  #calendar {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .calendar-header {
+    text-align: center;
+    margin-bottom: 10px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .weekday {
+    text-align: center;
+    font-weight: bold;
+    padding: 5px;
+    background: #e5fdd1;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+
+  .day {
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    padding: 5px;
+    min-height: 120px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    opacity: 0.9;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    min-width: 0;
+  }
+
+  .day:hover {
+    box-shadow: 0 0 5px 5px #ffc0cbce;
+  }
+
+  .day strong {
+    display: block;
+    margin-bottom: 5px;
+  }
+
+  .day.weekend {
+    background-color: #ffe5e5;
+  }
+
+  /* --- НОВИЙ СТИЛЬ: ЧЕРВОНА РАМКА ДЛЯ ДНІВ ІЗ ЗАВДАННЯМИ --- */
+  .day.has-tasks {
+    background-color: #fffafb;
+    border: 2px solid #f44336; /* Червона рамка */
+    box-shadow: 0 0 8px rgba(244, 67, 54, 0.3); /* Легке червоне свічення */
+  }
+
+  .day.all-done {
+    background-color: #f0fff4;
+    border: 2px solid #4caf50;
+  }
+
+  /* --- НОВИЙ СТИЛЬ: НАПИС "ЗАПЛАНОВАНЕ ЗАВДАННЯ" --- */
+  .planned-task-label {
+    font-size: 12px;
+    color: #d32f2f;
+    font-weight: 700;
+    text-align: center;
+    background: #ffebee;
+    padding: 6px 4px;
+    border-radius: 4px;
+    margin-top: auto;
+    margin-bottom: auto;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* Стилі для самих завдань всередині модального вікна */
+  .task {
+    font-size: 13px;
+    margin: 5px 0;
+    background: #f1f3f5;
+    padding: 6px 8px;
+    border-radius: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .task-text {
+    flex-grow: 1;
+    margin-right: 8px;
+    white-space: normal; 
+    word-wrap: break-word;
+    line-height: 1.4;
+  }
+
+  .task-text.done {
+    text-decoration: line-through;
+    color: gray;
+  }
+
+  button {
+    background: #25a72b;
+    color: white;
+    border: 1px solid #ccc;
+    padding: 4px 8px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-top: 5px;
+  }
+
+  button:hover { background: #218a24; }
+  button:active { outline: none; box-shadow: 0 0 0 3px #25a72b; }
+
+  .modal {
+    position: fixed; 
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.6);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; 
+  }
+
+  .modal-content {
+    background: white;
+    padding: 25px;
+    border-radius: 8px;
+    width: 400px;
+    max-width: 90%;
+    max-height: 85vh; 
+    overflow-y: auto; 
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  }
+
+  .modal-content h3 { margin-top: 0; color: #333; }
+
+  input[type="text"] {
+    width: 100%;
+    margin-top: 10px;
+    padding: 8px;
+    font-size: 14px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    box-sizing: border-box;
+  }
+
+  .filter { margin-top: 10px; margin-bottom: 15px; }
+  
+  .today-highlight {
+    border: 2px solid #25a72b;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(6px);
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    animation: pulse 1.5s infinite;
+  }
+
+  @keyframes pulse {
+    0% { box-shadow: 0 0 0 5px rgba(15, 190, 30, 0.603); }
+    70% { box-shadow: 0 0 0 10px rgba(15, 190, 30, 0); }
+    100% { box-shadow: 0 0 0 3px rgba(15, 190, 30, 0); }
+  }
+
+  
+  .weather-today img { width: 28px; height: 28px; }
+  
+  .role-badge {
+    font-size: 12px;
+    background: #e5fdd1;
+    padding: 3px 8px;
+    border-radius: 4px;
+    color: #218a24;
+    font-weight: 500;
+    margin-left: 10px;
+    display: inline-block;
+  }
+</style>
+
+  <!-- Скрипт погоди -->
+  <script src='./weather.js'></script>
 </head>
 <body>
-  <!-- <div id="header-container"></div> -->
-<main class="loaded">
-  <div class="calendar-container">
-    <div id="calendarBackground">
-      <img id="bgPreloader" style="display: none;" />
-    </div>
+  <div id="header-container"></div> 
+  
+  <main class="loaded">
+    <div class="calendar-container">
+      <div id="calendarBackground">
+        <img id="bgPreloader" style="display: none;" />
+      </div>
 
-    <div class="calendar-header">
-      <button onclick="changeMonth(-1)">←</button>
-      <span id="monthLabel"></span>
-      <button onclick="changeMonth(1)">→</button>
-      <button class="btn" type="button" style="margin-left: 80%;">
-        <a class="text__work" href="./index.html" style="text-decoration: none; font-size: smaller;">
-          Назад
-        </a>
-      </button>
-    </div>
+      <div class="calendar-header">
+        <button onclick="changeMonth(-1)">←</button>
+        <span id="monthLabel" style="font-weight: bold; font-size: 18px; color: #25a72b; margin: 0 15px;"></span>
+        <button onclick="changeMonth(1)">→</button>
+        
+        <span id="userRoleBadge" class="role-badge"></span>
 
-    <div id="calendar">
-      <!-- Weekday headers and days will be inserted here -->
-    </div>
-  </div>
+        <button class="btn" type="button" style="margin-left: 20px;">
+          <a class="text__work" href="./index.html" style="text-decoration: none; font-size: smaller; color: white;">
+            Назад
+          </a>
+        </button>
+      </div>
 
+      <div id="calendar">
+        <!-- Weekday headers and days will be inserted here -->
+      </div>
+    </div>
+  </main>
+
+  <!-- ЄДИНЕ Модальне вікно (винесено за межі <main>) -->
   <div id="modal" class="modal">
     <div class="modal-content">
-      <h3>Задачі на <span id="modalDate"></span></h3>
+      <h3>Задачі на <span id="modalDate" style="color: #25a72b;"></span></h3>
       <div class="filter">
-        <label>
+        <label style="font-size: 13px; cursor: pointer;">
           <input type="checkbox" id="hideDone" onchange="renderTaskList()"> Показати лише невиконані
         </label>
       </div>
-      <div id="taskList"></div>
-      <input type="text" id="taskInput" placeholder="Нова задача">
-      <button onclick="addTask()">Додати</button>
-      <button onclick="closeModal()">Закрити</button>
+      <div id="taskList" style="max-height: 300px; overflow-y: auto; padding-right: 5px;"></div>
+      <input type="text" id="taskInput" placeholder="Нова задача або візит...">
+      <div style="margin-top: 15px; display: flex; justify-content: space-between;">
+        <button onclick="addTask()">Додати</button>
+        <button onclick="closeModal()" style="background: #757575;">Закрити</button>
+      </div>
     </div>
   </div>
-<div id="footer-container"></div>
+  
   <script src="theme-toggle.js"></script>
+
   <script>
-   let currentYear = new Date().getFullYear();
-let currentMonth = new Date().getMonth();
-let tasks = {};
-let selectedDay = null;
+    const trainingNamesMap = {
+      "trening1.html": "Visit structure (Базовий тренінг МП)",
+      "trening2.html": "Decision-maker (Тренінг по роботі з ЛПР)",
+      "trening3.html": "Presentation (Тренінг з презентації продукту)",
+      "trening4.html": "Business emailing (Тренінг з ділового листування)",
+      "trening5.html": "Handling objections (Робота з запереченнями)",
+      "trening6.html": "Dealing with competitor (Робота з конкурентами)",
+      "trening7.html": "Reviews writing (Тренінг з написання відгуків)",
+      "trening8.html": "Sales management (Тренінг з управління продажами)",
+      "trening9.html": "Targeting (Створення партнерської бази)",
+      "trening10.html": "Situational leadership (Ситуаційне лідерство)",
+      "trening11.html": "People development (Розвиток персоналу)",
+      "trening12.html": "Negotiation process (Тренінг з ведення переговорів)",
+      "trening13.html": "Presentation making (Тренінг з підготовки презентацій)",
+      "trening14.html": "Time management (Тренінг з тайм-менеджменту)",
+      "trening15.html": "Quality control (Тренінг з контролю якості)",
+      "trening16.html": "Call sales (Тренінг з дистанційного продажу)",
+      "trening17.html": "Discounts offering (Тренінг по роботі зі знижками)",
+      "trening18.html": "Conference activities (Тренінг по роботі на конференціях)",
+      "trening19.html": "Needs (Тренінг з визначення потреб)",
+      "Trening20.html": "Пропозиції (до бізнес тренера)",
+      "trening21.html": "Pharmacovigilance (Тренінг з фармаконагляду)",
+      "trening22.html": "Effective communication (Тренінг з ефективної комунікації)",
+      "trening23.html": "Pharm-unit work (Тренінг з роботи в аптечному юніті)",
+      // Продукти
+      "argisDuo.html": "Аргіс ДУО свічки №10",
+      "bilord.html": "Білорд",
+      "veriksa.html": "Верікса",
+      "dekaboost2000.html": "ДеКаБуст 2000",
+      "pregnemag.html": "Прегнемаг",
+      "feminozyd.html": "Фемінозид",
+      "helivayn.html": "Хелівайн",
+      "cyklofitForte.html": "Циклофіт Форте №30",
+      "ixindol.html": "Іксіндол №30",
+      "bravol.html": "Бравол",
+      "valeoprost.html": "Валеопрост",
+      "voger.html": "Вогер №30",
+      "zagest.html": "Загест №30",
+      "staton.html": "Статон",
+      "aneza.html": "Анеза",
+      "kalbind.html": "Кальбінд",
+      "liberaForte.html": "Лібера Форте №30",
+      "libera.html": "Лібера №30",
+      "renohels.html": "Ренохелс №30",
+      "uropak36.html": "УроПак-36 №30",
+      "butrykol.html": "Бутрикол №10",
+      "esbulardi.html": "Есбуларді",
+      "eupatileks.html": "Еупатілекс",
+      "mastykozyn.html": "Мастикозин",
+      "pantofytol.html": "Пантофітол",
+      "travitafer.html": "Травітафер №30",
+      "glykomycel.html": "Глікоміцел",
+      "liberaArginin.html": "Лібера Аргінін №30",
+      "selefiks.html": "Селефікс",
+      "spirona.html": "Спірона",
+      "tarnityn.html": "Тарнітин",
+      "tirbizod.html": "Тірбізод",
+      "shugard.html": "Шугард №30",
+      "gippomycel.html": "Гіппоміцел",
+      "neyromineriy.html": "Нейромінерій"
+    };
+    const users = {
+      "P.yyy@lkj.com": "Оберіть менеджера",
+      "P.xxx@lkj.com": "Оберіть співробітника",
+      "rm1": "РМ1", "rm2": "РМ2", "rm3": "РМ3",
+      "mp11": "МП11", "mp12": "МП12", "mp13": "МП13",
+      "mp21": "МП21", "mp22": "МП22", "mp23": "МП23",
+      "mp31": "МП31", "mp32": "МП32", "mp33": "МП33",
+      "admin": "Тренер/Адмін"
+    };
 
-const monthNames = [
-  "Січень", "Лютий", "Березень", "Квітень", "Травень", "Червень",
-  "Липень", "Серпень", "Вересень", "Жовтень", "Листопад", "Грудень"
-];
+    const managerToEmployees = {
+      'P.yyy@lkj.com' : ['P.xxx@lkj.com'],
+      'rm1': ['mp11', 'mp12', 'mp13'],
+      'rm2': ['mp21', 'mp22', 'mp23'],
+      'rm3': ['mp31', 'mp32', 'mp33'],
+      'admin': ['mp11', 'mp12', 'mp13', 'mp21', 'mp22', 'mp23', 'mp31', 'mp32', 'mp33', 'rm1', 'rm2', 'rm3']
+    };
 
-const weekdays = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Нд"];
-
-const backgroundKeywords = [
-  "nature", "forest", "sunrise", "flowers", "mountains", "sky", "beach", "fog", "leaves", "snow"
-];
-
-let carouselIndex = 0;
-let carouselInterval;
-let carouselRunning = true;
-let previousBackgroundUrl = "";
-
-function loadTasks() {
-  const key = `tasks-${currentYear}-${currentMonth}`;
-  tasks = JSON.parse(localStorage.getItem(key)) || {};
-}
-
-function saveTasks() {
-  const key = `tasks-${currentYear}-${currentMonth}`;
-  localStorage.setItem(key, JSON.stringify(tasks));
-}
-
-function setRandomBackground(month) {
-  const keywords = [
-    "snow", "love", "spring", "flowers", "green", "sun", "beach",
-    "forest", "leaves", "pumpkin", "fog", "christmas"
-  ];
-  const query = keywords[month] || "nature";
-  const uniqueSig = `${currentYear}${month}${Date.now()}`;
-  const requestUrl = `https://source.unsplash.com/1600x900/?${query}&sig=${uniqueSig}`;
-  const fallbackUrl = `https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1600&q=80`;
-
-  const bg = document.getElementById('calendarBackground');
-  if (!bg) return;
-
-  bg.classList.remove('loaded');
-
-  fetch(requestUrl)
-    .then(response => {
-      bg.style.backgroundImage = `url('${response.url}')`;
-      setTimeout(() => bg.classList.add('loaded'), 100);
-    })
-    .catch(error => {
-      console.error("Помилка завантаження фону:", error);
-      bg.style.backgroundImage = `url('${fallbackUrl}')`;
-      setTimeout(() => bg.classList.add('loaded'), 100);
-    });
-}
-
-const fallbackImages = [
-  "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1600&q=80",
-  "https://images.unsplash.com/photo-1503264116251-35a269479413?auto=format&fit=crop&w=1600&q=80",
-  "https://images.unsplash.com/photo-1516117172878-fd2c41f4a759?auto=format&fit=crop&w=1600&q=80",
-  "https://images.unsplash.com/photo-1523413651479-597eb2da0ad6?auto=format&fit=crop&w=1600&q=80",
-  "https://images.unsplash.com/photo-1507149833265-60c372daea22?auto=format&fit=crop&w=1600&q=80",
-  "https://images.unsplash.com/photo-1519985176271-adb1088fa94c?auto=format&fit=crop&w=1600&q=80",
-  "https://images.unsplash.com/photo-1503264116251-35a269479413?auto=format&fit=crop&w=1600&q=80",
-  "https://images.unsplash.com/photo-1518837695005-2083093ee35b?auto=format&fit=crop&w=1600&q=80",
-  "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1600&q=80",
-  "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1600&q=80",
-  "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0?auto=format&fit=crop&w=1600&q=80",
-  "https://images.unsplash.com/photo-1501854140801-50d01698950b?auto=format&fit=crop&w=1600&q=80",
-  "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1600&q=80",
-  "https://images.unsplash.com/photo-1593642634367-d91a135587b5?auto=format&fit=crop&w=1600&q=80"
-];
-
-function updateBackgroundManually() {
-  const bg = document.getElementById('calendarBackground');
-  if (!bg) return;
-
-  const keyword = backgroundKeywords[carouselIndex % backgroundKeywords.length];
-  const uniqueSig = `${Date.now()}-${carouselIndex}`;
-  const requestUrl = `https://source.unsplash.com/1600x900/?${keyword}&sig=${uniqueSig}`;
-  const fallbackUrl = fallbackImages[carouselIndex % fallbackImages.length];
-
-  const img = new Image();
-  img.onload = () => {
-    bg.style.backgroundImage = `url('${requestUrl}')`;
-    bg.classList.add('loaded');
-  };
-  img.onerror = () => {
-    console.warn("Unsplash не відповів. Завантажуємо fallback.");
-    bg.style.backgroundImage = `url('${fallbackUrl}')`;
-    bg.classList.add('loaded');
-  };
-  img.src = requestUrl;
-
-  carouselIndex++;
-}
-
-
-
-function startBackgroundCarousel() {
-  updateBackgroundManually(); // перший запуск
-  carouselInterval = setInterval(updateBackgroundManually, 10000);
-}
-
-function toggleCarousel() {
-  if (carouselRunning) {
-    clearInterval(carouselInterval);
-    carouselRunning = false;
-  } else {
-    startBackgroundCarousel();
-    carouselRunning = true;
-  }
-}
-
-function generateCalendar(year, month) {
-  setRandomBackground(month);
-
-  document.getElementById('monthLabel').textContent = `${monthNames[month]} ${year}`;
-  const calendar = document.getElementById('calendar');
-  calendar.innerHTML = '';
-
-  weekdays.forEach(day => {
-    const header = document.createElement('div');
-    header.className = 'weekday';
-    header.textContent = day;
-    calendar.appendChild(header);
-  });
-
-  const firstDay = new Date(year, month, 1).getDay();
-  const offset = (firstDay + 6) % 7;
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-  for (let i = 0; i < offset; i++) {
-    const empty = document.createElement('div');
-    calendar.appendChild(empty);
-  }
-
-  for (let d = 1; d <= daysInMonth; d++) {
-    const date = new Date(year, month, d);
-    const dayOfWeek = date.getDay();
-
-    const dayDiv = document.createElement('div');
-    dayDiv.className = 'day';
-    dayDiv.onclick = () => openModal(d);
-
-    const isToday =
-  d === new Date().getDate() &&
-  month === new Date().getMonth() &&
-  year === new Date().getFullYear();
-
-if (isToday) {
-  dayDiv.classList.add('today-highlight');
-}
-
-
-    if (dayOfWeek === 0 || dayOfWeek === 6) {
-      dayDiv.classList.add('weekend');
+    const currentUser = localStorage.getItem("allowedEmail") || "mp11";
+    function getAllowedViewers() {
+      if (managerToEmployees[currentUser]) return managerToEmployees[currentUser];
+      return [currentUser];
     }
 
-    let innerHTML = `<strong>${d}</strong>`;
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwHH90cAKBQBr94_X1EeIwyaKv8xjowOagm48hguizZIlQjWsz10fwchWBduPLWdNXMhQ/exec";
 
-    if (tasks[d]) {
-      const allDone = tasks[d].every(task => task.startsWith('✔️'));
-      const hasTasks = tasks[d].length > 0;
+    let currentYear = new Date().getFullYear();
+    let currentMonth = new Date().getMonth();
+    let tasks = {}; 
+    let activeDayStr = null;
 
-      if (allDone) {
-        dayDiv.classList.add('all-done');
-      } else if (hasTasks) {
-        dayDiv.classList.add('has-tasks');
+    const monthNames = [
+      "Січень", "Лютий", "Березень", "Квітень", "Травень", "Червень",
+      "Липень", "Серпень", "Вересень", "Жовтень", "Листопад", "Грудень"
+    ];
+    const weekdays = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Нд"];
+    
+    const backgroundKeywords = ["nature", "forest", "sunrise", "flowers", "mountains", "sky", "beach", "fog", "leaves", "snow"];
+   const fallbackImages = [
+      "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1600&q=80",
+      "https://images.unsplash.com/photo-1503264116251-35a269479413?auto=format&fit=crop&w=1600&q=80",
+      "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1600&q=80", // Гори і хмари
+      "https://images.unsplash.com/photo-1497436072909-60f360e1d4b1?auto=format&fit=crop&w=1600&q=80", // Туманний ліс
+      "https://images.unsplash.com/photo-1449844908441-8829872d2607?auto=format&fit=crop&w=1600&q=80", // Захід сонця
+      "https://images.unsplash.com/photo-1447752809965-4261bd7f740e?auto=format&fit=crop&w=1600&q=80", // Гірська річка і ліс
+      "https://images.unsplash.com/photo-1426687587073-7c96d56afac8?auto=format&fit=crop&w=1600&q=80", // Океан, пляж згори
+      "https://images.unsplash.com/photo-1433838552652-f9a46b332c40?auto=format&fit=crop&w=1600&q=80", // Озеро і гори
+      "https://images.unsplash.com/photo-1465146344425-aa207229a10b?auto=format&fit=crop&w=1600&q=80", // Зима, сніжна стежка
+      "https://images.unsplash.com/photo-1473448912268-2022ce9509d8?auto=format&fit=crop&w=1600&q=80", // Ліс, сонячне проміння
+      "https://images.unsplash.com/photo-1431440898524-72ce67655fdb?auto=format&fit=crop&w=1600&q=80", // Зелене листя (весна/літо)
+      "https://images.unsplash.com/photo-1475924156734-497670868f03?auto=format&fit=crop&w=1600&q=80"  // Світанок, природа
+    ];
+    let carouselIndex = 0;
+    let carouselInterval;
+    let carouselRunning = true;
+
+    function updateBackgroundManually() {
+      const bg = document.getElementById('calendarBackground');
+      if (!bg) return;
+      const keyword = backgroundKeywords[carouselIndex % backgroundKeywords.length];
+      const uniqueSig = `${Date.now()}-${carouselIndex}`;
+      const requestUrl = `https://source.unsplash.com/1600x900/?${keyword}&sig=${uniqueSig}`;
+      const fallbackUrl = fallbackImages[carouselIndex % fallbackImages.length];
+
+      const img = new Image();
+      img.onload = () => { bg.style.backgroundImage = `url('${requestUrl}')`; bg.classList.add('loaded'); };
+      img.onerror = () => { bg.style.backgroundImage = `url('${fallbackUrl}')`; bg.classList.add('loaded'); };
+      img.src = requestUrl;
+      carouselIndex++;
+    }
+
+    function startBackgroundCarousel() {
+      updateBackgroundManually();
+      carouselInterval = setInterval(updateBackgroundManually, 10000);
+    }
+
+    async function loadTasksFromServer() {
+      let loadedFromServer = false;
+      try {
+        const response = await fetch(`${SCRIPT_URL}?action=getTasks&year=${currentYear}&month=${currentMonth}`);
+        const result = await response.json();
+        if (result.status === "success") {
+          tasks = result.tasks || {};
+          loadedFromServer = true;
+        }
+      } catch (e) {
+        console.warn("Apps Script повернув помилку або ще не готовий. Використовуємо локальні дані.");
+      } finally {
+        if (!loadedFromServer) {
+          const key = `tasks-${currentYear}-${currentMonth}`;
+          tasks = JSON.parse(localStorage.getItem(key)) || {};
+        }
+        generateCalendar(currentYear, currentMonth);
       }
+    }
 
-      tasks[d].slice(0, 2).forEach(task => {
-        const isDone = task.startsWith('✔️');
-        const taskClass = isDone ? 'task-text done' : 'task-text';
-        innerHTML += `<div class="task"><span class="${taskClass}">${task}</span></div>`;
+    async function saveTasksToServer() {
+      const key = `tasks-${currentYear}-${currentMonth}`;
+      localStorage.setItem(key, JSON.stringify(tasks));
+      try {
+        await fetch(SCRIPT_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({ action: "saveTasks", year: currentYear, month: currentMonth, tasks: tasks })
+        });
+      } catch (e) {
+        console.error("Помилка збереження на сервер:", e);
+      }
+    }
+
+    function getFilteredTasksForDay(dayStr) {
+      if (!tasks[dayStr]) return [];
+      const allowed = getAllowedViewers();
+      return tasks[dayStr].filter(t => allowed.includes(t.author) || t.author === currentUser);
+    }
+
+    function generateCalendar(year, month) {
+      document.getElementById('monthLabel').textContent = `${monthNames[month]} ${year}`;
+      
+      const badge = document.getElementById('userRoleBadge');
+      if(badge) badge.textContent = `Роль: ${users[currentUser] || currentUser}`;
+
+      const calendar = document.getElementById('calendar');
+      calendar.innerHTML = '';
+
+      weekdays.forEach(day => {
+        const header = document.createElement('div');
+        header.className = 'weekday';
+        header.textContent = day;
+        calendar.appendChild(header);
       });
 
-      if (tasks[d].length > 2) {
-        innerHTML += `<div style="font-size:10px; color:gray;">+${tasks[d].length - 2} ще</div>`;
+      const firstDay = new Date(year, month, 1).getDay();
+      const offset = (firstDay + 6) % 7;
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+      for (let i = 0; i < offset; i++) {
+        calendar.appendChild(document.createElement('div'));
+      }
+
+      for (let d = 1; d <= daysInMonth; d++) {
+        const date = new Date(year, month, d);
+        const dayOfWeek = date.getDay();
+        const dayStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+
+        const dayDiv = document.createElement('div');
+        dayDiv.className = 'day';
+        dayDiv.onclick = () => openModal(d, dayStr);
+
+        const isToday = d === new Date().getDate() && month === new Date().getMonth() && year === new Date().getFullYear();
+        if (isToday) dayDiv.classList.add('today-highlight');
+        if (dayOfWeek === 0 || dayOfWeek === 6) dayDiv.classList.add('weekend');
+
+        let innerHTML = `<strong>${d}</strong>`;
+        const dayTasks = getFilteredTasksForDay(dayStr);
+
+        // --- НОВА ЛОГІКА ВІДОБРАЖЕННЯ (ЛИШЕ НАПИС "ЗАПЛАНОВАНЕ ЗАВДАННЯ") ---
+        if (dayTasks.length > 0) {
+          const allDone = dayTasks.every(t => t.done);
+          
+          if (allDone) {
+            dayDiv.classList.add('all-done');
+            innerHTML += `<div class="planned-task-label" style="color: #2e7d32; background: #e8f5e9;">Всі завдання виконано</div>`;
+          } else {
+            dayDiv.classList.add('has-tasks'); // Додасть червону рамку
+            innerHTML += `<div class="planned-task-label">Заплановане завдання</div>`;
+          }
+        }
+
+        dayDiv.innerHTML = innerHTML;
+        calendar.appendChild(dayDiv);
       }
     }
 
-    dayDiv.innerHTML = innerHTML;
-    calendar.appendChild(dayDiv);
-  }
-}
+    function openModal(day, dayStr) {
+      activeDayStr = dayStr;
+      document.getElementById('modalDate').textContent = `${day} ${monthNames[currentMonth]} ${currentYear}`;
+      document.getElementById('taskInput').value = '';
+      document.getElementById('hideDone').checked = false;
+      renderTaskList();
+      document.getElementById('modal').style.display = 'flex';
+      clearInterval(carouselInterval);
+      carouselRunning = false;
+    }
 
-function openModal(day) {
-  selectedDay = day;
-  document.getElementById('modalDate').textContent = `${day} ${monthNames[currentMonth]} ${currentYear}`;
-  document.getElementById('taskInput').value = '';
-  document.getElementById('hideDone').checked = false;
-  renderTaskList();
-  document.getElementById('modal').style.display = 'flex';
-  clearInterval(carouselInterval);
-  carouselRunning = false;
-}
+    function closeModal() {
+      document.getElementById('modal').style.display = 'none';
+      startBackgroundCarousel();
+      carouselRunning = true;
+    }
 
-function closeModal() {
-  document.getElementById('modal').style.display = 'none';
-  startBackgroundCarousel();
-  carouselRunning = true;
-}
+   function renderTaskList() {
+      const container = document.getElementById('taskList');
+      container.innerHTML = '';
+      const hideDone = document.getElementById('hideDone').checked;
+      const dayTasks = getFilteredTasksForDay(activeDayStr);
 
-function renderTaskList() {
-  const container = document.getElementById('taskList');
-  container.innerHTML = '';
-  const hideDone = document.getElementById('hideDone').checked;
+      dayTasks.forEach((taskObj, index) => {
+        if (hideDone && taskObj.done) return;
 
-  if (tasks[selectedDay]) {
-    tasks[selectedDay].forEach((taskText, index) => {
-      const isDone = taskText.startsWith('✔️');
-      if (hideDone && isDone) return;
+        const taskEl = document.createElement('div');
+        taskEl.className = 'task';
+        const taskClass = taskObj.done ? 'task-text done' : 'task-text';
 
-      const taskEl = document.createElement('div');
-      taskEl.className = 'task';
+        let cleanText = taskObj.text;
+        let actionButtonHtml = "";
 
-      const taskClass = isDone ? 'task-text done' : 'task-text';
+        if (cleanText.includes("посилання:")) {
+          const parts = cleanText.split("| посилання:");
+          cleanText = parts[0].trim();
+          let linksPart = parts[1] ? parts[1].trim() : "";
 
-      taskEl.innerHTML = `
-        <span class="${taskClass}" ondblclick="editTask(${selectedDay}, ${index})">${taskText}</span>
-        <button onclick="markDone(${selectedDay}, ${index})">✅</button>
-        <button onclick="cancelTask(${selectedDay}, ${index})">❌</button>
-      `;
-      container.appendChild(taskEl);
-    });
-  }
-}
+          if (linksPart.includes(",")) {
+            let linksArray = linksPart.split(",");
+            actionButtonHtml = `<div style="margin-top: 6px; display: flex; flex-wrap: wrap; gap: 4px;">`;
+            linksArray.forEach(l => {
+              let cl = l.trim();
+              let name = trainingNamesMap[cl] || cl; // Людська назва з мапи
+              actionButtonHtml += `<a href="./${cl}" target="_blank" style="background: #2196F3; color: white; padding: 3px 8px; border-radius: 3px; font-size: 11px; text-decoration: none; display: inline-block; margin-bottom: 2px;">📖 ${name}</a>`;
+            });
+            actionButtonHtml += `</div>`;
+          } else if (linksPart) {
+            let name = trainingNamesMap[linksPart] || linksPart; // Людська назва з мапи
+            actionButtonHtml = `<div style="margin-top: 6px;"><a href="./${linksPart}" target="_blank" style="background: #2196F3; color: white; padding: 3px 8px; border-radius: 3px; font-size: 11px; text-decoration: none; display: inline-block;">📖 ${name}</a></div>`;
+          }
+        }
 
-function addTask() {
-  const input = document.getElementById('taskInput');
-  const text = input.value.trim();
-  if (!text) return;
+        taskEl.innerHTML = `
+          <div class="${taskClass}"><b>[${taskObj.author}]</b><br>${cleanText}${actionButtonHtml}</div>
+          <div style="display: flex; flex-direction: column; gap: 4px; margin-left: 8px;">
+            <button onclick="markDone('${activeDayStr}', ${index})" style="padding: 4px; font-size: 11px;">✅</button>
+            <button onclick="cancelTask('${activeDayStr}', ${index})" style="padding: 4px; font-size: 11px; background: #f44336;">❌</button>
+          </div>
+        `;
+        container.appendChild(taskEl);
+      });
+    }
 
-  if (!tasks[selectedDay]) tasks[selectedDay] = [];
-  tasks[selectedDay].push(text);
-  input.value = '';
-  saveTasks();
-  renderTaskList();
-  generateCalendar(currentYear, currentMonth);
-}
+    function addTask() {
+      const input = document.getElementById('taskInput');
+      const text = input.value.trim();
+      if (!text) return;
 
-function markDone(day, index) {
-  const taskText = tasks[day][index];
-  if (!taskText.startsWith('✔️')) {
-    tasks[day][index] = `✔️ ${taskText}`;
-    saveTasks();
-    renderTaskList();
-    generateCalendar(currentYear, currentMonth);
-  }
-}
+      if (!tasks[activeDayStr]) tasks[activeDayStr] = [];
+      tasks[activeDayStr].push({ text: text, author: currentUser, done: false });
+      
+      input.value = '';
+      saveTasksToServer();
+      renderTaskList();
+      generateCalendar(currentYear, currentMonth);
+    }
 
-function cancelTask(day, index) {
-  tasks[day].splice(index, 1);
-  if (tasks[day].length === 0) delete tasks[day];
-  saveTasks();
-  renderTaskList();
-  generateCalendar(currentYear, currentMonth);
-}
-
-function editTask(day, index) {
-  const container = document.getElementById('taskList');
-  const taskText = tasks[day][index].replace(/^✔️ /, '');
-  const input = document.createElement('input');
-  input.type = 'text';
-  input.value = taskText;
-  input.className = 'edit-input';
-
-  input.onkeydown = (e) => {
-    if (e.key === 'Enter') {
-      const newText = input.value.trim();
-      if (newText) {
-        const prefix = isDone ? '✔️ ' : '';
-        tasks[day][index] = prefix + newText;
-        saveTasks();
+    function markDone(dayStr, index) {
+      if (tasks[dayStr] && tasks[dayStr][index]) {
+        tasks[dayStr][index].done = !tasks[dayStr][index].done;
+        saveTasksToServer();
         renderTaskList();
         generateCalendar(currentYear, currentMonth);
       }
-    } else if (e.key === 'Escape') {
-      renderTaskList(); // скасувати редагування
     }
-  };
 
-  const taskEl = container.children[index];
-  const span = taskEl.querySelector('span');
-  span.replaceWith(input);
-  input.focus();
-}
+    function cancelTask(dayStr, index) {
+      if (tasks[dayStr]) {
+        tasks[dayStr].splice(index, 1);
+        if (tasks[dayStr].length === 0) delete tasks[dayStr];
+        saveTasksToServer();
+        renderTaskList();
+        generateCalendar(currentYear, currentMonth);
+      }
+    }
 
-function changeMonth(offset) {
-  currentMonth += offset;
-  if (currentMonth < 0) {
-    currentMonth = 11;
-    currentYear--;
-  } else if (currentMonth > 11) {
-    currentMonth = 0;
-    currentYear++;
-  }
-  loadTasks();
-  generateCalendar(currentYear, currentMonth);
-}
+    function changeMonth(offset) {
+      currentMonth += offset;
+      if (currentMonth < 0) {
+        currentMonth = 11;
+        currentYear--;
+      } else if (currentMonth > 11) {
+        currentMonth = 0;
+        currentYear++;
+      }
+      loadTasksFromServer();
+    }
 
-// Ініціалізація при завантаженні сторінки
-document.addEventListener('DOMContentLoaded', () => {
-  loadTasks();
-  generateCalendar(currentYear, currentMonth);
-  startBackgroundCarousel();
-});
-document.getElementById('nextBackgroundBtn').addEventListener('click', () => {
-  updateBackgroundManually();
-});
+    document.addEventListener('DOMContentLoaded', () => {
+      loadTasksFromServer();
+      startBackgroundCarousel();
+    });
+  </script>
 
-    </script>
-
-    <script src="headfoot.js"></script>
-<script src="scroll.js"></script>
-<script src="scrbtn.js"></script>
+  <script src="headfoot.js"></script>
+  <script src="scroll.js"></script>
+  <script src="scrbtn.js"></script>
 </body>
 </html>

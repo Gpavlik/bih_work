@@ -145,9 +145,9 @@
             <h3>📚 Матеріали та модулі</h3>
             <p>Швидкий доступ до баз знань та каталогів:</p>
             <ul>
-              <li style="border: none; padding: 4px 0; background: transparent;"><a href="./portfolio news.html" class="cabinet-link" style="margin: 0; background: #64748b;">Головні новини та оновлення</a></li>
               <li style="border: none; padding: 4px 0; background: transparent;"><a href="./portfolio products.html" class="cabinet-link" style="margin: 0; background: #2980b9;">Довідники препаратів</a></li>
               <li style="border: none; padding: 4px 0; background: transparent;"><a href="./portfolio trenings.html" class="cabinet-link" style="margin: 0; background: #27ae60;">Каталог тренінгів</a></li>
+              <li style="border: none; padding: 4px 0; background: transparent;"><a href="./portfolio standart.html" class="cabinet-link" style="margin: 0; background: #ae8c27;">Збірка стандартів</a></li>
             </ul>
           </div>
 
@@ -160,6 +160,18 @@
             <a href="./portfolio trenings.html" class="cabinet-link" style="background: #007acc; margin-top: 15px;">Перейти до тренінгів &rarr;</a>
           </div>
 
+          <!-- 5. НОВИЙ БЛОК: Останні новини та оновлення на порталі -->
+          <div class="cabinet-card" style="grid-column: 2 / -1; border-left: 4px solid #ff9800; background: #fdfdfd;">
+            <h3>📢 Останні оновлення на порталі (07.07.2026)</h3>
+            <div style="background-color: #f9f9f9; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; margin-top: 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);">
+              <h4 style="margin-top: 0; color: #2c3e50; font-size: 16px; margin-bottom: 12px; text-align: center;">07.07.2026 Додано оновлення</h4>
+              <div style="color: #4a5568; line-height: 1.6; font-size: 14px;">
+                🟢 1. В розділ інтерактивних завдань та календаря.<br>
+                🟢 2. В розділ навчальних модулів та звітів.
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
     </section>
@@ -169,7 +181,7 @@
 
   <!-- Скрипт логіки кабінету -->
   <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwSr6AILZMxNmPhAVeFFQtTVuRnKXIdxxiYo-b3Ank1_TBB18iNJLHQvpbpMSiyeVMBUQ/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwHH90cAKBQBr94_X1EeIwyaKv8xjowOagm48hguizZIlQjWsz10fwchWBduPLWdNXMhQ/exec";
 
     document.addEventListener("DOMContentLoaded", async () => {
       const allowedEmail = localStorage.getItem("allowedEmail");
@@ -187,6 +199,68 @@
       let completedModules = 0;
       const totalModules = 30;
 
+      // Словник назв тренінгів та продуктів
+      const trainingNamesMap = {
+        "trening1.html": "Visit structure (Базовий тренінг МП)",
+        "trening2.html": "Decision-maker (Тренінг по роботі з ЛПР)",
+        "trening3.html": "Presentation (Тренінг з презентації продукту)",
+        "trening4.html": "Business emailing (Тренінг з ділового листування)",
+        "trening5.html": "Handling objections (Робота з запереченнями)",
+        "trening6.html": "Dealing with competitor (Робота з конкурентами)",
+        "trening7.html": "Reviews writing (Тренінг з написання відгуків)",
+        "trening8.html": "Sales management (Тренінг з управління продажами)",
+        "trening9.html": "Targeting (Створення партнерської бази)",
+        "trening10.html": "Situational leadership (Ситуаційне лідерство)",
+        "trening11.html": "People development (Розвиток персоналу)",
+        "trening12.html": "Negotiation process (Тренінг з ведення переговорів)",
+        "trening13.html": "Presentation making (Тренінг з підготовки презентацій)",
+        "trening14.html": "Time management (Тренінг з тайм-менеджменту)",
+        "trening15.html": "Quality control (Тренінг з контролю якості)",
+        "trening16.html": "Call sales (Тренінг з дистанційного продажу)",
+        "trening17.html": "Discounts offering (Тренінг по роботі зі знижками)",
+        "trening18.html": "Conference activities (Тренінг по роботі на конференціях)",
+        "trening19.html": "Needs (Тренінг з визначення потреб)",
+        "Trening20.html": "Пропозиції (до бізнес тренера)",
+        "trening21.html": "Pharmacovigilance (Тренінг з фармаконагляду)",
+        "trening22.html": "Effective communication (Тренінг з ефективної комунікації)",
+        "trening23.html": "Pharm-unit work (Тренінг з роботи в аптечному юніті)",
+        "argisDuo.html": "Аргіс ДУО свічки №10",
+        "bilord.html": "Білорд",
+        "veriksa.html": "Верікса",
+        "dekaboost2000.html": "ДеКаБуст 2000",
+        "pregnemag.html": "Прегнемаг",
+        "feminozyd.html": "Фемінозид",
+        "helivayn.html": "Хелівайн",
+        "cyklofitForte.html": "Циклофіт Форте №30",
+        "ixindol.html": "Іксіндол №30",
+        "bravol.html": "Бравол",
+        "valeoprost.html": "Валеопрост",
+        "voger.html": "Вогер №30",
+        "zagest.html": "Загест №30",
+        "staton.html": "Статон",
+        "aneza.html": "Анеза",
+        "kalbind.html": "Кальбінд",
+        "liberaForte.html": "Лібера Форте №30",
+        "libera.html": "Лібера №30",
+        "renohels.html": "Ренохелс №30",
+        "uropak36.html": "УроПак-36 №30",
+        "butrykol.html": "Бутрикол №10",
+        "esbulardi.html": "Есбуларді",
+        "eupatileks.html": "Еупатілекс",
+        "mastykozyn.html": "Мастикозин",
+        "pantofytol.html": "Пантофітол",
+        "travitafer.html": "Травітафер №30",
+        "glykomycel.html": "Глікоміцел",
+        "liberaArginin.html": "Лібера Аргінін №30",
+        "selefiks.html": "Селефікс",
+        "spirona.html": "Спірона",
+        "tarnityn.html": "Тарнітин",
+        "tirbizod.html": "Тірбізод",
+        "shugard.html": "Шугард №30",
+        "gippomycel.html": "Гіппоміцел",
+        "neyromineriy.html": "Нейромінерій"
+      };
+
       // Отримуємо дані з Google Таблиці через Apps Script (GET)
       try {
         const response = await fetch(`${SCRIPT_URL}?email=${encodeURIComponent(allowedEmail)}`);
@@ -194,30 +268,51 @@
 
         if (result.status === "success") {
           completedModules = result.completedModules || 0;
-          
-          // Рендеримо призначені курси / продукти / запрошення
+
           const coursesContainer = document.getElementById("assignedCoursesList");
           if (result.courses && result.courses.length > 0) {
             coursesContainer.innerHTML = "";
             result.courses.forEach(item => {
-              let displayTitle = item.courseUrl;
-              let linkHref = item.courseUrl;
+              let rawUrl = item.courseUrl || "";
+              let displayText = rawUrl;
+              let actionButtons = "";
 
-              // Якщо це повноцінне текстове запрошення або пряме посилання
-              if (item.courseUrl.startsWith("http") || item.courseUrl.startsWith("./")) {
-                displayTitle = `Перейти до матеріалу / події`;
+              if (rawUrl.includes("посилання:")) {
+                const parts = rawUrl.split("| посилання:");
+                displayText = parts[0].trim();
+                let linksPart = parts[1] ? parts[1].trim() : "";
+
+                if (linksPart.includes(",")) {
+                  let linksArray = linksPart.split(",");
+                  actionButtons = `<div style="margin-top: 8px; display: flex; flex-wrap: wrap; gap: 6px;">`;
+                  linksArray.forEach(l => {
+                    let cl = l.trim();
+                    let name = trainingNamesMap[cl] || cl;
+                    actionButtons += `<a href="./${cl}" target="_blank" class="cabinet-link" style="margin: 0; font-size: 11px; padding: 4px 8px;">📖 ${name}</a>`;
+                  });
+                  actionButtons += `</div>`;
+                } else if (linksPart) {
+                  let name = trainingNamesMap[linksPart] || linksPart;
+                  actionButtons = `<div style="margin-top: 6px;"><a href="./${linksPart}" target="_blank" class="cabinet-link" style="margin: 0; font-size: 12px; padding: 4px 10px;">📖 Відкрити: ${name}</a></div>`;
+                }
+              } else if (rawUrl.startsWith("http") || rawUrl.startsWith("./")) {
+                actionButtons = `<div style="margin-top: 6px;"><a href="${rawUrl}" target="_blank" class="cabinet-link" style="margin: 0;">Відкрити матеріали &rarr;</a></div>`;
               }
 
               coursesContainer.innerHTML += `
                 <li>
-                  <div style="font-weight: 500; color: #2c3e50; margin-bottom: 4px; word-break: break-word;">${item.courseUrl}</div>
-                  <span style="font-size: 11px; color: #64748b; display: block; margin-bottom: 6px;">Статус: ${item.status}</span>
-                  ${item.courseUrl.startsWith("http") || item.courseUrl.startsWith("./") ? 
-                    `<a href="${linkHref}" target="_blank" class="cabinet-link">Відкрити матеріали &rarr;</a>` : ''}
+                  <div style="font-weight: 500; color: #2c3e50; margin-bottom: 4px; word-break: break-word;">${displayText}</div>
+                  <span style="font-size: 11px; color: #64748b; display: block; margin-bottom: 4px;">Статус: ${item.status}</span>
+                  ${actionButtons}
                 </li>
               `;
             });
           } else {
+            coursesContainer.innerHTML = `<p style="color: #757575; font-size: 13px;">Наразі немає нових призначень від керівника.</p>`;
+          }
+        } else {
+          const coursesContainer = document.getElementById("assignedCoursesList");
+          if (coursesContainer) {
             coursesContainer.innerHTML = `<p style="color: #757575; font-size: 13px;">Наразі немає нових призначень від керівника.</p>`;
           }
         }

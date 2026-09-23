@@ -54,3 +54,28 @@ window.addEventListener('scroll', () => {
 
   lastScrollY = currentScrollY;
 });
+
+  document.addEventListener("DOMContentLoaded", () => {
+    // Шукаємо всі посилання або кнопки, які мають клас або текст "Назад"
+    const backLinks = document.querySelectorAll("a, button");
+    
+    backLinks.forEach(el => {
+      // Перевіряємо, чи текст містить "Назад" або посилання веде на index.html звідкись ізсередини
+      if (el.textContent.trim() === "Назад" || el.innerText.trim() === "Назад") {
+        if (el.tagName === "A") {
+          el.href = "./cabinet.html";
+        } else if (el.tagName === "BUTTON") {
+          el.onclick = () => { window.location.href = "./cabinet.html"; };
+        }
+      }
+      
+      // Також якщо це тег <a> всередині кнопки назад, який часто зустрічається у ваших шаблонах:
+      const textSpan = el.querySelector(".text__work");
+      if (textSpan && textSpan.textContent.trim() === "Назад") {
+        let parentLink = textSpan.closest("a");
+        if (parentLink) {
+          parentLink.href = "./cabinet.html";
+        }
+      }
+    });
+  });

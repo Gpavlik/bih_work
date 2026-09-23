@@ -101,6 +101,14 @@
       font-weight: 700;
       margin-bottom: 10px;
     }
+    .user-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-bottom: 12px;
+      border: 2px solid #2196F3;
+    }
   </style>
 </head>
 
@@ -121,9 +129,10 @@
 
         <div class="cabinet-grid">
           
-          <!-- 1. Профіль користувача -->
-          <div class="cabinet-card">
-            <h3>👤 Профіль користувача</h3>
+          <!-- 1. Профіль користувача з аватаркою -->
+          <div class="cabinet-card" style="text-align: center;">
+            <img id="userAvatarImg" class="user-avatar" src="" alt="Аватар користувача">
+            <h3 style="justify-content: center;" id="userNameField">Користувач</h3>
             <p><strong>Email:</strong> <span id="userEmailField">завантаження...</span></p>
             <p><strong>Статус доступу:</strong> <span style="color: green; font-weight: 500;">Активний (Партнер)</span></p>
             <p style="margin-top: 10px;">Доступ до платформи надано на основі корпоративної верифікації.</p>
@@ -160,8 +169,8 @@
             <a href="./portfolio trenings.html" class="cabinet-link" style="background: #007acc; margin-top: 15px;">Перейти до тренінгів &rarr;</a>
           </div>
 
-          <!-- 5. НОВИЙ БЛОК: Останні новини та оновлення на порталі -->
-          <div class="cabinet-card" style="grid-column: 2 / -1; border-left: 4px solid #ff9800; background: #fdfdfd;">
+          <!-- 5. БЛОК: Останні новини та оновлення на порталі -->
+          <div class="cabinet-card" style="grid-column: 1 / -1; border-left: 4px solid #ff9800; background: #fdfdfd;">
             <h3>📢 Останні оновлення на порталі (07.07.2026)</h3>
             <div style="background-color: #f9f9f9; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; margin-top: 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);">
               <h4 style="margin-top: 0; color: #2c3e50; font-size: 16px; margin-bottom: 12px; text-align: center;">07.07.2026 Додано оновлення</h4>
@@ -179,9 +188,47 @@
 
  <div id="footer-container"></div>
 
+  <script src="user.js"></script>
   <!-- Скрипт логіки кабінету -->
   <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwHH90cAKBQBr94_X1EeIwyaKv8xjowOagm48hguizZIlQjWsz10fwchWBduPLWdNXMhQ/exec";
+
+    // Функція визначення аватара за вашими правилами
+    function getUserAvatarPath(userKey, userFullName, userScore = 0) {
+      if (userKey === "admin") {
+        return "./images2/avatar/ad.jpg";
+      }
+
+      let isFemale = false;
+      if (userFullName) {
+        const parts = userFullName.trim().split(" ");
+        if (parts.length >= 3) {
+          let patronymic = parts[2].toLowerCase();
+          if (patronymic.endsWith("вна")) {
+            isFemale = true;
+          }
+        }
+      }
+
+      if (userKey.startsWith("rm")) {
+        return isFemale ? "./images2/avatar/frm.jpg" : "./images2/avatar/mrm.jpg";
+      }
+
+      // Грейди для МП за балами
+      let gradeCode = "j"; // Junior (0-20)
+      if (userScore > 80) {
+        gradeCode = "p"; // Profi
+      } else if (userScore > 60) {
+        gradeCode = "e"; // Expert
+      } else if (userScore > 40) {
+        gradeCode = "s"; // Senior
+      } else if (userScore > 20) {
+        gradeCode = "m"; // Middle
+      }
+
+      let genderCode = isFemale ? "f" : "m";
+      return `./images2/avatar/${genderCode}${gradeCode}.jpg`;
+    }
 
     document.addEventListener("DOMContentLoaded", async () => {
       const allowedEmail = localStorage.getItem("allowedEmail");
@@ -190,14 +237,26 @@
         return;
       }
 
-      // Виводимо пошту у блок профілю
       const emailField = document.getElementById("userEmailField");
-      if (emailField) {
-        emailField.textContent = allowedEmail;
-      }
+      const nameField = document.getElementById("userNameField");
+      const fullName = (typeof users !== 'undefined' && users[allowedEmail]) ? users[allowedEmail] : "Співробітник";
+
+      if (emailField) emailField.textContent = allowedEmail;
+      if (nameField) nameField.textContent = fullName;
 
       let completedModules = 0;
       const totalModules = 30;
+
+      // Визначаємо та встановлюємо аватар
+      let userScore = completedModules * 5; // Умовний розрахунок балів
+      const avatarPath = getUserAvatarPath(allowedEmail, fullName, userScore);
+      const avatarImg = document.getElementById("userAvatarImg");
+      if (avatarImg) {
+        avatarImg.src = avatarPath;
+        avatarImg.onerror = () => {
+          avatarImg.src = "./images2/avatar/default.jpg"; // Запасний варіант
+        };
+      }
 
       // Словник назв тренінгів та продуктів
       const trainingNamesMap = {
@@ -261,7 +320,6 @@
         "neyromineriy.html": "Нейромінерій"
       };
 
-      // Отримуємо дані з Google Таблиці через Apps Script (GET)
       try {
         const response = await fetch(`${SCRIPT_URL}?email=${encodeURIComponent(allowedEmail)}`);
         const result = await response.json();
@@ -310,21 +368,14 @@
           } else {
             coursesContainer.innerHTML = `<p style="color: #757575; font-size: 13px;">Наразі немає нових призначень від керівника.</p>`;
           }
-        } else {
-          const coursesContainer = document.getElementById("assignedCoursesList");
-          if (coursesContainer) {
-            coursesContainer.innerHTML = `<p style="color: #757575; font-size: 13px;">Наразі немає нових призначень від керівника.</p>`;
-          }
         }
       } catch (error) {
         console.error("Помилка завантаження даних кабінету:", error);
         document.getElementById("assignedCoursesList").innerHTML = `<p style="color: #e74c3c; font-size: 13px;">Помилка завантаження даних з сервера.</p>`;
       }
 
-      // Оновлюємо інтерфейс прогресу
       updateProgressUI(completedModules, totalModules);
 
-      // Кнопка виходу
       const logoutBtn = document.getElementById("logoutBtn");
       if (logoutBtn) {
         logoutBtn.addEventListener("click", () => {
@@ -343,6 +394,24 @@
         testStatusSpan.style.color = current > 0 ? "#2196F3" : "#757575";
       }
     }
+  </script>
+
+  <!-- Автоматичне спрямування всіх кнопок "Назад" на кабінет -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const backLinks = document.querySelectorAll("a, button");
+      backLinks.forEach(el => {
+        if (el.textContent.trim() === "Назад" || el.innerText.trim() === "Назад") {
+          if (el.tagName === "A") el.href = "./cabinet.html";
+          else if (el.tagName === "BUTTON") el.onclick = () => { window.location.href = "./cabinet.html"; };
+        }
+        const textSpan = el.querySelector(".text__work");
+        if (textSpan && textSpan.textContent.trim() === "Назад") {
+          let parentLink = textSpan.closest("a");
+          if (parentLink) parentLink.href = "./cabinet.html";
+        }
+      });
+    });
   </script>
 
   <script src="./js/menu.js"></script>

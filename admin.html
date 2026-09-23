@@ -50,9 +50,10 @@
         <p style="margin: 5px 0 0 0; color: #64748b; font-size: 0.9em;">Керування активностями, призначення тренінгів та контроль завдань команди</p>
       </div>
       <div class="nav-links">
-        <a href="./calc3 analis.html" style="display: none;" id="analyticsBtn" class="nav-btn" target="_blank" >📊 Дашборд аналітики</a>
+        <!-- Кнопка дашборду спочатку прихована, з'явиться через JS лише для admin -->
+        <a href="./calc3 analis.html" style="display: none;" id="analyticsBtn" class="nav-btn" target="_blank">📊 Дашборд аналітики</a>
         <a href="./cabinet.html" class="nav-btn">👤 Мій кабінет</a>
-        <button style="background: #e74c3c; color: white; border: none; padding: 8px 14px; border-radius: 4px; cursor: pointer; font-weight: 500;"><a onclick="showPasswordPrompt(event, './portfolio PV.html')" style="text-decoration: none; font-size: smaller;" class="text__work" href="./portfolio PV.html">Перейти до оцінки ПВ</a></button>
+        <button style="background: #e74c3c; color: white; border: none; padding: 8px 14px; border-radius: 4px; cursor: pointer; font-weight: 500;"><a onclick="showPasswordPrompt(event, './portfolio PV.html')" style="text-decoration: none; font-size: smaller; color: white;" class="text__work" href="./portfolio PV.html">Перейти до оцінки ПВ</a></button>
       </div>
     </div>
 
@@ -245,7 +246,7 @@
               <th>Середній бал</th>
               <th>Фокус розвитку</th>
             </tr>
-          </thead
+          </thead>
           <tbody>
             <tr><td colspan="6" style="text-align: center; color: #888;">Завантаження даних...</td></tr>
           </tbody>
@@ -324,29 +325,18 @@
       "neyromineriy.html": "Нейромінерій"
     };
 
-    // Допоміжна функція для отримання гарної назви
-    window.formatTrainingDisplay = function(rawUrl) {
-      if (!rawUrl) return "Завдання";
-      // Якщо це повноцінний текст із календаря/тренінгу
-      if (rawUrl.includes("📌") || rawUrl.includes("📅")) return rawUrl;
-      
-      // Витягуємо ім'я файлу з посилання
-      const fileName = rawUrl.split('/').pop().split('?')[0];
-      const displayName = trainingNamesMap[fileName] || fileName;
-      
-      // Якщо це посилання (файл або http), робимо клікабельним
-      if (rawUrl.startsWith("http") || rawUrl.endsWith(".html") || rawUrl.endsWith(".pdf")) {
-        return `<a href="${rawUrl}" target="_blank" style="color: #007acc; text-decoration: underline; font-weight: 500;">📖 ${displayName}</a>`;
-      }
-      return displayName;
-    };
-
     document.addEventListener("DOMContentLoaded", async () => {
       const allowedEmail = localStorage.getItem("allowedEmail");
       if (!allowedEmail) {
         alert("Будь ласка, увійдіть на головній сторінці!");
         window.location.href = "./index.html";
         return;
+      }
+
+      // Перевірка прав доступу до дашборду аналітики (тільки для admin)
+      const analyticsBtn = document.getElementById("analyticsBtn");
+      if (allowedEmail === "admin" && analyticsBtn) {
+        analyticsBtn.style.display = "inline-block";
       }
 
       const assignedEmails = managerToEmployees[allowedEmail] || [];
@@ -393,7 +383,6 @@
         const dateTime = document.getElementById("inviteDateTime").value;
         const location = document.getElementById("inviteLocation").value.trim();
 
-        // Форматування дати для календаря (YYYY-MM-DD з dateTime)
         const datePart = dateTime.split("T")[0];
         const trainingDetailsText = `📌 Тренінг: "${theme}" | 📅 Дедлайн: ${datePart} (Час: ${dateTime.split("T")[1]}) | 📍 Де: ${location}`;
 
@@ -450,14 +439,12 @@
         const deadline = document.getElementById("deadlineProd").value;
         const empName = document.getElementById("targetUserEmailProd").selectedOptions[0].textContent;
 
-        // Збираємо всі обрані опції
         const selectedOptions = Array.from(productSelect.selectedOptions);
         
         if (!email) { alert("Оберіть співробітника!"); return; }
         if (selectedOptions.length === 0) { alert("Оберіть хоча б один продукт!"); return; }
         if (!deadline) { alert("Оберіть дедлайн!"); return; }
 
-        // Формуємо масиви назв та посилань для обраних продуктів
         const productNames = selectedOptions.map(opt => trainingNamesMap[opt.value] || opt.textContent);
         const productValues = selectedOptions.map(opt => opt.value);
 
@@ -505,19 +492,32 @@
       });
 
       // Вихід
-      document.getElementById("logoutAdminBtn").addEventListener("click", () => {
-        localStorage.removeItem("allowedEmail");
-        window.location.href = "./index.html";
+      const logoutBtn = document.getElementById("logoutAdminBtn");
+      if (logoutBtn) {
+        logoutBtn.addEventListener("click", () => {
+          localStorage.removeItem("allowedEmail");
+          window.location.href = "./index.html";
+        });
+      }
+    });
+  </script>
+
+  <!-- Автоматичне спрямування всіх кнопок "Назад" на кабінет -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const backLinks = document.querySelectorAll("a, button");
+      backLinks.forEach(el => {
+        if (el.textContent.trim() === "Назад" || el.innerText.trim() === "Назад") {
+          if (el.tagName === "A") el.href = "./cabinet.html";
+          else if (el.tagName === "BUTTON") el.onclick = () => { window.location.href = "./cabinet.html"; };
+        }
+        const textSpan = el.querySelector(".text__work");
+        if (textSpan && textSpan.textContent.trim() === "Назад") {
+          let parentLink = textSpan.closest("a");
+          if (parentLink) parentLink.href = "./cabinet.html";
+        }
       });
     });
-    // Перевірка прав доступу до дашборду аналітики
-      const allowedEmail = localStorage.getItem("allowedEmail");
-      const analyticsBtn = document.getElementById("analyticsBtn");
-      
-      // Якщо це адміністратор — показуємо кнопку, якщо РМ — залишаємо прихованою
-      if (allowedEmail === "admin" && analyticsBtn) {
-        analyticsBtn.style.display = "inline-block";
-      }
   </script>
 
   <script src="./js/menu.js"></script>

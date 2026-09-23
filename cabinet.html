@@ -75,7 +75,7 @@
       font-weight: 500;
     }
     .cabinet-link:hover {
-      background: #1976D2;
+      background: #069606;
       text-decoration: none;
     }
     .logout-btn {
@@ -94,7 +94,7 @@
     .task-badge {
       display: inline-block;
       background: #e3f2fd;
-      color: #1976d2;
+      color: #069606;
       padding: 4px 8px;
       border-radius: 4px;
       font-size: 12px;
@@ -102,12 +102,12 @@
       margin-bottom: 10px;
     }
     .user-avatar {
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
+      width: 120px;
+      height: 120px;
+      border-radius: 10%;
       object-fit: cover;
       margin-bottom: 12px;
-      border: 2px solid #2196F3;
+      border: 2px solid #069606;
     }
   </style>
 </head>
@@ -130,12 +130,17 @@
         <div class="cabinet-grid">
           
           <!-- 1. Профіль користувача з аватаркою -->
-          <div class="cabinet-card" style="text-align: center;">
+          <div class="cabinet-card" style="text-align: center; border-left: 4px solid #069606;">
+            
             <img id="userAvatarImg" class="user-avatar" src="" alt="Аватар користувача">
             <h3 style="justify-content: center;" id="userNameField">Користувач</h3>
             <p><strong>Email:</strong> <span id="userEmailField">завантаження...</span></p>
+            <div style="text-align: left;">
             <p><strong>Статус доступу:</strong> <span style="color: green; font-weight: 500;">Активний (Партнер)</span></p>
-            <p style="margin-top: 10px;">Доступ до платформи надано на основі корпоративної верифікації.</p>
+            <p><strong style="color: black; font-weight: 700;">Ваші досягнення в навчальному модулі:</strong></p>
+            <p style="margin-top: 10px;"><strong>Пройдено сценаріїв візитів:</strong> <span id="visitedCount">0</span></p>
+            <p><strong>Статус тестування:</strong> <span id="testStatus" style="color: #757575;">Очікує на проходження</span></p>
+            </div>
           </div>
 
           <!-- 2. Призначені завдання / тренінги / продукти -->
@@ -150,7 +155,7 @@
           </div>
 
           <!-- 3. Навчальні матеріали та модулі -->
-          <div class="cabinet-card">
+          <div class="cabinet-card" style="border-left: 4px solid #ff0000;">
             <h3>📚 Матеріали та модулі</h3>
             <p>Швидкий доступ до баз знань та каталогів:</p>
             <ul>
@@ -159,24 +164,14 @@
               <li style="border: none; padding: 4px 0; background: transparent;"><a href="./portfolio standart.html" class="cabinet-link" style="margin: 0; background: #ae8c27;">Збірка стандартів</a></li>
             </ul>
           </div>
-
-          <!-- 4. Історія та прогрес -->
-          <div class="cabinet-card">
-            <h3>📈 Історія та прогрес</h3>
-            <p>Ваші досягнення в навчальному модулі:</p>
-            <p style="margin-top: 10px;"><strong>Пройдено сценаріїв візитів:</strong> <span id="visitedCount">0</span> / 30</p>
-            <p><strong>Статус тестування:</strong> <span id="testStatus" style="color: #757575;">Очікує на проходження</span></p>
-            <a href="./portfolio trenings.html" class="cabinet-link" style="background: #007acc; margin-top: 15px;">Перейти до тренінгів &rarr;</a>
-          </div>
-
-          <!-- 5. БЛОК: Останні новини та оновлення на порталі -->
+   <!-- 5. БЛОК: Останні новини та оновлення на порталі -->
           <div class="cabinet-card" style="grid-column: 1 / -1; border-left: 4px solid #ff9800; background: #fdfdfd;">
-            <h3>📢 Останні оновлення на порталі (07.07.2026)</h3>
+            <h3>📢 Останні оновлення на порталі (23.09.2026)</h3>
             <div style="background-color: #f9f9f9; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; margin-top: 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);">
-              <h4 style="margin-top: 0; color: #2c3e50; font-size: 16px; margin-bottom: 12px; text-align: center;">07.07.2026 Додано оновлення</h4>
+              <h4 style="margin-top: 0; color: #2c3e50; font-size: 16px; margin-bottom: 12px; text-align: center;">23.09.2026 Додано оновлення</h4>
               <div style="color: #4a5568; line-height: 1.6; font-size: 14px;">
-                🟢 1. В розділ інтерактивних завдань та календаря.<br>
-                🟢 2. В розділ навчальних модулів та звітів.
+                🟢 1. Cтворено розділ інтерактивних завдань та календаря.<br>
+                🟢 2. Створено навчальних модулів та звітів.
               </div>
             </div>
           </div>

@@ -20,9 +20,10 @@
     .btn-create:hover { background: #2471a3; }
     .nav-back { display: inline-block; margin-bottom: 20px; color: #007acc; text-decoration: none; font-weight: 500; }
     
-    /* Стилі для модального вікна створення продукту */
     .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000; }
-    .modal-box { background: #fff; padding: 25px; border-radius: 8px; width: 100%; max-width: 400px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+    .modal-box { background: #fff; padding: 25px; border-radius: 8px; width: 100%; max-width: 450px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+    .file-preview { display: flex; align-items: center; gap: 10px; margin-top: 5px; }
+    .file-preview img { width: 50px; height: 50px; object-fit: contain; border: 1px solid #cbd5e1; border-radius: 4px; background: #f8fafc; }
   </style>
 </head>
 <body>
@@ -31,7 +32,6 @@
     <h2>📦 Повний візуальний редактор сторінок продуктів</h2>
     <p style="color: #64748b; margin-bottom: 15px;">Керуйте текстами всіх секцій препарату, зображеннями та посиланнями.</p>
 
-    <!-- Кнопка генерації / створення нового продукту -->
     <button type="button" class="btn-create" id="openModalBtn">➕ Створити новий продукт</button>
 
     <form id="productEditForm">
@@ -45,8 +45,8 @@
       </div>
 
       <div class="form-group">
-        <label for="prodCategory">Категорія:</label>
-        <select id="prodCategory">
+        <label for="prodCategory">Категорія (для портфоліо):</label>
+        <select id="prodCategory" required>
           <option value="gastro">Здоров'я ШКТ</option>
           <option value="female">Жіноче здоров'я</option>
           <option value="male">Чоловіче здоров'я</option>
@@ -62,6 +62,10 @@
         <input type="text" id="prodTitle" required>
       </div>
       <div class="form-group">
+        <label>Згенероване ім'я файлу:</label>
+        <input type="text" id="prodFilename" readonly style="background: #e2e8f0; color: #475569;">
+      </div>
+      <div class="form-group">
         <label>Короткий слоган / Підзаголовок (H3 у шапці):</label>
         <input type="text" id="prodSubtitle">
       </div>
@@ -69,13 +73,24 @@
         <label>Основний опис (Вступний абзац):</label>
         <textarea id="prodDescShort"></textarea>
       </div>
+
+      <!-- Вибір зображень через провідник комп'ютера -->
       <div class="form-group">
-        <label>Шлях до головного зображення (ліворуч):</label>
-        <input type="text" id="imgMain">
+        <label>Головне зображення (ліворуч):</label>
+        <div class="file-preview">
+          <input type="file" id="imgMainFile" accept="image/*">
+          <img id="imgMainPreview" src="" alt="" style="display:none;">
+        </div>
+        <input type="hidden" id="imgMain">
       </div>
+
       <div class="form-group">
-        <label>Шлях до додаткового зображення (упаковка):</label>
-        <input type="text" id="imgSec">
+        <label>Додаткове зображення (упаковка):</label>
+        <div class="file-preview">
+          <input type="file" id="imgSecFile" accept="image/*">
+          <img id="imgSecPreview" src="" alt="" style="display:none;">
+        </div>
+        <input type="hidden" id="imgSec">
       </div>
 
       <h3>Секції контенту (Блоки опису)</h3>
@@ -117,24 +132,56 @@
     <div class="modal-box">
       <h3 style="margin-top: 0; color: #2980b9;">Створити новий продукт</h3>
       <div class="form-group">
-        <label for="newFileName">Ім'я файлу (наприклад: <code>preparat.html</code>):</label>
-        <input type="text" id="newFileName" placeholder="preparat.html">
-      </div>
-      <div class="form-group">
-        <label for="newProdTitle">Назва препарату:</label>
-        <input type="text" id="newProdTitle" placeholder="Назва препарату">
+        <label for="newProdTitleInput">Назва продукту:</label>
+        <input type="text" id="newProdTitleInput" placeholder="Наприклад: Остео Кер">
       </div>
       <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
         <button type="button" id="closeModalBtn" style="background: #cbd5e1; border: none; padding: 8px 14px; border-radius: 4px; cursor: pointer;">Скасувати</button>
-        <button type="button" id="confirmCreateBtn" style="background: #27ae60; color: white; border: none; padding: 8px 14px; border-radius: 4px; cursor: pointer; font-weight: bold;">Додати</button>
+        <button type="button" id="confirmCreateBtn" style="background: #27ae60; color: white; border: none; padding: 8px 14px; border-radius: 4px; cursor: pointer; font-weight: bold;">Згенерувати</button>
       </div>
     </div>
   </div>
 
   <script>
-    const PRODUCTS_SCRIPT_URL = "ТУТ_ВСТАВТЕ_URL_СКРИПТА_ПРОДУКТІВ";
+    const PRODUCTS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzCYxWnF5nDnmJQA3BKVTSbdPlz39PeHTZzClctcC41YGWDas7vmv85iqCD8jE4gDHO/exec";
 
-    // Логіка модального вікна створення нового продукту
+    // Функція транслітерації для генерації назви файлу англійською
+    function transliterate(text) {
+      const ukrMap = {
+        'а':'a', 'б':'b', 'в':'v', 'г':'h', 'ґ':'g', 'д':'d', 'е':'e', 'є':'ye', 'ж':'zh',
+        'з':'z', 'и':'y', 'і':'i', 'ї':'yi', 'й':'y', 'к':'k', 'л':'l', 'м':'m', 'н':'n',
+        'о':'o', 'п':'p', 'р':'r', 'с':'s', 'т':'t', 'у':'u', 'ф':'f', 'х':'kh', 'ц':'ts',
+        'ч':'ch', 'ш':'sh', 'щ':'shch', 'ь':'', 'ю':'yu', 'я':'ya'
+      };
+      return text.toLowerCase().split('').map(char => {
+        if (ukrMap[char] !== undefined) return ukrMap[char];
+        if (/[a-z0-9]/.test(char)) return char;
+        return '_';
+      }).join('').replace(/_+/g, '_').replace(/^_|_$/g, '');
+    }
+
+    // Обробка завантаження зображень через провідник та конвертація в Base64
+    function handleImageUpload(inputElement, hiddenInputId, previewImgId) {
+      inputElement.addEventListener("change", (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function(uploadEvent) {
+            const base64String = uploadEvent.target.result;
+            document.getElementById(hiddenInputId).value = base64String;
+            const preview = document.getElementById(previewImgId);
+            preview.src = base64String;
+            preview.style.display = "block";
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+    }
+
+    handleImageUpload(document.getElementById("imgMainFile"), "imgMain", "imgMainPreview");
+    handleImageUpload(document.getElementById("imgSecFile"), "imgSec", "imgSecPreview");
+
+    // Модальне вікно створення
     const modal = document.getElementById("newProductModal");
     document.getElementById("openModalBtn").addEventListener("click", () => {
       modal.style.display = "flex";
@@ -144,24 +191,18 @@
     });
 
     document.getElementById("confirmCreateBtn").addEventListener("click", () => {
-      const fileName = document.getElementById("newFileName").value.trim();
-      const title = document.getElementById("newProdTitle").value.trim();
-
-      if (!fileName || !fileName.endsWith(".html")) {
-        alert("Будь ласка, введіть коректну назву файлу, що закінчується на .html (наприклад: product.html)");
-        return;
-      }
+      const title = document.getElementById("newProdTitleInput").value.trim();
       if (!title) {
-        alert("Будь ласка, введіть назву продукту!");
+        alert("Введіть назву продукту!");
         return;
       }
 
+      const translitName = transliterate(title) + ".html";
       const select = document.getElementById("fileSelect");
-      
-      // Перевіряємо, чи немає вже такого файла в списку
+
       let exists = false;
       for (let i = 0; i < select.options.length; i++) {
-        if (select.options[i].value === fileName) {
+        if (select.options[i].value === translitName) {
           exists = true;
           break;
         }
@@ -169,20 +210,22 @@
 
       if (!exists) {
         const opt = document.createElement("option");
-        opt.value = fileName;
-        opt.textContent = `${title} (${fileName})`;
+        opt.value = translitName;
+        opt.textContent = `${title} (${translitName})`;
         select.appendChild(opt);
       }
 
-      // Обираємо щойно створений продукт у випадаючому списку
-      select.value = fileName;
+      select.value = translitName;
       document.getElementById("prodTitle").value = title;
+      document.getElementById("prodFilename").value = translitName;
 
-      // Очищуємо інші поля для нового продукту
+      // Очищення полів
       document.getElementById("prodSubtitle").value = "";
       document.getElementById("prodDescShort").value = "";
       document.getElementById("imgMain").value = "";
+      document.getElementById("imgMainPreview").style.display = "none";
       document.getElementById("imgSec").value = "";
+      document.getElementById("imgSecPreview").style.display = "none";
       document.getElementById("sec1Text").value = "";
       document.getElementById("sec2Text").value = "";
       document.getElementById("sec3Text").value = "";
@@ -196,28 +239,45 @@
       document.getElementById("linkCompetitor").value = "";
 
       modal.style.display = "none";
-      document.getElementById("newFileName").value = "";
-      document.getElementById("newProdTitle").value = "";
-      
-      alert(`✅ Продукт "${title}" створено та додано до списку! Заповніть дані та натисніть «Зберегти».`);
+      document.getElementById("newProdTitleInput").value = "";
+      alert(`✅ Створено новий файл: ${translitName}`);
     });
 
-    // Завантаження даних при виборі продукту зі списку
+    // Автоматичне оновлення імені файлу при зміні назви
+    document.getElementById("prodTitle").addEventListener("input", (e) => {
+      const title = e.target.value;
+      if (title) {
+        document.getElementById("prodFilename").value = transliterate(title) + ".html";
+      }
+    });
+
+    // Завантаження даних продукту з таблиці
     document.getElementById("fileSelect").addEventListener("change", async (e) => {
       const fileName = e.target.value;
       if (!fileName) return;
+
+      document.getElementById("prodFilename").value = fileName;
 
       try {
         const response = await fetch(`${PRODUCTS_SCRIPT_URL}?product=${fileName}`);
         const data = await response.json();
         if (data.status === "success") {
-          document.getElementById("prodCategory").value = data.category || "";
+          document.getElementById("prodCategory").value = data.category || "gastro";
           document.getElementById("prodTitle").value = data.title || "";
           document.getElementById("prodSubtitle").value = data.subtitle || "";
           document.getElementById("prodDescShort").value = data.descShort || "";
-          document.getElementById("imgMain").value = data.imgMain || "";
-          document.getElementById("imgSec").value = data.imgSec || "";
           
+          if (data.imgMain) {
+            document.getElementById("imgMain").value = data.imgMain;
+            const p1 = document.getElementById("imgMainPreview");
+            p1.src = data.imgMain; p1.style.display = "block";
+          }
+          if (data.imgSec) {
+            document.getElementById("imgSec").value = data.imgSec;
+            const p2 = document.getElementById("imgSecPreview");
+            p2.src = data.imgSec; p2.style.display = "block";
+          }
+
           document.getElementById("sec1Title").value = data.sec1Title || "Склад та активні речовини";
           document.getElementById("sec1Text").value = data.sec1Text || "";
           document.getElementById("sec2Title").value = data.sec2Title || "Властивості компонентів";
@@ -237,21 +297,28 @@
           document.getElementById("linkCompetitor").value = data.linkCompetitor || "";
         }
       } catch (err) {
-        console.log("Новий файл, дані ще відсутні в базі.");
+        console.log("Новий товар.");
       }
     });
 
-    // Збереження даних у таблицю
+    // Збереження даних (включаючи автоматичне додавання картки в портфоліо)
     document.getElementById("productEditForm").addEventListener("submit", async (e) => {
       e.preventDefault();
       
+      const filename = document.getElementById("prodFilename").value;
+      const category = document.getElementById("prodCategory").value;
+      const title = document.getElementById("prodTitle").value;
+      const subtitle = document.getElementById("prodSubtitle").value;
+      const descShort = document.getElementById("prodDescShort").value;
+      const imgMain = document.getElementById("imgMain").value;
+
       const payload = {
-        filename: document.getElementById("fileSelect").value,
-        category: document.getElementById("prodCategory").value,
-        title: document.getElementById("prodTitle").value,
-        subtitle: document.getElementById("prodSubtitle").value,
-        descShort: document.getElementById("prodDescShort").value,
-        imgMain: document.getElementById("imgMain").value,
+        filename: filename,
+        category: category,
+        title: title,
+        subtitle: subtitle,
+        descShort: descShort,
+        imgMain: imgMain,
         imgSec: document.getElementById("imgSec").value,
         sec1Title: document.getElementById("sec1Title").value,
         sec1Text: document.getElementById("sec1Text").value,
@@ -268,7 +335,24 @@
         linkPresentation: document.getElementById("linkPresentation").value,
         linkInstruction: document.getElementById("linkInstruction").value,
         linkTest: document.getElementById("linkTest").value,
-        linkCompetitor: document.getElementById("linkCompetitor").value
+        linkCompetitor: document.getElementById("linkCompetitor").value,
+        
+        // Інструкція для скрипта портфоліо
+        updatePortfolio: true,
+        portfolioCardHtml: `
+          <li class="description">
+            <div class="overflow">
+              <picture><img src="${imgMain}" alt="${title}" width="450" height="294" loading="lazy" /></picture>
+              <a class="atext" href="./${filename}">
+                <div class="bg"><p class="bg__uppertext">${subtitle || title}</p></div>
+              </a>
+            </div>
+            <div class="text">
+              <h3 class="text__work">${title}</h3>
+              <p class="text__sub">Дієтична добавка</p>
+            </div>
+          </li>
+        `
       };
 
       try {
@@ -278,7 +362,7 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload)
         });
-        alert("✅ Усі секції продукту успішно збережено в базі даних!");
+        alert("✅ Продукт успішно збережено, а посилання в портфоліо оновлено!");
       } catch (err) {
         alert("❌ Помилка при збереженні.");
       }

@@ -61,7 +61,7 @@ window.addEventListener('scroll', () => {
     
     backLinks.forEach(el => {
       // Перевіряємо, чи текст містить "Назад" або посилання веде на index.html звідкись ізсередини
-      if (el.textContent.trim() === "Назад" || el.innerText.trim() === "Назад") {
+      if (el.textContent.trim() === "Мій кабінет" || el.innerText.trim() === "Мій кабінет") {
         if (el.tagName === "A") {
           el.href = "./cabinet.html";
         } else if (el.tagName === "BUTTON") {
@@ -71,7 +71,7 @@ window.addEventListener('scroll', () => {
       
       // Також якщо це тег <a> всередині кнопки назад, який часто зустрічається у ваших шаблонах:
       const textSpan = el.querySelector(".text__work");
-      if (textSpan && textSpan.textContent.trim() === "Назад") {
+      if (textSpan && textSpan.textContent.trim() === "Мій кабінет") {
         let parentLink = textSpan.closest("a");
         if (parentLink) {
           parentLink.href = "./cabinet.html";

@@ -2331,3 +2331,16 @@ body.abyss-effect {
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
       border-radius: 6px;
     }
+    /* Робимо посилання схожими на кнопки */
+a.btn {
+  display: inline-block;
+  text-decoration: none;
+  font-size: smaller;
+  /* Тут, мабуть, вже є твої кольори, паддінги та бордери з класу .btn */
+}
+
+/* Стиль для неактивного тестування */
+.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}

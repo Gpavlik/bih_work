@@ -1,16 +1,14 @@
 document.addEventListener("DOMContentLoaded", async () => {
-  // Ваше НОВЕ посилання
-  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbytaIqinqy-8usncHA3Ndhr10ob36OZ8t-2s5i-lq5o2KbnWAk56oYBY8DTS8WI6W0K/exec";
-  
+  const SHEET_ID = "1iByJ39N4FSG8E9a-3_1WkiGXEFZHe5VP3h4xa-B_xTY";
+  const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`;
+
   const categoryMap = {
-    // Якщо продакт напише українською:
     "Жіноче здоров'я": "female",
     "Чоловіче здоров'я": "male",
     "Здоров'я нирок": "kidneys",
     "Здоров'я ШКТ": "gastro",
     "Ендокринологія": "endo",
     "Неврологія": "neuro",
-    // Якщо продакт напише одразу ID (як зараз з Убіквітом):
     "female": "female",
     "male": "male",
     "kidneys": "kidneys",
@@ -20,34 +18,64 @@ document.addEventListener("DOMContentLoaded", async () => {
   };
 
   try {
-    console.log("1. Відправляємо запит до таблиці...");
-    const response = await fetch(`${SCRIPT_URL}?action=getCatalog`);
-    const result = await response.json();
-    
-    console.log("2. Відповідь від сервера:", result);
+    console.log("1. Запит напряму до Google Таблиці...");
+    const response = await fetch(SHEET_URL);
+    const text = await response.text();
 
-    if (result.status === "success") {
-      const products = result.data;
-      console.log(`3. Знайдено продуктів у таблиці: ${products.length}`, products);
+    const jsonString = text.substring(47, text.length - 2);
+    const data = JSON.parse(jsonString);
 
-      // Очищаємо всі списки перед додаванням карток
+    if (data && data.table && data.table.rows) {
+      let rows = data.table.rows;
+      let headers = [];
+
+      // 1. Перевіряємо, чи є заголовки у cols.label
+      const colsLabels = data.table.cols.map(c => c && c.label ? c.label.trim().toLowerCase() : "");
+      const hasLabels = colsLabels.some(l => l !== "");
+
+      if (hasLabels) {
+        headers = colsLabels;
+      } else if (rows.length > 0) {
+        // Якщо в cols.label порожньо, беремо першу строчку таблиці як заголовки
+        headers = rows[0].c.map(cell => cell && cell.v !== null ? String(cell.v).trim().toLowerCase() : "");
+        rows = rows.slice(1); // Прибираємо рядок заголовків із даних
+      }
+
       Object.values(categoryMap).forEach(spoilerId => {
         const ul = document.querySelector(`#${spoilerId} .works-cards`);
-        if (ul) ul.innerHTML = ""; 
+        if (ul) ul.innerHTML = "";
       });
 
-      products.forEach(prod => {
-        // Перевіряємо, як називається колонка: category чи Category (якщо з великої, беремо її)
-        let rawCategory = prod.category || prod.Category || "";
-        
-        // Нормалізуємо текст (прибираємо зайві пробіли і вирівнюємо всі апострофи)
-        let catName = rawCategory.trim().replace(/['’`]/g, "'");
-        
-        const spoilerId = categoryMap[catName]; 
+      let count = 0;
+      const catalogProductsForCache = [];
+
+      rows.forEach(row => {
+        if (!row.c) return;
+
+        const rowData = {};
+        row.c.forEach((cell, i) => {
+          const key = headers[i];
+          if (key) {
+            rowData[key] = cell ? (cell.v !== null ? cell.v : "") : "";
+          }
+        });
+
+        // Витягуємо дані за ключами
+        const filename = String(rowData["filename"] || rowData["file"] || rowData["id"] || "").trim();
+        const title = String(rowData["title"] || rowData["назва"] || "").trim();
+        const subtitle = String(rowData["subtitle"] || rowData["підзаголовок"] || "").trim();
+        const descShort = String(rowData["descshort"] || rowData["короткий опис"] || "").trim();
+        const imgMain = String(rowData["imgmain"] || rowData["зображення"] || "").trim();
+        let rawCategory = String(rowData["category"] || rowData["категорія"] || rowData["cat"] || "").trim();
+
+        if (!filename && !title) return; // Пропускаємо порожні рядки
+
+        let catName = rawCategory.replace(/['’`]/g, "'");
+        const spoilerId = categoryMap[catName];
 
         if (!spoilerId) {
-          console.warn(`⚠️ Пропущено "${prod.title || 'Безіменний'}": невідома або порожня категорія -> "${catName}"`);
-          return; 
+          console.warn(`⚠️ Пропущено "${title || filename}": невідома категорія -> "${catName}"`);
+          return;
         }
 
         const ul = document.querySelector(`#${spoilerId} .works-cards`);
@@ -55,28 +83,45 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         const li = document.createElement("li");
         li.className = "description";
-        
+
         li.innerHTML = `
           <div class="overflow">
             <picture>
-              <img src="${prod.imgMain || ''}" alt="${prod.title || ''}" width="450" height="294" loading="lazy" />
+              <img src="${imgMain}" alt="${title}" width="450" height="294" loading="lazy" />
             </picture>
-            <a class="atext" href="./product.html?id=${prod.filename}">
+            <a class="atext" href="./product.html?id=${filename}">
               <div class="bg">
-                <p class="bg__uppertext">${prod.subtitle || ''}</p>
+                <p class="bg__uppertext">${subtitle}</p>
               </div>
             </a>
           </div>
           <div class="text">
-            <h3 class="text__work">${prod.title || ''}</h3>
-            <p class="text__sub">${prod.descShort || ''}</p>
+            <h3 class="text__work">${title}</h3>
+            <p class="text__sub">${descShort}</p>
           </div>
         `;
         ul.appendChild(li);
-        console.log(`✅ Додано картку: ${prod.title} у розділ ${catName}`);
+        count++;
+
+        catalogProductsForCache.push({
+          filename, category: spoilerId, title, subtitle, descShort, imgMain,
+          descLong: rowData["desclong"] || "",
+          imgSec: rowData["imgsec"] || "",
+          sec1Title: rowData["sec1title"] || "", sec1Text: rowData["sec1text"] || "",
+          sec2Title: rowData["sec2title"] || "", sec2Text: rowData["sec2text"] || "",
+          sec3Title: rowData["sec3title"] || "", sec3Text: rowData["sec3text"] || "",
+          sec4Title: rowData["sec4title"] || "", sec4Text: rowData["sec4text"] || "",
+          sec5Title: rowData["sec5title"] || "", sec5Text: rowData["sec5text"] || "",
+          linkCampaign: rowData["linkcampaign"] || "", linkVideo: rowData["linkvideo"] || "",
+          linkPresentation: rowData["linkpresentation"] || "", linkInstruction: rowData["linkinstruction"] || "",
+          linkTest: rowData["linktest"] || "", linkCompetitor: rowData["linkcompetitor"] || ""
+        });
       });
+
+      console.log(`⚡ Блискавично завантажено та відмальовано продуктів: ${count}`);
+      localStorage.setItem("catalogData", JSON.stringify(catalogProductsForCache));
     }
   } catch (e) {
-    console.error("Помилка завантаження каталогу продуктів:", e);
+    console.error("Помилка при прямому зчитуванні Google Таблиці:", e);
   }
 });

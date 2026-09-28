@@ -21,6 +21,41 @@
             color: #334155;
         }
 
+        /* Примусове скасування скруглень для всіх div та button */
+        div, button {
+            border-radius: 0 !important;
+        }
+
+        /* Брендові кнопки */
+        .btn-custom {
+            background-color: #f5f4fa !important;
+            color: #069606 !important;
+            border: 1px solid #069606 !important;
+            transition: all 0.2s ease-in-out;
+        }
+        .btn-custom:hover {
+            background-color: #069606 !important;
+            color: #ffffff !important;
+        }
+        .btn-custom:hover * {
+            color: #ffffff !important;
+        }
+
+        .btn-custom-secondary {
+            background-color: #f5f4fa !important;
+            color: #334155 !important;
+            border: 1px solid #cbd5e1 !important;
+            transition: all 0.2s ease-in-out;
+        }
+        .btn-custom-secondary:hover {
+            background-color: #069606 !important;
+            color: #ffffff !important;
+            border-color: #069606 !important;
+        }
+        .btn-custom-secondary:hover * {
+            color: #ffffff !important;
+        }
+
         .custom-scrollbar::-webkit-scrollbar {
             width: 6px;
         }
@@ -29,7 +64,7 @@
         }
         .custom-scrollbar::-webkit-scrollbar-thumb {
             background: #94a3b8;
-            border-radius: 4px;
+            border-radius: 0;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
             background: #069606;
@@ -37,40 +72,23 @@
     </style>
 </head>
 <body class="min-h-screen flex flex-col justify-between custom-scrollbar">
-<div id="header-container"></div>
-    <!-- Header -->
-    <dheader class="bg-white/90 backdrop-blur-md border-b border-slate-200 sticky top-0 z-50 shadow-sm">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-            <div class="flex items-center space-x-3 cursor-pointer" onclick="navigateTo('home')">
-                <div class="bg-green-600 text-white p-2.5 rounded-xl shadow-md">
-                    <i data-lucide="pill" class="w-6 h-6"></i>
-                </div>
-                <div>
-                    <h1 class="text-xl font-bold text-slate-900 leading-tight">Фармацевтичне Тестування</h1>
-                    <p class="text-xs text-slate-500 font-medium">16 Продуктів • Гастроентерологія, Ендокринологія, Неврологія</p>
-                </div>
-            </div>
-            <div class="flex items-center space-x-3">
-                <button onclick="navigateTo('home')" id="nav-home-btn" class="hidden sm:flex items-center space-x-2 text-sm font-medium text-slate-600 hover:text-green-600 px-3 py-2 rounded-lg hover:bg-slate-100 transition-colors border border-slate-200">
-                    <i data-lucide="layout-grid" class="w-4 h-4"></i>
-                    <span>Всі тести</span>
-                </button>
-            </div>
-        </div>
-    </dheader>
 
-    <!-- Main Content -->
+    <!-- Header контейнер, куди headfoot.js підтягує header.inc -->
+    <div id="header-container"></div>
+
+    <!-- Основний динамічний контент -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow w-full" id="main-content">
         <!-- Dynamic Content Injected Here -->
     </main>
 
-    <!-- Footer -->
+    <!-- Footer контейнер, куди headfoot.js підтягує footer.inc -->
     <div id="footer-container"></div>
-  <script src="./js/menu.js"></script>
-  <script src="theme-toggle.js"></script>
-  <script src="tracking.js"></script>
-  <script src="headfoot.js"></script>
-<script src="scrbtn.js"></script>
+
+    <script src="./js/menu.js"></script>
+    <script src="theme-toggle.js"></script>
+    <script src="tracking.js"></script>
+    <script src="headfoot.js"></script>
+    <script src="scrbtn.js"></script>
     <script>
         const productsData = [
             {
@@ -676,7 +694,7 @@
             {
                 id: "trivitafer",
                 name: "Тривітафер",
-                category: "Гастроентерологія / Гематологія",
+                category: "Гастроентерологія",
                 subtitle: "Хелатне залізо з високою біодоступністю",
                 badge: "Бісгліцинат Fe 90 мг",
                 color: "rose",
@@ -916,7 +934,7 @@
             {
                 id: "shugard",
                 name: "Шугард",
-                category: "Ендокринологія / Метаболізм",
+                category: "Ендокринологія",
                 subtitle: "6-компонентний метаболічний комплекс",
                 badge: "6 в 1 • Контроль глікемії",
                 color: "amber",
@@ -1156,7 +1174,7 @@
             {
                 id: "kalbind",
                 name: "Кальбінд",
-                category: "Нефрологія / Ендокринологія",
+                category: "Ендокринологія",
                 subtitle: "Селективний фосфат-біндер",
                 badge: "Ацетат Ca 667 мг",
                 color: "green",
@@ -1276,7 +1294,7 @@
             {
                 id: "glykomicel",
                 name: "Глікоміцел",
-                category: "Метаболізм / Кардіологія",
+                category: "Ендокринологія",
                 subtitle: "Модератор обміну на основі Рейші",
                 badge: "Ganoderma lucidum 500 мг",
                 color: "red",
@@ -1396,7 +1414,7 @@
             {
                 id: "libera-arginine",
                 name: "Лібера Аргінін",
-                category: "Кардіологія / Нефрологія",
+                category: "Ендокринологія",
                 subtitle: "Подвійна підтримка ендотелію та нирок",
                 badge: "Леспедеза 300 мг + L-аргінін",
                 color: "cyan",
@@ -1516,7 +1534,7 @@
             {
                 id: "spirona",
                 name: "Спірона",
-                category: "Ендокринологія / Нутриціологія",
+                category: "Ендокринологія",
                 subtitle: "Стандартизована Спіруліна 1000 мг",
                 badge: "3000 мг добова доза",
                 color: "emerald",
@@ -1636,7 +1654,7 @@
             {
                 id: "neuromineriy",
                 name: "Нейромінерій",
-                category: "Неврологія / Метаболізм",
+                category: "Неврологія",
                 subtitle: "Морський магній Simag™ + В13 + В6",
                 badge: "Simag™ + Вітамін B13",
                 color: "green",
@@ -1756,7 +1774,7 @@
             {
                 id: "hippomicel",
                 name: "Гіппоміцел",
-                category: "Неврологія / Ноотропи",
+                category: "Неврологія",
                 subtitle: "Екстракт Їжовика гребінчастого 10:1",
                 badge: "Hericium erinaceus 550 мг",
                 color: "orange",
@@ -1876,7 +1894,7 @@
             {
                 id: "tarnityn",
                 name: "Тарнітин",
-                category: "Кардіологія / Метаболізм",
+                category: "Ендокринологія / Неврологія",
                 subtitle: "L-карнітин у високій дозі",
                 badge: "1360 мг чистого L-карнітину",
                 color: "purple",
@@ -2034,41 +2052,29 @@
 
         function showCatalogView() {
             currentProductId = null;
-            document.getElementById('nav-home-btn').classList.add('hidden');
-
             const main = document.getElementById('main-content');
             
             let html = `
-                <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-green-900 text-white rounded-2xl p-6 sm:p-8 mb-8 shadow-xl border border-slate-700">
-                    <div class="max-w-3xl">
-                        <span class="inline-block bg-green-500/30 text-green-300 text-xs font-bold px-3 py-1 rounded-full mb-3 uppercase tracking-wider border border-green-400/30">Каталог продуктів 2026</span>
-                        <h2 class="text-2xl sm:text-3xl font-extrabold mb-3">Тести для самоперевірки знань</h2>
-                        <p class="text-slate-300 text-sm sm:text-base leading-relaxed mb-4">
-                            Тестові запитання для кожного продукту підготовлено по 10 інтерактивних запитань.
-                        </p>
-                    </div>
-                </div>
-
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             `;
 
             productsData.forEach(p => {
                 html += `
-                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-all flex flex-col justify-between overflow-hidden group">
+                    <div class="bg-white rounded-none border border-slate-200 border-l-4 border-l-[#069606] shadow-sm hover:shadow-md transition-all flex flex-col justify-between overflow-hidden group">
                         <div class="p-5">
                             <div class="flex justify-between items-start mb-3">
-                                <span class="text-xs font-bold px-2.5 py-1 rounded-md bg-slate-100 text-slate-700 uppercase tracking-wide">${p.category}</span>
-                                <span class="text-xs font-bold text-green-700 bg-green-50 px-2.5 py-1 rounded border border-green-200">10 питань</span>
+                                <span class="text-xs font-bold px-2.5 py-1 bg-slate-100 text-slate-700 uppercase tracking-wide">${p.category}</span>
+                                <span class="text-xs font-bold text-[#069606] bg-green-50 px-2.5 py-1 border border-green-200">10 питань</span>
                             </div>
-                            <h3 class="text-xl font-bold text-slate-900 group-hover:text-green-600 transition-colors mb-1">${p.name}</h3>
+                            <h3 class="text-xl font-bold text-slate-900 group-hover:text-[#069606] transition-colors mb-1">${p.name}</h3>
                             <p class="text-xs font-medium text-slate-500 mb-3">${p.subtitle}</p>
-                            <div class="inline-block bg-slate-50 text-slate-700 text-xs px-2.5 py-1.5 rounded border border-slate-200 font-mono mb-4">
+                            <div class="inline-block bg-slate-50 text-slate-700 text-xs px-2.5 py-1.5 border border-slate-200 font-mono mb-4">
                                 ${p.badge}
                             </div>
                         </div>
 
                         <div class="bg-slate-50 px-5 py-3 border-t border-slate-100 flex items-center justify-between gap-2">
-                         <button onclick="navigateTo('quiz', '${p.id}')" class="flex-grow flex items-center justify-center space-x-1 text-xs font-bold text-white bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg transition-colors shadow-sm">
+                            <button onclick="navigateTo('quiz', '${p.id}')" class="flex-grow flex items-center justify-center space-x-1 text-xs font-bold btn-custom px-4 py-2 rounded-none shadow-sm">
                                 <span>Пройти тест</span>
                                 <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
                             </button>
@@ -2083,8 +2089,6 @@
 
         function showQuizView(productId) {
             currentProductId = productId;
-            document.getElementById('nav-home-btn').classList.remove('hidden');
-
             const product = productsData.find(p => p.id === productId);
             if (!product) return showCatalogView();
 
@@ -2108,30 +2112,28 @@
                 return;
             }
 
-            const fullUrl = `${window.location.origin}${window.location.pathname}#${product.id}`;
-
             let html = `
-                <div class="bg-white rounded-xl border border-slate-200 p-5 mb-6 shadow-sm">
+                <div class="bg-white rounded-none border border-slate-200 border-l-4 border-l-[#069606] p-5 mb-6 shadow-sm">
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
                         <div>
                             <div class="flex items-center space-x-2">
-                                <span class="text-xs font-bold px-2.5 py-0.5 rounded bg-green-100 text-green-800 uppercase">${product.category}</span>
+                                <span class="text-xs font-bold px-2.5 py-0.5 bg-green-100 text-[#069606] uppercase">${product.category}</span>
                                 <span class="text-xs text-slate-400">• Поглиблене тестування</span>
                             </div>
                             <h2 class="text-2xl font-bold text-slate-900 mt-1">${product.name}</h2>
                         </div>
-                       </div>
+                    </div>
 
                     <div class="mt-4 flex items-center justify-between text-xs font-semibold text-slate-500 mb-2">
                         <span>Запитання ${currentQIndex + 1} з ${totalQ}</span>
                         <span>${Math.round(((currentQIndex + 1) / totalQ) * 100)}% Прогрес</span>
                     </div>
-                    <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
-                        <div class="bg-green-600 h-full transition-all duration-300" style="width: ${((currentQIndex + 1) / totalQ) * 100}%"></div>
+                    <div class="w-full bg-slate-100 h-2.5 overflow-hidden">
+                        <div class="bg-[#069606] h-full transition-all duration-300" style="width: ${((currentQIndex + 1) / totalQ) * 100}%"></div>
                     </div>
                 </div>
 
-                <div class="bg-white rounded-xl border border-slate-200 p-6 sm:p-8 shadow-sm">
+                <div class="bg-white rounded-none border border-slate-200 border-l-4 border-l-[#069606] p-6 sm:p-8 shadow-sm">
                     <h3 class="text-lg sm:text-xl font-bold text-slate-900 mb-6 leading-relaxed">
                         ${currentQIndex + 1}. ${currentQ.q}
                     </h3>
@@ -2142,13 +2144,13 @@
             currentQ.options.forEach((option, idx) => {
                 const isSelected = quizState.answers[currentQIndex] === idx;
                 html += `
-                    <div onclick="selectAnswer(${idx})" class="flex items-start p-4 rounded-xl border cursor-pointer transition-all ${
+                    <div onclick="selectAnswer(${idx})" class="flex items-start p-4 rounded-none border cursor-pointer transition-all ${
                         isSelected 
-                            ? 'border-green-600 bg-green-50/50 ring-2 ring-green-500/20 text-slate-900 font-semibold' 
-                            : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700'
+                            ? 'border-[#069606] border-l-4 border-l-[#069606] bg-green-50/50 text-slate-900 font-semibold' 
+                            : 'border-slate-200 hover:border-[#069606] hover:bg-slate-50 text-slate-700'
                     }">
                         <div class="flex items-center h-5 mt-0.5">
-                            <input type="radio" name="option" ${isSelected ? 'checked' : ''} class="h-4 w-4 text-green-600 border-slate-300 focus:ring-green-500">
+                            <input type="radio" name="option" ${isSelected ? 'checked' : ''} class="h-4 w-4 text-[#069606] border-slate-300 focus:ring-[#069606]">
                         </div>
                         <span class="ml-3 text-sm sm:text-base leading-snug">${option}</span>
                     </div>
@@ -2159,18 +2161,18 @@
                     </div>
 
                     <div class="flex items-center justify-between pt-4 border-t border-slate-100">
-                        <button onclick="prevQuestion()" ${currentQIndex === 0 ? 'disabled class="opacity-40 cursor-not-allowed flex items-center space-x-1 text-sm font-medium text-slate-400 px-4 py-2 rounded-lg bg-slate-100"' : 'class="flex items-center space-x-1 text-sm font-medium text-slate-700 hover:bg-slate-100 px-4 py-2 rounded-lg transition-colors bg-slate-50 border border-slate-200"'}>
+                        <button onclick="prevQuestion()" ${currentQIndex === 0 ? 'disabled class="opacity-40 cursor-not-allowed flex items-center space-x-1 text-sm font-medium text-slate-400 px-4 py-2 bg-slate-100 rounded-none"' : 'class="flex items-center space-x-1 text-sm font-medium btn-custom-secondary px-4 py-2 rounded-none bg-slate-50 border border-slate-200"'}>
                             <i data-lucide="chevron-left" class="w-4 h-4"></i>
                             <span>Назад</span>
                         </button>
 
                         ${currentQIndex === totalQ - 1 ? `
-                            <button onclick="submitQuiz()" class="flex items-center space-x-2 text-sm font-bold text-white bg-green-600 hover:bg-green-700 px-6 py-2.5 rounded-lg transition-colors shadow-sm">
+                            <button onclick="submitQuiz()" class="flex items-center space-x-2 text-sm font-bold btn-custom px-6 py-2.5 rounded-none shadow-sm">
                                 <i data-lucide="check-circle" class="w-4 h-4"></i>
                                 <span>Завершити тест</span>
                             </button>
                         ` : `
-                            <button onclick="nextQuestion()" class="flex items-center space-x-1 text-sm font-bold text-white bg-green-600 hover:bg-green-700 px-5 py-2.5 rounded-lg transition-colors shadow-sm">
+                            <button onclick="nextQuestion()" class="flex items-center space-x-1 text-sm font-bold btn-custom px-5 py-2.5 rounded-none shadow-sm">
                                 <span>Далі</span>
                                 <i data-lucide="chevron-right" class="w-4 h-4"></i>
                             </button>
@@ -2225,19 +2227,19 @@
             const percent = Math.round((score / product.questions.length) * 100);
 
             let html = `
-                <div class="bg-white rounded-xl border border-slate-200 p-6 sm:p-8 mb-8 text-center shadow-sm">
-                    <div class="inline-flex items-center justify-center w-16 h-16 rounded-full mb-4 ${percent >= 80 ? 'bg-emerald-100 text-emerald-600' : percent >= 60 ? 'bg-amber-100 text-amber-600' : 'bg-rose-100 text-rose-600'}">
+                <div class="bg-white rounded-none border border-slate-200 border-l-4 border-l-[#069606] p-6 sm:p-8 mb-8 text-center shadow-sm">
+                    <div class="inline-flex items-center justify-center w-16 h-16 mb-4 ${percent >= 80 ? 'bg-emerald-100 text-[#069606]' : percent >= 60 ? 'bg-amber-100 text-amber-600' : 'bg-rose-100 text-rose-600'}">
                         <i data-lucide="${percent >= 80 ? 'award' : percent >= 60 ? 'check' : 'alert-circle'}" class="w-8 h-8"></i>
                     </div>
                     <h2 class="text-2xl font-bold text-slate-900 mb-1">Результат тесту: ${product.name}</h2>
                     <p class="text-sm text-slate-500 mb-6">Ви відповіли правильно на ${score} з ${product.questions.length} питань (${percent}%)</p>
 
                     <div class="flex justify-center items-center space-x-3">
-                        <button onclick="showQuizView('${product.id}')" class="flex items-center space-x-2 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 px-5 py-2.5 rounded-lg border border-slate-300 transition-colors">
+                        <button onclick="showQuizView('${product.id}')" class="flex items-center space-x-2 text-xs font-bold btn-custom-secondary px-5 py-2.5 rounded-none border border-slate-300 transition-colors">
                             <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
                             <span>Пройти знову</span>
                         </button>
-                        <button onclick="navigateTo('home')" class="flex items-center space-x-2 text-xs font-bold text-white bg-green-600 hover:bg-green-700 px-5 py-2.5 rounded-lg transition-colors">
+                        <button onclick="navigateTo('home')" class="flex items-center space-x-2 text-xs font-bold btn-custom px-5 py-2.5 rounded-none transition-colors">
                             <i data-lucide="layout-grid" class="w-4 h-4"></i>
                             <span>До всіх тестів</span>
                         </button>
@@ -2253,27 +2255,27 @@
                 const isCorrect = userAnswer === q.correct;
 
                 html += `
-                    <div class="bg-white rounded-xl border ${isCorrect ? 'border-emerald-200 bg-emerald-50/20' : 'border-rose-200 bg-rose-50/20'} p-5">
+                    <div class="bg-white rounded-none border border-l-4 border-l-[#069606] ${isCorrect ? 'border-emerald-200 bg-emerald-50/20' : 'border-rose-200 bg-rose-50/20'} p-5">
                         <div class="flex items-start justify-between mb-3">
                             <h4 class="text-sm font-bold text-slate-900">${idx + 1}. ${q.q}</h4>
-                            <span class="text-xs font-bold px-2 py-0.5 rounded ${isCorrect ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">
+                            <span class="text-xs font-bold px-2 py-0.5 ${isCorrect ? 'bg-emerald-100 text-[#069606]' : 'bg-rose-100 text-rose-800'}">
                                 ${isCorrect ? 'Правильно' : 'Помилка'}
                             </span>
                         </div>
 
                         <div class="space-y-1.5 mb-3 text-xs sm:text-sm">
-                            <p class="${userAnswer === q.correct ? 'text-emerald-700 font-semibold' : 'text-rose-700 font-semibold'}">
+                            <p class="${userAnswer === q.correct ? 'text-[#069606] font-semibold' : 'text-rose-700 font-semibold'}">
                                 <span class="text-slate-500 font-normal">Ваша відповідь:</span> ${userAnswer !== null ? q.options[userAnswer] : 'Не обрано'}
                             </p>
                             ${!isCorrect ? `
-                                <p class="text-emerald-700 font-semibold">
+                                <p class="text-[#069606] font-semibold">
                                     <span class="text-slate-500 font-normal">Правильна відповідь:</span> ${q.options[q.correct]}
                                 </p>
                             ` : ''}
                         </div>
 
-                        <div class="bg-white p-3 rounded-lg border border-slate-200 text-xs text-slate-600 flex items-start space-x-2">
-                            <i data-lucide="info" class="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5"></i>
+                        <div class="bg-white p-3 rounded-none border border-slate-200 border-l-4 border-l-[#069606] text-xs text-slate-600 flex items-start space-x-2">
+                            <i data-lucide="info" class="w-4 h-4 text-[#069606] flex-shrink-0 mt-0.5"></i>
                             <div>
                                 <span class="font-semibold text-slate-800">Фармацевтичне обґрунтування:</span> ${q.explanation}
                             </div>
@@ -2287,28 +2289,6 @@
             if (window.lucide) {
                 lucide.createIcons();
             }
-        }
-
-        function copyProductLink(productId) {
-            const url = `${window.location.origin}${window.location.pathname}#${productId}`;
-            navigator.clipboard.writeText(url).then(() => {
-                showToast("Пряме посилання скопійовано в буфер обміну!");
-            }).catch(() => {
-                prompt("Скопіюйте посилання вручну:", url);
-            });
-        }
-
-        function showToast(message) {
-            const toast = document.createElement('div');
-            toast.className = "fixed bottom-5 right-5 bg-slate-900 text-white text-xs font-medium px-4 py-3 rounded-xl shadow-2xl z-50 flex items-center space-x-2 border border-slate-700";
-            toast.innerHTML = `<i data-lucide="check" class="w-4 h-4 text-emerald-400"></i><span>${message}</span>`;
-            document.body.appendChild(toast);
-            if (window.lucide) {
-                lucide.createIcons();
-            }
-            setTimeout(() => {
-                toast.remove();
-            }, 3000);
         }
 
         document.addEventListener('DOMContentLoaded', initApp);

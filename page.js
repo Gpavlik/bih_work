@@ -66,7 +66,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
     });
 
-    const setLink = (id, url) => {
+const setLink = (id, url) => {
       const btn = document.getElementById(id);
       if (btn && url) btn.href = url;
     };
@@ -74,14 +74,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     setLink("campaign", data.linkCampaign);
     setLink("video", data.linkVideo);
     setLink("presentation", data.linkPresentation);
-    
-    document.querySelectorAll(".button-section").forEach(el => {
-      const a = el.querySelector("a");
-      if (a) {
-           if (a.textContent.includes("Інструкція") && data.linkInstruction) a.href = data.linkInstruction;
-           if (a.textContent.includes("Конкурентне оточення") && data.linkCompetitor) a.href = data.linkCompetitor;
-      }
-    });
+    setLink("instruction", data.linkInstruction);
+    setLink("competitor", data.linkCompetitor);
 
     if (data.linkTest) {
       const testLink = document.getElementById("test");

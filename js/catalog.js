@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", async () => {
   // Ваше НОВЕ посилання
-  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzCYxWnF5nDnmJQA3BKVTSbdPlz39PeHTZzClctcC41YGWDas7vmv85iqCD8jE4gDHO/exec";
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbytaIqinqy-8usncHA3Ndhr10ob36OZ8t-2s5i-lq5o2KbnWAk56oYBY8DTS8WI6W0K/exec";
   
   const categoryMap = {
     // Якщо продакт напише українською:
@@ -61,7 +61,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             <picture>
               <img src="${prod.imgMain || ''}" alt="${prod.title || ''}" width="450" height="294" loading="lazy" />
             </picture>
-            <a class="atext" href="./${prod.filename}">
+            <a class="atext" href="./product.html?id=${prod.filename}">
               <div class="bg">
                 <p class="bg__uppertext">${prod.subtitle || ''}</p>
               </div>

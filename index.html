@@ -122,38 +122,20 @@
       <p class="modal__title">Залиште свої дані для доступу до матеріалів сайту</p>
       <form id="loginForm" class="form" name="signup_form" autocomplete="on" novalidate>
         <label class="form__label">
-          <p class="form__name">Ім'я</p>
-          <input class="form__input" type="text" name="name" autofocus placeholder="Введіть ваше ім'я та прізвище" required/>
+          <p class="form__name">Логін (Email / ID)</p>
+          <input class="form__input" type="text" id="loginInput" name="login" autofocus placeholder="Введіть логін або email" required/>
           <svg class="form__icon" width="12px" height="12px">
             <use href="./images/sprite.svg#icon-man"></use>
           </svg>
         </label>
         <label class="form__label">
-          <p class="form__name">Місто</p>
-          <input class="form__input" type="text" name="city" placeholder="Введіть ваше місто" required/>
+          <p class="form__name">Пароль</p>
+          <input class="form__input" type="password" id="passwordInput" name="password" placeholder="Введіть пароль" required/>
           <svg class="form__icon" width="13px" height="13px">
             <use href="./images/ico/city (2).svg"></use>
           </svg>
         </label>
-        <label class="form__label" for="emailInput">
-          <p class="form__name">e-mail</p>
-          <input class="form__input" type="email" id="emailInput" name="email"  placeholder="Введіть ваш корпоративний email" required>
-          <svg class="form__icon" width="15px" height="12px">
-            <use href="./images/sprite.svg#icon-envy"></use>
-          </svg>
-        </label>
-        <label class="check">
-          <input class="check__checkbox" visually hidden type="checkbox" name="policy" value="agree" />
-          <span class="custom-checkbox">
-            <svg class="check__icon" width="11px" height="8px">
-              <use href="./images/sprite.svg#icon-galka">
-              </use>
-            </svg>
-          </span>
-          <span class="check__name" style="text-align: center;">Підтвердіть, що Ви не розголошуватимете отриману інформацію</span>
-        </label>
-        <button type="submit" class="submit-btn">Навчатися!</button>
-        
+        <button type="submit" class="submit-btn">Навчатися</button>
       </form>
       </div>
     <script src="./js/modal.js"></script>

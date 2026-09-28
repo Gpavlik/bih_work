@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Керування співробітниками та ієрархією | Адмін-панель</title>
+  <link rel="shortcut icon" href="https://behealth.com.ua/assets/img/favicon.ico" type="img/png">
+  <link rel="stylesheet" href="./css/main.css">
+  <style>
+    body { font-family: 'Roboto', sans-serif; background-color: #f4f6f9; padding: 20px; color: #333; }
+    .container-admin { max-width: 1400px; margin: 30px auto; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+    h2 { color: #2c3e50; margin-top: 0; }
+    h3 { color: #007acc; border-bottom: 2px solid #eef; padding-bottom: 8px; margin-top: 30px; }
+    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-bottom: 20px; }
+    .form-group { margin-bottom: 15px; }
+    .form-group label { display: block; font-weight: 500; margin-bottom: 5px; font-size: 14px; }
+    .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 14px; box-sizing: border-box; }
+    .btn-save { background: #27ae60; color: white; border: none; padding: 12px 20px; font-size: 16px; font-weight: bold; border-radius: 4px; cursor: pointer; width: 100%; }
+    .btn-save:hover { background: #219653; }
+    .nav-back { display: inline-block; margin-bottom: 20px; color: #007acc; text-decoration: none; font-weight: 500; }
+    
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 0.95em; }
+    th, td { border: 1px solid #e2e8f0; padding: 12px; text-align: left; }
+    th { background-color: #007acc; color: white; font-weight: 600; }
+    tr:nth-child(even) { background-color: #f8fafc; }
+    .btn-edit { background: #f39c12; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 13px; margin-right: 5px; }
+    .btn-delete { background: #e74c3c; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 13px; }
+  </style>
+</head>
+<body>
+  <div id="header-container"></div>
+  <div class="container-admin">
+    <a href="./admin.html" class="nav-back">&larr; Назад до панелі управління</a>
+    <h2>👥 Управління кадровим складом та ієрархією</h2>
+    <p style="color: #64748b; margin-bottom: 20px;">Створюйте нових співробітників, призначайте паролі, ролі та керуйте підпорядкуванням (РМ та МП).</p>
+
+    <!-- ФОРМА СТВОРЕННЯ / РЕДАГУВАННЯ -->
+    <form id="userForm">
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="userLogin">Логін (Email або унікальний ID):</label>
+          <input type="text" id="userLogin" placeholder="Наприклад: mp24 або ivan@lkj.com" required>
+        </div>
+        <div class="form-group">
+          <label for="userPassword">Пароль:</label>
+          <input type="text" id="userPassword" placeholder="Введіть пароль" required>
+        </div>
+        <div class="form-group">
+          <label for="userFullName">ПІБ співробітника:</label>
+          <input type="text" id="userFullName" placeholder="Наприклад: Шевченко Андрій Петрович" required>
+        </div>
+        <div class="form-group">
+          <label for="userRole">Роль в системі:</label>
+          <select id="userRole" required>
+            <option value="mp">Медичний представник (МП)</option>
+            <option value="rm">Регіональний менеджер (РМ)</option>
+            <option value="admin">Адміністратор / Офіс</option>
+          </select>
+        </div>
+        <div class="form-group" id="managerGroup">
+          <label for="userManager">Керівник:</label>
+          <select id="userManager">
+            <option value="">-- Оберіть Керівника --</option>
+          </select>
+        </div>
+      </div>
+      <button type="submit" class="btn-save" id="submitBtn">💾 Зберегти співробітника в базу</button>
+    </form>
+
+    <h3>📋 Список існуючих співробітників</h3>
+    <div style="overflow-x: auto;">
+      <table id="usersTable">
+        <thead>
+          <tr>
+            <th>Логін / Email</th>
+            <th>ПІБ</th>
+            <th>Роль</th>
+            <th>Керівник</th>
+            <th>Дії</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td colspan="5" style="text-align: center; color: #888;">Завантаження бази співробітників...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="footer-container"></div>
+  <script>
+    // URL вашого розгорнутого Google Apps Script
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby6gDrwZw1pJG52yulXne3U6fgldpXvGgbWgzzCkS60i0lVvhoEtH_8FkhqgMtLb432WQ/exec";
+
+    let allUsers = [];
+
+    // Динамічне приховування вибору менеджера, якщо створюється Адмін або РМ
+    document.getElementById("userRole").addEventListener("change", (e) => {
+      const role = e.target.value;
+      const managerGroup = document.getElementById("managerGroup");
+      if (role === "admin") {
+        managerGroup.style.display = "none";
+        document.getElementById("userManager").value = "";
+      } else {
+        managerGroup.style.display = "block";
+      }
+    });
+
+    // Завантаження списку співробітників та заповнення селектів РМ
+    async function loadUsersData() {
+      try {
+        const response = await fetch(`${SCRIPT_URL}?action=getUsersHierarchy`);
+        const result = await response.json();
+
+        if (result.status === "success") {
+          allUsers = result.users || [];
+          renderTableAndManagers();
+        } else {
+          document.querySelector("#usersTable tbody").innerHTML = `<tr><td colspan="5" style="text-align: center; color: red;">Помилка завантаження даних</td></tr>`;
+        }
+      } catch (err) {
+        console.error("Помилка з'єднання:", err);
+      }
+    }
+
+    function renderTableAndManagers() {
+      const tbody = document.querySelector("#usersTable tbody");
+      const managerSelect = document.getElementById("userManager");
+      
+      tbody.innerHTML = "";
+      managerSelect.innerHTML = '<option value="">-- Оберіть РМ --</option>';
+
+      // Фільтруємо РМ для випадаючого списку
+      allUsers.forEach(u => {
+        if (u.role === "rm" || u.role === "admin") {
+          const opt = document.createElement("option");
+          opt.value = u.login;
+          opt.textContent = `${u.fullName} (${u.login})`;
+          managerSelect.appendChild(opt);
+        }
+
+        // Рендеримо рядок таблиці
+        let roleBadge = u.role === "admin" ? "🔴 Адмін" : (u.role === "rm" ? "🔵 РМ" : "🟢 МП");
+        tbody.innerHTML += `
+          <tr>
+            <td><strong>${u.login}</strong></td>
+            <td>${u.fullName}</td>
+            <td>${roleBadge}</td>
+            <td>${u.manager || "—"}</td>
+            <td>
+              <button class="btn-edit" onclick="editUser('${u.login}')">✏️ Редагувати</button>
+            </td>
+          </tr>
+        `;
+      });
+
+      if (allUsers.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #888;">База порожня. Створіть першого співробітника вище.</td></tr>`;
+      }
+    }
+
+    // Заповнення форми для редагування
+    window.editUser = function(login) {
+      const user = allUsers.find(u => u.login === login);
+      if (!user) return;
+
+      document.getElementById("userLogin").value = user.login;
+      document.getElementById("userLogin").readOnly = true; // Логін не міняємо при редагуванні
+      document.getElementById("userPassword").value = user.password || ""; // За бажанням
+      document.getElementById("userFullName").value = user.fullName;
+      document.getElementById("userRole").value = user.role;
+      document.getElementById("userManager").value = user.manager || "";
+      
+      if (user.role === "admin" || user.role === "rm") {
+        document.getElementById("managerGroup").style.display = "none";
+      } else {
+        document.getElementById("managerGroup").style.display = "block";
+      }
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    // Відправка форми на збереження
+    document.getElementById("userForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const payload = {
+        action: "saveUser",
+        login: document.getElementById("userLogin").value.trim(),
+        password: document.getElementById("userPassword").value.trim(),
+        fullName: document.getElementById("userFullName").value.trim(),
+        role: document.getElementById("userRole").value,
+        manager: document.getElementById("userManager").value
+      };
+
+      try {
+        await fetch(SCRIPT_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        alert("✅ Співробітника успішно збережено в базі!");
+        document.getElementById("userForm").reset();
+        document.getElementById("userLogin").readOnly = false;
+        document.getElementById("managerGroup").style.display = "block";
+        loadUsersData(); // Перезавантажуємо таблицю
+      } catch (err) {
+        alert("❌ Помилка при збереженні співробітника.");
+      }
+    });
+
+    // Завантажуємо дані при відкритті сторінки
+    document.addEventListener("DOMContentLoaded", loadUsersData);
+  </script>
+  <script src="./js/menu.js"></script>
+  <script src="headfoot.js"></script>
+  <script src="theme-toggle.js"></script>
+  <script src="tracking.js"></script>
+  <script src="scrbtn.js"></script>
+</body>
+</html>

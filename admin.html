@@ -1,288 +1,561 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Редактор продуктів | Адмін-панель</title>
-  <link rel="stylesheet" href="./css/main.css">
+  <link rel="shortcut icon" href="https://behealth.com.ua/assets/img/favicon.ico" type="img/png">
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Панель Адміністратора | Академія</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@700&family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/modern-normalize/1.1.0/modern-normalize.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="./css/main.css" />
   <style>
-    body { font-family: 'Roboto', sans-serif; background-color: #f4f6f9; padding: 20px; color: #333; }
-    .editor-container { max-width: 900px; margin: 30px auto; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-    h2 { color: #2c3e50; margin-top: 0; }
-    h3 { color: #007acc; border-bottom: 2px solid #eef; padding-bottom: 8px; margin-top: 30px; }
-    .form-group { margin-bottom: 15px; }
-    .form-group label { display: block; font-weight: 500; margin-bottom: 5px; font-size: 14px; }
-    .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 14px; box-sizing: border-box; }
-    .form-group textarea { height: 100px; resize: vertical; }
-    .btn-save { background: #27ae60; color: white; border: none; padding: 12px 20px; font-size: 16px; font-weight: bold; border-radius: 4px; cursor: pointer; width: 100%; margin-top: 20px; }
-    .btn-save:hover { background: #219653; }
-    .btn-create { background: #2980b9; color: white; border: none; padding: 8px 14px; font-size: 14px; border-radius: 4px; cursor: pointer; font-weight: 500; margin-bottom: 15px; display: inline-block; }
-    .btn-create:hover { background: #2471a3; }
-    .nav-back { display: inline-block; margin-bottom: 20px; color: #007acc; text-decoration: none; font-weight: 500; }
+    body { font-family: 'Roboto', sans-serif; background-color: #f4f6f9; color: #333; }
+    .admin-container { max-width: 1200px; margin: 30px auto; padding: 20px; }
+    .admin-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; margin-bottom: 30px; background: #fff; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    .admin-header h1 { margin: 0; font-size: 24px; color: #2c3e50; }
     
-    /* Стилі для модального вікна створення продукту */
-    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000; }
-    .modal-box { background: #fff; padding: 25px; border-radius: 8px; width: 100%; max-width: 400px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+    .admin-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 30px; }
+    .admin-card { background: #fff; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    .admin-card h3 { margin-top: 0; color: #007acc; font-size: 18px; border-bottom: 2px solid #eef; padding-bottom: 8px; }
+
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.9em; }
+    th, td { border: 1px solid #e2e8f0; padding: 10px; text-align: left; }
+    th { background-color: #007acc; color: white; font-weight: 600; }
+    tr:nth-child(even) { background-color: #f8fafc; }
+
+    .form-group { margin-bottom: 15px; }
+    .form-group label { display: block; font-weight: 500; margin-bottom: 5px; font-size: 0.9em; }
+    .form-group select, .form-group input, .form-group textarea { width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.95em; box-sizing: border-box; }
+    .form-group textarea { resize: vertical; height: 90px; }
+    
+    .btn-action { background-color: #27ae60; color: white; border: none; padding: 10px 18px; border-radius: 4px; cursor: pointer; font-weight: bold; transition: background 0.2s; width: 100%; }
+    .btn-action:hover { background-color: #219653; }
+    
+    .nav-links { display: flex; gap: 10px; flex-wrap: wrap; }
+    .nav-btn { background: #e0e6ed; color: #4a5568; padding: 8px 14px; text-decoration: none; font-size: 14px; font-weight: 500; }
+    .nav-btn:hover { background: #069606; color: white; }
   </style>
 </head>
 <body>
-  <div class="editor-container">
-    <a href="./admin_3.html" class="nav-back">&larr; Назад до адмін-панелі</a>
-    <h2>📦 Повний візуальний редактор сторінок продуктів</h2>
-    <p style="color: #64748b; margin-bottom: 15px;">Керуйте текстами всіх секцій препарату, зображеннями та посиланнями.</p>
 
-    <!-- Кнопка генерації / створення нового продукту -->
-    <button type="button" class="btn-create" id="openModalBtn">➕ Створити новий продукт</button>
+  <div id="header-container"></div>
 
-    <form id="productEditForm">
-      <div class="form-group">
-        <label for="fileSelect">Оберіть файл продукту:</label>
-        <select id="fileSelect" required>
-          <option value="">-- Оберіть файл --</option>
-          <option value="pantofytol.html">Пантофітол (pantofytol.html)</option>
-          <option value="eupatileks.html">Еупатілекс (eupatileks.html)</option>
-        </select>
+  <div class="admin-container">
+    <div class="admin-header">
+      <div>
+        <h1>🛠️ Панель управління та моніторингу L&D</h1>
+        <p style="margin: 5px 0 0 0; color: #64748b; font-size: 0.9em;">Керування активностями, призначення тренінгів та контроль завдань команди</p>
       </div>
-
-      <div class="form-group">
-        <label for="prodCategory">Категорія:</label>
-        <select id="prodCategory">
-          <option value="gastro">Здоров'я ШКТ</option>
-          <option value="female">Жіноче здоров'я</option>
-          <option value="male">Чоловіче здоров'я</option>
-          <option value="kidneys">Здоров'я нирок</option>
-          <option value="endo">Ендокринологія</option>
-          <option value="neuro">Неврологія</option>
-        </select>
-      </div>
-
-      <h3>Основні дані</h3>
-      <div class="form-group">
-        <label>Назва препарату та випуск (наприклад: Пантофітол (капсули №20)):</label>
-        <input type="text" id="prodTitle" required>
-      </div>
-      <div class="form-group">
-        <label>Короткий слоган / Підзаголовок (H3 у шапці):</label>
-        <input type="text" id="prodSubtitle">
-      </div>
-      <div class="form-group">
-        <label>Основний опис (Вступний абзац):</label>
-        <textarea id="prodDescShort"></textarea>
-      </div>
-      <div class="form-group">
-        <label>Шлях до головного зображення (ліворуч):</label>
-        <input type="text" id="imgMain">
-      </div>
-      <div class="form-group">
-        <label>Шлях до додаткового зображення (упаковка):</label>
-        <input type="text" id="imgSec">
-      </div>
-
-      <h3>Секції контенту (Блоки опису)</h3>
-      <div class="form-group">
-        <label>Блок 1 (Заголовок):</label><input type="text" id="sec1Title" value="Склад та активні речовини">
-        <label style="margin-top:5px;">Блок 1 (Текст / Список HTML):</label><textarea id="sec1Text"></textarea>
-      </div>
-      <div class="form-group">
-        <label>Блок 2 (Заголовок):</label><input type="text" id="sec2Title" value="Властивості компонентів">
-        <label style="margin-top:5px;">Блок 2 (Текст / Список HTML):</label><textarea id="sec2Text"></textarea>
-      </div>
-      <div class="form-group">
-        <label>Блок 3 (Заголовок):</label><input type="text" id="sec3Title" value="Рекомендації до застосування">
-        <label style="margin-top:5px;">Блок 3 (Текст / Список HTML):</label><textarea id="sec3Text"></textarea>
-      </div>
-      <div class="form-group">
-        <label>Блок 4 (Заголовок):</label><input type="text" id="sec4Title" value="Спосіб застосування та дози">
-        <label style="margin-top:5px;">Блок 4 (Текст):</label><textarea id="sec4Text"></textarea>
-      </div>
-      <div class="form-group">
-        <label>Блок 5 (Заголовок):</label><input type="text" id="sec5Title" value="Протипоказання">
-        <label style="margin-top:5px;">Блок 5 (Текст):</label><textarea id="sec5Text"></textarea>
-      </div>
-
-      <h3>Посилання для кнопок</h3>
-      <div class="form-group"><label>Кампейн:</label><input type="text" id="linkCampaign"></div>
-      <div class="form-group"><label>Відео (Вебінар):</label><input type="text" id="linkVideo"></div>
-      <div class="form-group"><label>Презентації (На візит):</label><input type="text" id="linkPresentation"></div>
-      <div class="form-group"><label>Інструкція:</label><input type="text" id="linkInstruction"></div>
-      <div class="form-group"><label>Тестування:</label><input type="text" id="linkTest"></div>
-      <div class="form-group"><label>Конкурентне оточення:</label><input type="text" id="linkCompetitor"></div>
-
-      <button type="submit" class="btn-save">💾 Зберегти зміни в базі продуктів</button>
-    </form>
-  </div>
-
-  <!-- Модальне вікно для створення нового продукту -->
-  <div class="modal-overlay" id="newProductModal">
-    <div class="modal-box">
-      <h3 style="margin-top: 0; color: #2980b9;">Створити новий продукт</h3>
-      <div class="form-group">
-        <label for="newFileName">Ім'я файлу (наприклад: <code>preparat.html</code>):</label>
-        <input type="text" id="newFileName" placeholder="preparat.html">
-      </div>
-      <div class="form-group">
-        <label for="newProdTitle">Назва препарату:</label>
-        <input type="text" id="newProdTitle" placeholder="Назва препарату">
-      </div>
-      <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
-        <button type="button" id="closeModalBtn" style="background: #cbd5e1; border: none; padding: 8px 14px; border-radius: 4px; cursor: pointer;">Скасувати</button>
-        <button type="button" id="confirmCreateBtn" style="background: #27ae60; color: white; border: none; padding: 8px 14px; border-radius: 4px; cursor: pointer; font-weight: bold;">Додати</button>
+      <div class="nav-links">
+        <a href="./calc3 analis.html" style="display: none;" id="analyticsBtn" class="nav-btn" target="_blank">📊 Дашборд аналітики</a>
+        <a href="./admin_products.html" style="display: none;" id="productEditorBtn" class="nav-btn" target="_blank">📦 Редактор продуктів</a>
+        <a href="./admin-users.html" style="display: none;" id="userEditorBtn" class="nav-btn" target="_blank">👤 Редактор користувачів</a>
+        <a href="./cabinet.html" class="nav-btn">👤 Мій кабінет</a>
+        <button style="background: #e74c3c; color: white; border: none; padding: 8px 14px; cursor: pointer; font-weight: 500;"><a onclick="showPasswordPrompt(event, './portfolio PV.html')" style="text-decoration: none; font-size: smaller; color: white;" class="text__work" href="./portfolio PV.html">Перейти до оцінки ПВ</a></button>
       </div>
     </div>
+
+    <!-- КАРТКИ ШВИДКОГО КЕРУВАННЯ -->
+    <div class="admin-grid">
+      
+      <!-- 1. Призначення тренінгів -->
+      <div class="admin-card">
+        <h3>🎯 Призначити самостійне проходження тренінгу</h3>
+        <form id="assignTrainingForm">
+          <div class="form-group">
+            <label for="targetUserEmailTrain">Співробітник:</label>
+            <select id="targetUserEmailTrain" required>
+              <option value="">-- Оберіть співробітника --</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="selectTraining">Оберіть курс / тренінг:</label>
+            <select id="selectTraining">
+              <option value="trening1.html">Visit structure (Базовий тренінг МП)</option>
+              <option value="trening2.html">Decision-maker (Тренінг по роботі з ЛПР)</option>
+              <option value="trening3.html">Presentation (Тренінг з презентації продукту)</option>
+              <option value="trening4.html">Business emailing (Тренінг з ділового листування)</option>
+              <option value="trening5.html">Handling objections (Робота з запереченнями)</option>
+              <option value="trening6.html">Dealing with competitor (Робота з конкурентами)</option>
+              <option value="trening7.html">Reviews writing (Тренінг з написання відгуків)</option>
+              <option value="trening8.html">Sales management (Тренінг з управління продажами)</option>
+              <option value="trening9.html">Targeting (Створення партнерської бази)</option>
+              <option value="trening10.html">Situational leadership (Ситуаційне лідерство)</option>
+              <option value="trening11.html">People development (Розвиток персоналу)</option>
+              <option value="trening12.html">Negotiation process (Тренінг з ведення переговорів)</option>
+              <option value="trening13.html">Presentation making (Тренінг з підготовки презентацій)</option>
+              <option value="trening14.html">Time management (Тренінг з тайм-менеджменту)</option>
+              <option value="trening15.html">Quality control (Тренінг з контролю якості)</option>
+              <option value="trening16.html">Call sales (Тренінг з дистанційного продажу)</option>
+              <option value="trening17.html">Discounts offering (Тренінг по роботі зі знижками)</option>
+              <option value="trening18.html">Conference activities (Тренінг по роботі на конференціях)</option>
+              <option value="trening19.html">Needs (Тренінг з визначення потреб)</option>
+              <option value="Trening20.html">Пропозиції (до бізнес тренера)</option>
+              <option value="trening21.html">Pharmacovigilance (Тренінг з фармаконагляду)</option>
+              <option value="trening22.html">Effective communication (Тренінг з ефективної комунікації)</option>
+              <option value="trening23.html">Pharm-unit work (Тренінг з роботи в аптечному юніті)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="deadlineTrain">Дедлайн виконання:</label>
+            <input type="date" id="deadlineTrain" required>
+          </div>
+          <button type="submit" class="btn-action">📌 Призначити тренінг</button>
+        </form>
+      </div>
+
+     <!-- 2. Призначення вивчення продукту (динамічне з таблиці) -->
+      <div class="admin-card">
+        <h3>💊 Призначити вивчення продуктів</h3>
+        <form id="assignProductForm">
+          <div class="form-group">
+            <label for="targetUserEmailProd">Співробітник:</label>
+            <select id="targetUserEmailProd" required>
+              <option value="">-- Оберіть співробітника --</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="selectProduct">Оберіть продукти (утримуйте Ctrl / Cmd для вибору кількох):</label>
+            <select id="selectProduct" multiple style="height: 150px;" required>
+              <option value="">⏳ Завантаження продуктів з бази...</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="deadlineProd">Дедлайн виконання:</label>
+            <input type="date" id="deadlineProd" required>
+          </div>
+          <button type="submit" class="btn-action" style="background: #2980b9;">📌 Призначити продукти</button>
+        </form>
+      </div>
+
+      <!-- 3. Запросити на тренінг (онлайн / офлайн) -->
+      <div class="admin-card">
+        <h3>📅 Запросити на тренінг (Онлайн / Офлайн)</h3>
+        <form id="inviteTrainingForm">
+          <div class="form-group">
+            <label for="targetUserEmailInvite">Співробітник:</label>
+            <select id="targetUserEmailInvite" required>
+              <option value="">-- Оберіть співробітника --</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="selectLiveTraining">Запланований тренінг / подія:</label>
+            <select id="selectLiveTraining">
+              <option value="https://docs.google.com/spreadsheets/d/1GfeebQH67JT0rTjtEi-m_lLT6YwmYft3/edit?usp=sharing">Графік запланованих тренінгів (Google Таблиця)</option>
+              <option value="online_session_1">Онлайн-сесія з практичного коучингу</option>
+              <option value="offline_workshop_1">Регіональний офлайн-воркшоп команди</option>
+            </select>
+          </div>
+          <button type="submit" class="btn-action" style="background: #8e44ad;">📨 Надіслати запрошення</button>
+        </form>
+      </div>
+
+      <!-- 4. Призначити вивчення стандартів -->
+      <div class="admin-card">
+        <h3>📋 Вивчення стандартів та інструкцій</h3>
+        <form id="assignStandardForm">
+          <div class="form-group">
+            <label for="targetUserEmailStand">Співробітник:</label>
+            <select id="targetUserEmailStand" required>
+              <option value="">-- Оберіть співробітника --</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="selectStandard">Оберіть стандарт / документ:</label>
+            <select id="selectStandard">
+              <option value="https://docs.google.com/spreadsheets/d/1v_kSyBYQ1Xm0PjlTHELeSSnHGyiSUAc6/edit?usp=drive_link">Критерії оцінки МП (Стандарти візитів)</option>
+              <option value="https://docs.google.com/spreadsheets/d/1F7tI9fugKmG2iFIO-SiWyED7zsxql6uL/edit?usp=sharing">Критерії оцінки РМ (Подвійні візити)</option>
+              <option value="ipr_document">Індівідуальний план розвитку (ІПР)</option>
+              <option value="https://drive.google.com/file/d/1OekIFsc1Lsd6IkKtSvQ5Mq8R9NsLrqk8/view?usp=sharing">Методичне керівництво (Стандарти МП)</option>
+              <option value="./stand1.html">Стандарти візитів МП (До різних партнерів)</option>
+              <option value="https://docs.google.com/spreadsheets/d/15ccVC93l0eneZAHQd5E5BEyWNl8AgdCL/edit?usp=sharing">Промо грід (Норми візитів)</option>
+              <option value="./tr/користування crm телефон.pdf">CRM: Керівництво по роботі в Quadrasoft</option>
+              <option value="./stand2.html">Корисні книги для саморозвитку</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="deadlineStand">Дедлайн виконання:</label>
+            <input type="date" id="deadlineStand" required>
+          </div>
+          <button type="submit" class="btn-action" style="background: #d35400;">📁 Призначити стандарт</button>
+        </form>
+      </div>
+
+    </div>
+
+    <!-- ТАБЛИЦЯ ОСТАННІХ ЗДАТИХ ЗВІТІВ ТА ОЦІНОК -->
+    <div class="admin-card" style="margin-bottom: 30px;">
+      <h3>📋 Останні оцінки та польові візити (Моніторинг)</h3>
+      <p style="font-size: 0.85em; color: #64748b;">Дані завантажуються в реальному часі з вашої Google Таблиці.</p>
+      <div style="overflow-x: auto;">
+        <table id="adminRecentTable">
+          <thead>
+            <tr>
+              <th>Дата</th>
+              <th>МП</th>
+              <th>РМ / Тренер</th>
+              <th>Візити (Місто / ЛПЗ)</th>
+              <th>Середній бал</th>
+              <th>Фокус розвитку</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td colspan="6" style="text-align: center; color: #888;">Завантаження даних...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
   </div>
 
+  <div id="footer-container"></div>
+
+  <script src="user.js"></script>
   <script>
-    const PRODUCTS_SCRIPT_URL = "ТУТ_ВСТАВТЕ_URL_СКРИПТА_ПРОДУКТІВ";
+    // URL вашого Google Apps Script
+    const PRODUCTS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbytaIqinqy-8usncHA3Ndhr10ob36OZ8t-2s5i-lq5o2KbnWAk56oYBY8DTS8WI6W0K/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby6gDrwZw1pJG52yulXne3U6fgldpXvGgbWgzzCkS60i0lVvhoEtH_8FkhqgMtLb432WQ/exec";
 
-    // Логіка модального вікна створення нового продукту
-    const modal = document.getElementById("newProductModal");
-    document.getElementById("openModalBtn").addEventListener("click", () => {
-      modal.style.display = "flex";
-    });
-    document.getElementById("closeModalBtn").addEventListener("click", () => {
-      modal.style.display = "none";
-    });
+    // Словник для тренінгів
+    const trainingNamesMap = {
+      "trening1.html": "Visit structure (Базовий тренінг МП)",
+      "trening2.html": "Decision-maker (Тренінг по роботі з ЛПР)",
+      "trening3.html": "Presentation (Тренінг з презентації продукту)",
+      "trening4.html": "Business emailing (Тренінг з ділового листування)",
+      "trening5.html": "Handling objections (Робота з запереченнями)",
+      "trening6.html": "Dealing with competitor (Робота з конкурентами)",
+      "trening7.html": "Reviews writing (Тренінг з написання відгуків)",
+      "trening8.html": "Sales management (Тренінг з управління продажами)",
+      "trening9.html": "Targeting (Створення партнерської бази)",
+      "trening10.html": "Situational leadership (Ситуаційне лідерство)",
+      "trening11.html": "People development (Розвиток персоналу)",
+      "trening12.html": "Negotiation process (Тренінг з ведення переговорів)",
+      "trening13.html": "Presentation making (Тренінг з підготовки презентацій)",
+      "trening14.html": "Time management (Тренінг з тайм-менеджменту)",
+      "trening15.html": "Quality control (Тренінг з контролю якості)",
+      "trening16.html": "Call sales (Тренінг з дистанційного продажу)",
+      "trening17.html": "Discounts offering (Тренінг по роботі зі знижками)",
+      "trening18.html": "Conference activities (Тренінг по роботі на конференціях)",
+      "trening19.html": "Needs (Тренінг з визначення потреб)",
+      "Trening20.html": "Пропозиції (до бізнес тренера)",
+      "trening21.html": "Pharmacovigilance (Тренінг з фармаконагляду)",
+      "trening22.html": "Effective communication (Тренінг з ефективної комунікації)",
+      "trening23.html": "Pharm-unit work (Тренінг з роботи в аптечному юніті)"
+    };
 
-    document.getElementById("confirmCreateBtn").addEventListener("click", () => {
-      const fileName = document.getElementById("newFileName").value.trim();
-      const title = document.getElementById("newProdTitle").value.trim();
+    // Назви категорій для групування продуктів
+    const categoryNames = {
+      "female": "Жіноче здоров'я",
+      "male": "Чоловіче здоров'я",
+      "kidneys": "Здоров'я нирок",
+      "gastro": "Здоров'я ШКТ",
+      "endo": "Ендокринологія",
+      "neuro": "Неврологія"
+    };
 
-      if (!fileName || !fileName.endsWith(".html")) {
-        alert("Будь ласка, введіть коректну назву файлу, що закінчується на .html (наприклад: product.html)");
+    document.addEventListener("DOMContentLoaded", async () => {
+      const allowedEmail = localStorage.getItem("allowedEmail");
+      const userRole = localStorage.getItem("userRole");
+
+      if (!allowedEmail) {
+        alert("Будь ласка, увійдіть на головній сторінці!");
+        window.location.href = "./index.html";
         return;
       }
-      if (!title) {
-        alert("Будь ласка, введіть назву продукту!");
-        return;
-      }
 
-      const select = document.getElementById("fileSelect");
+      // Перевірка прав доступу до панелей (тільки для Admin)
+      const analyticsBtn = document.getElementById("analyticsBtn");
+      const productEditorBtn = document.getElementById("productEditorBtn");
+      const userEditorBtn = document.getElementById("userEditorBtn");
       
-      // Перевіряємо, чи немає вже такого файла в списку
-      let exists = false;
-      for (let i = 0; i < select.options.length; i++) {
-        if (select.options[i].value === fileName) {
-          exists = true;
-          break;
-        }
+      if (userRole === "admin" || allowedEmail === "Admin") {
+        if (analyticsBtn) analyticsBtn.style.display = "inline-block";
+        if (productEditorBtn) productEditorBtn.style.display = "inline-block";
+        if (userEditorBtn) userEditorBtn.style.display = "inline-block";
       }
 
-      if (!exists) {
-        const opt = document.createElement("option");
-        opt.value = fileName;
-        opt.textContent = `${title} (${fileName})`;
-        select.appendChild(opt);
-      }
-
-      // Обираємо щойно створений продукт у випадаючому списку
-      select.value = fileName;
-      document.getElementById("prodTitle").value = title;
-
-      // Очищуємо інші поля для нового продукту
-      document.getElementById("prodSubtitle").value = "";
-      document.getElementById("prodDescShort").value = "";
-      document.getElementById("imgMain").value = "";
-      document.getElementById("imgSec").value = "";
-      document.getElementById("sec1Text").value = "";
-      document.getElementById("sec2Text").value = "";
-      document.getElementById("sec3Text").value = "";
-      document.getElementById("sec4Text").value = "";
-      document.getElementById("sec5Text").value = "";
-      document.getElementById("linkCampaign").value = "";
-      document.getElementById("linkVideo").value = "";
-      document.getElementById("linkPresentation").value = "";
-      document.getElementById("linkInstruction").value = "";
-      document.getElementById("linkTest").value = "";
-      document.getElementById("linkCompetitor").value = "";
-
-      modal.style.display = "none";
-      document.getElementById("newFileName").value = "";
-      document.getElementById("newProdTitle").value = "";
-      
-      alert(`✅ Продукт "${title}" створено та додано до списку! Заповніть дані та натисніть «Зберегти».`);
-    });
-
-    // Завантаження даних при виборі продукту зі списку
-    document.getElementById("fileSelect").addEventListener("change", async (e) => {
-      const fileName = e.target.value;
-      if (!fileName) return;
-
+      // 1. Динамічне завантаження списку продуктів із таблиці
       try {
-        const response = await fetch(`${PRODUCTS_SCRIPT_URL}?product=${fileName}`);
-        const data = await response.json();
-        if (data.status === "success") {
-          document.getElementById("prodCategory").value = data.category || "";
-          document.getElementById("prodTitle").value = data.title || "";
-          document.getElementById("prodSubtitle").value = data.subtitle || "";
-          document.getElementById("prodDescShort").value = data.descShort || "";
-          document.getElementById("imgMain").value = data.imgMain || "";
-          document.getElementById("imgSec").value = data.imgSec || "";
+        const res = await fetch(`${PRODUCTS_SCRIPT_URL}?action=getCatalog`);
+        const json = await res.json();
+        if (json.status === "success" && json.data) {
+          const selectProduct = document.getElementById("selectProduct");
+          selectProduct.innerHTML = ""; 
+
+          const groups = {};
+          json.data.forEach(prod => {
+            if (prod.filename) {
+              const cat = prod.cat || prod.category || "gastro";
+              if (!groups[cat]) groups[cat] = [];
+              groups[cat].push(prod);
+              trainingNamesMap[prod.filename] = prod.title;
+            }
+          });
+
+          for (const [catKey, catLabel] of Object.entries(categoryNames)) {
+            if (groups[catKey] && groups[catKey].length > 0) {
+              const optgroup = document.createElement("optgroup");
+              optgroup.label = catLabel;
+
+              groups[catKey].forEach(prod => {
+                const opt = document.createElement("option");
+                opt.value = prod.filename;
+                opt.textContent = prod.title;
+                optgroup.appendChild(opt);
+              });
+
+              selectProduct.appendChild(optgroup);
+            }
+          }
+        }
+      } catch (err) {
+        console.error("Помилка завантаження каталогів продуктів:", err);
+      }
+
+      // 2. Динамічне завантаження співробітників з урахуванням ієрархії з бекенду
+      try {
+        const resUsers = await fetch(`${SCRIPT_URL}?action=getUsersHierarchy`);
+        const jsonUsers = await resUsers.json();
+
+        if (jsonUsers.status === "success" && jsonUsers.users) {
+          const allUsers = jsonUsers.users;
           
-          document.getElementById("sec1Title").value = data.sec1Title || "Склад та активні речовини";
-          document.getElementById("sec1Text").value = data.sec1Text || "";
-          document.getElementById("sec2Title").value = data.sec2Title || "Властивості компонентів";
-          document.getElementById("sec2Text").value = data.sec2Text || "";
-          document.getElementById("sec3Title").value = data.sec3Title || "Рекомендації до застосування";
-          document.getElementById("sec3Text").value = data.sec3Text || "";
-          document.getElementById("sec4Title").value = data.sec4Title || "Спосіб застосування та дози";
-          document.getElementById("sec4Text").value = data.sec4Text || "";
-          document.getElementById("sec5Title").value = data.sec5Title || "Протипоказання";
-          document.getElementById("sec5Text").value = data.sec5Text || "";
+          // Фільтруємо згідно з правами: Адмін бачить усіх, РМ бачить себе і своїх підлеглих
+          let availableUsers = [];
+          if (userRole === "admin" || allowedEmail === "Admin") {
+            availableUsers = allUsers;
+          } else if (userRole === "rm") {
+            availableUsers = allUsers.filter(u => u.login === allowedEmail || u.manager === allowedEmail);
+          } else {
+            availableUsers = allUsers.filter(u => u.login === allowedEmail);
+          }
 
-          document.getElementById("linkCampaign").value = data.linkCampaign || "";
-          document.getElementById("linkVideo").value = data.linkVideo || "";
-          document.getElementById("linkPresentation").value = data.linkPresentation || "";
-          document.getElementById("linkInstruction").value = data.linkInstruction || "";
-          document.getElementById("linkTest").value = data.linkTest || "";
-          document.getElementById("linkCompetitor").value = data.linkCompetitor || "";
+          const selectElements = [
+            document.getElementById("targetUserEmailTrain"), 
+            document.getElementById("targetUserEmailProd"),
+            document.getElementById("targetUserEmailInvite"),
+            document.getElementById("targetUserEmailStand")
+          ];
+
+          selectElements.forEach(select => {
+            if (select) {
+              select.innerHTML = '<option value="">-- Оберіть співробітника --</option>';
+              availableUsers.forEach(emp => {
+                const option = document.createElement("option");
+                option.value = emp.login;
+                option.textContent = `${emp.fullName} (${emp.login})`;
+                select.appendChild(option);
+              });
+            }
+          });
         }
       } catch (err) {
-        console.log("Новий файл, дані ще відсутні в базі.");
+        console.error("Помилка завантаження ієрархії користувачів:", err);
       }
-    });
 
-    // Збереження даних у таблицю
-    document.getElementById("productEditForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      
-      const payload = {
-        filename: document.getElementById("fileSelect").value,
-        category: document.getElementById("prodCategory").value,
-        title: document.getElementById("prodTitle").value,
-        subtitle: document.getElementById("prodSubtitle").value,
-        descShort: document.getElementById("prodDescShort").value,
-        imgMain: document.getElementById("imgMain").value,
-        imgSec: document.getElementById("imgSec").value,
-        sec1Title: document.getElementById("sec1Title").value,
-        sec1Text: document.getElementById("sec1Text").value,
-        sec2Title: document.getElementById("sec2Title").value,
-        sec2Text: document.getElementById("sec2Text").value,
-        sec3Title: document.getElementById("sec3Title").value,
-        sec3Text: document.getElementById("sec3Text").value,
-        sec4Title: document.getElementById("sec4Title").value,
-        sec4Text: document.getElementById("sec4Text").value,
-        sec5Title: document.getElementById("sec5Title").value,
-        sec5Text: document.getElementById("sec5Text").value,
-        linkCampaign: document.getElementById("linkCampaign").value,
-        linkVideo: document.getElementById("linkVideo").value,
-        linkPresentation: document.getElementById("linkPresentation").value,
-        linkInstruction: document.getElementById("linkInstruction").value,
-        linkTest: document.getElementById("linkTest").value,
-        linkCompetitor: document.getElementById("linkCompetitor").value
-      };
+      // --- МОДАЛКА ЗАПРОШЕННЯ ---
+      const inviteModal = document.getElementById("inviteModal");
+      const inviteFormCard = document.getElementById("inviteTrainingForm");
+      const closeModalBtn = document.getElementById("closeInviteModal");
+      let selectedEmpEmail = "";
+      let selectedEmpName = "";
 
-      try {
-        await fetch(PRODUCTS_SCRIPT_URL, {
-          method: "POST",
-          mode: "no-cors",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
+      if (inviteFormCard) {
+        inviteFormCard.addEventListener("submit", (e) => {
+          e.preventDefault();
+          const targetSelect = document.getElementById("targetUserEmailInvite");
+          selectedEmpEmail = targetSelect.value;
+          selectedEmpName = targetSelect.selectedOptions[0].textContent;
+
+          if (!selectedEmpEmail) { alert("Оберіть співробітника!"); return; }
+          inviteModal.style.display = "flex";
         });
-        alert("✅ Усі секції продукту успішно збережено в базі даних!");
-      } catch (err) {
-        alert("❌ Помилка при збереженні.");
+      }
+
+      if (closeModalBtn) {
+        closeModalBtn.addEventListener("click", () => {
+          inviteModal.style.display = "none";
+        });
+      }
+
+      const modalInviteForm = document.getElementById("modalInviteForm");
+      if (modalInviteForm) {
+        modalInviteForm.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const theme = document.getElementById("inviteTheme").value.trim();
+          const dateTime = document.getElementById("inviteDateTime").value;
+          const location = document.getElementById("inviteLocation").value.trim();
+
+          const datePart = dateTime.split("T")[0];
+          const trainingDetailsText = `📌 Тренінг: "${theme}" | 📅 Дедлайн: ${datePart} (Час: ${dateTime.split("T")[1]}) | 📍 Де: ${location}`;
+
+          try {
+            await fetch(SCRIPT_URL, {
+              method: "POST",
+              mode: "no-cors",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ action: "assignTraining", email: selectedEmpEmail, trainingUrl: trainingDetailsText })
+            });
+            
+            alert(`✅ Запрошення успішно надіслано: ${selectedEmpName}!`);
+            inviteModal.style.display = "none";
+            modalInviteForm.reset();
+            inviteFormCard.reset();
+          } catch (error) {
+            alert("❌ Помилка при надсиланні запрошення.");
+          }
+        });
+      }
+
+      // Обробка призначення тренінгу з дедлайном
+      const assignTrainingForm = document.getElementById("assignTrainingForm");
+      if (assignTrainingForm) {
+        assignTrainingForm.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const email = document.getElementById("targetUserEmailTrain").value;
+          const training = document.getElementById("selectTraining").value;
+          const deadline = document.getElementById("deadlineTrain").value;
+          const empName = document.getElementById("targetUserEmailTrain").selectedOptions[0].textContent;
+
+          if (!email) { alert("Оберіть співробітника!"); return; }
+          if (!deadline) { alert("Оберіть дедлайн!"); return; }
+
+          const trainingNameReadable = trainingNamesMap[training] || training;
+          const textPayload = `📌 Тренінг: ${trainingNameReadable} | 📅 Дедлайн: ${deadline} | посилання:${training}`;
+
+          try {
+            await fetch(SCRIPT_URL, {
+              method: "POST",
+              mode: "no-cors",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ action: "assignTraining", email: email, trainingUrl: textPayload })
+            });
+            alert(`✅ Тренінг успішно призначено (${empName}, дедлайн: ${deadline})!`);
+            assignTrainingForm.reset();
+          } catch (error) {
+            alert("❌ Помилка при призначенні тренінгу.");
+          }
+        });
+      }
+
+      // Обробка призначення кількох продуктів з дедлайном
+      const assignProductForm = document.getElementById("assignProductForm");
+      if (assignProductForm) {
+        assignProductForm.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const email = document.getElementById("targetUserEmailProd").value;
+          const productSelect = document.getElementById("selectProduct");
+          const deadline = document.getElementById("deadlineProd").value;
+          const empName = document.getElementById("targetUserEmailProd").selectedOptions[0].textContent;
+
+          const selectedOptions = Array.from(productSelect.selectedOptions);
+          
+          if (!email) { alert("Оберіть співробітника!"); return; }
+          if (selectedOptions.length === 0) { alert("Оберіть хоча б один продукт!"); return; }
+          if (!deadline) { alert("Оберіть дедлайн!"); return; }
+
+          const productNames = selectedOptions.map(opt => trainingNamesMap[opt.value] || opt.textContent);
+          const productValues = selectedOptions.map(opt => opt.value);
+
+          const textPayload = `💊 Вивчення продуктів: ${productNames.join(", ")} | 📅 Дедлайн: ${deadline} | посилання:${productValues.join(",")}`;
+
+          try {
+            await fetch(SCRIPT_URL, {
+              method: "POST",
+              mode: "no-cors",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ action: "assignTraining", email: email, trainingUrl: textPayload })
+            });
+            alert(`✅ Вивчення продуктів (${productNames.length} шт.) успішно призначено (${empName}, дедлайн: ${deadline})!`);
+            assignProductForm.reset();
+          } catch (error) {
+            alert("❌ Помилка при призначенні продуктів.");
+          }
+        });
+      }
+
+      // Обробка призначення стандартів з дедлайном
+      const assignStandardForm = document.getElementById("assignStandardForm");
+      if (assignStandardForm) {
+        assignStandardForm.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const email = document.getElementById("targetUserEmailStand").value;
+          const standardUrl = document.getElementById("selectStandard").value;
+          const deadline = document.getElementById("deadlineStand").value;
+          const empName = document.getElementById("targetUserEmailStand").selectedOptions[0].textContent;
+
+          if (!email) { alert("Оберіть співробітника!"); return; }
+          if (!deadline) { alert("Оберіть дедлайн!"); return; }
+
+          const textPayload = `📋 Стандарт / Інструкція | 📅 Дедлайн: ${deadline} | посилання:${standardUrl}`;
+
+          try {
+            await fetch(SCRIPT_URL, {
+              method: "POST",
+              mode: "no-cors",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ action: "assignTraining", email: email, trainingUrl: textPayload })
+            });
+            alert(`✅ Стандарт успішно призначено (${empName}, дедлайн: ${deadline})!`);
+            assignStandardForm.reset();
+          } catch (error) {
+            alert("❌ Помилка при призначенні стандарту.");
+          }
+        });
       }
     });
   </script>
+
+  <!-- Автоматичне спрямування всіх кнопок "Назад" на кабінет -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const backLinks = document.querySelectorAll("a, button");
+      backLinks.forEach(el => {
+        if (el.textContent.trim() === "Назад" || el.innerText.trim() === "Назад") {
+          if (el.tagName === "A") el.href = "./cabinet.html";
+          else if (el.tagName === "BUTTON") el.onclick = () => { window.location.href = "./cabinet.html"; };
+        }
+        const textSpan = el.querySelector(".text__work");
+        if (textSpan && textSpan.textContent.trim() === "Назад") {
+          let parentLink = textSpan.closest("a");
+          if (parentLink) parentLink.href = "./cabinet.html";
+        }
+      });
+    });
+  </script>
+
+  <script src="./js/menu.js"></script>
+  <script src="headfoot.js"></script>
+  <script src="theme-toggle.js"></script>
+  <script src="tracking.js"></script>
+  <script src="scrbtn.js"></script>
+
+  <!-- МОДАЛЬНЕ ВІКНО ДЛЯ ЗАПРОШЕННЯ НА ТРЕНІНГ -->
+  <div id="inviteModal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); align-items: center; justify-content: center;">
+    <div style="background: #fff; padding: 30px; border-radius: 8px; width: 100%; max-width: 500px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); position: relative;">
+      <h3 style="margin-top: 0; color: #8e44ad; margin-bottom: 20px;">📅 Запрошення на тренінг</h3>
+      <form id="modalInviteForm">
+        <div class="form-group">
+          <label for="inviteTheme">Тема тренінгу:</label>
+          <input type="text" id="inviteTheme" placeholder="Наприклад: Майстерність комунікації" required>
+        </div>
+        <div class="form-group">
+          <label for="inviteDateTime">Дата та час:</label>
+          <input type="datetime-local" id="inviteDateTime" required>
+        </div>
+        <div class="form-group">
+          <label for="inviteLocation">Посилання на Zoom або адреса проведення:</label>
+          <input type="text" id="inviteLocation" placeholder="https://zoom.us/j/... або офіс компанії" required>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+          <button type="button" id="closeInviteModal" style="background: #cbd5e1; border: none; padding: 10px 16px; border-radius: 4px; cursor: pointer; font-weight: 500;">Скасувати</button>
+          <button type="submit" class="btn-action" style="background: #8e44ad; width: auto;">📤 Надіслати запрошення</button>
+        </div>
+      </form>
+    </div>
+  </div>
 </body>
 </html>

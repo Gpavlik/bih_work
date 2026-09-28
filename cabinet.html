@@ -29,7 +29,6 @@
     .cabinet-card {
       background: var(--bg-card, #ffffff);
       border: 1px solid #e1e1e1;
-      border-radius: 8px;
       padding: 25px;
       box-shadow: 0 4px 6px rgba(0,0,0,0.05);
       transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -79,17 +78,32 @@
       text-decoration: none;
     }
     .logout-btn {
-      background-color: #f44336;
-      color: white;
+      background-color: #f5f4fa;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
       border: none;
       padding: 10px 20px;
-      border-radius: 4px;
       cursor: pointer;
       font-weight: 500;
       transition: background 0.2s;
     }
     .logout-btn:hover {
       background-color: #d32f2f;
+      color: white;
+    }
+    .admin-nav-btn {
+      background-color: #f5f4fa;
+      border: none;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      padding: 10px 20px;
+      text-decoration: none;
+      font-weight: 500;
+      display: inline-block;
+      transition: background 0.2s;
+    }
+    .admin-nav-btn:hover {
+      background-color: #069606;
+      color: white;
+      text-decoration: none;
     }
     .task-badge {
       display: inline-block;
@@ -124,22 +138,25 @@
             <h1 class="title" style="font-size: 32px; margin-bottom: 10px;">Особистий кабінет</h1>
             <p class="subtitle" id="welcomeUserText">Вітаємо у навчальному просторі академії!</p>
           </div>
-          <button class="logout-btn" id="logoutBtn" type="button">Вийти з кабінету</button>
+          <div style="display: flex; gap: 10px; align-items: center;">
+            <!-- Кнопка повернення до адмін-панелі (спочатку прихована, з'явиться для admin або rm) -->
+            <a href="./admin.html" id="goToAdminBtn" class="admin-nav-btn" style="display: none;">🛠️ Панель управління</a>
+            <button class="logout-btn" id="logoutBtn" type="button">Вийти з кабінету</button>
+          </div>
         </div>
 
         <div class="cabinet-grid">
           
           <!-- 1. Профіль користувача з аватаркою -->
           <div class="cabinet-card" style="text-align: center; border-left: 4px solid #069606;">
-            
             <img id="userAvatarImg" class="user-avatar" src="" alt="Аватар користувача">
             <h3 style="justify-content: center;" id="userNameField">Користувач</h3>
             <p><strong>Email:</strong> <span id="userEmailField">завантаження...</span></p>
             <div style="text-align: left;">
-            <p><strong>Статус доступу:</strong> <span style="color: green; font-weight: 500;">Активний (Партнер)</span></p>
-            <p><strong style="color: black; font-weight: 700;">Ваші досягнення в навчальному модулі:</strong></p>
-            <p style="margin-top: 10px;"><strong>Пройдено сценаріїв візитів:</strong> <span id="visitedCount">0</span></p>
-            <p><strong>Статус тестування:</strong> <span id="testStatus" style="color: #757575;">Очікує на проходження</span></p>
+              <p><strong>Статус доступу:</strong> <span style="color: green; font-weight: 500;">Активний (Партнер)</span></p>
+              <p><strong style="color: black; font-weight: 700;">Ваші досягнення в навчальному модулі:</strong></p>
+              <p style="margin-top: 10px;"><strong>Пройдено сценаріїв візитів:</strong> <span id="visitedCount">0</span></p>
+              <p><strong>Статус тестування:</strong> <span id="testStatus" style="color: #757575;">Очікує на проходження</span></p>
             </div>
           </div>
 
@@ -164,7 +181,8 @@
               <li style="border: none; padding: 4px 0; background: transparent;"><a href="./portfolio standart.html" class="cabinet-link" style="margin: 0; background: #ae8c27;">Збірка стандартів</a></li>
             </ul>
           </div>
-   <!-- 5. БЛОК: Останні новини та оновлення на порталі -->
+          
+          <!-- 5. БЛОК: Останні новини та оновлення на порталі -->
           <div class="cabinet-card" style="grid-column: 1 / -1; border-left: 4px solid #ff9800;">
             <h3>📢 Останні оновлення на порталі (23.09.2026)</h3>
             <div style="background-color: #f9f9f9; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; margin-top: 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);">
@@ -186,11 +204,11 @@
   <script src="user.js"></script>
   <!-- Скрипт логіки кабінету -->
   <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwHH90cAKBQBr94_X1EeIwyaKv8xjowOagm48hguizZIlQjWsz10fwchWBduPLWdNXMhQ/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby6gDrwZw1pJG52yulXne3U6fgldpXvGgbWgzzCkS60i0lVvhoEtH_8FkhqgMtLb432WQ/exec";
 
-    // Функція визначення аватара за вашими правилами
-    function getUserAvatarPath(userKey, userFullName, userScore = 0) {
-      if (userKey === "admin") {
+    // Функція визначення аватара за роллю та ПІБ
+    function getUserAvatarPath(role, userFullName, userScore = 0) {
+      if (role === "admin") {
         return "./images2/avatar/ad.jpg";
       }
 
@@ -205,20 +223,19 @@
         }
       }
 
-      if (userKey.startsWith("rm")) {
+      if (role === "rm") {
         return isFemale ? "./images2/avatar/frm.jpg" : "./images2/avatar/mrm.jpg";
       }
 
-      // Грейди для МП за балами
-      let gradeCode = "j"; // Junior (0-20)
+      let gradeCode = "j"; 
       if (userScore > 80) {
-        gradeCode = "p"; // Profi
+        gradeCode = "p"; 
       } else if (userScore > 60) {
-        gradeCode = "e"; // Expert
+        gradeCode = "e"; 
       } else if (userScore > 40) {
-        gradeCode = "s"; // Senior
+        gradeCode = "s"; 
       } else if (userScore > 20) {
-        gradeCode = "m"; // Middle
+        gradeCode = "m"; 
       }
 
       let genderCode = isFemale ? "f" : "m";
@@ -226,34 +243,40 @@
     }
 
     document.addEventListener("DOMContentLoaded", async () => {
-      const allowedEmail = localStorage.getItem("allowedEmail");
+      const allowedEmail = localStorage.getItem("allowedEmail"); // У нас тут зберігається логін співробітника
+      const userRole = localStorage.getItem("userRole");         // Зберігаємо роль (admin, rm, mp)
+      const userFullName = localStorage.getItem("userFullName") || "Співробітник";
+
       if (!allowedEmail) {
         window.location.href = "./index.html";
         return;
       }
 
+      // Перевірка прав доступу: показуємо кнопку адмін-панелі для admin або rm
+      const goToAdminBtn = document.getElementById("goToAdminBtn");
+      if (goToAdminBtn && (userRole === "admin" || userRole === "rm")) {
+        goToAdminBtn.style.display = "inline-block";
+      }
+
       const emailField = document.getElementById("userEmailField");
       const nameField = document.getElementById("userNameField");
-      const fullName = (typeof users !== 'undefined' && users[allowedEmail]) ? users[allowedEmail] : "Співробітник";
 
       if (emailField) emailField.textContent = allowedEmail;
-      if (nameField) nameField.textContent = fullName;
+      if (nameField) nameField.textContent = userFullName;
 
       let completedModules = 0;
       const totalModules = 30;
 
-      // Визначаємо та встановлюємо аватар
-      let userScore = completedModules * 5; // Умовний розрахунок балів
-      const avatarPath = getUserAvatarPath(allowedEmail, fullName, userScore);
+      let userScore = completedModules * 5; 
+      const avatarPath = getUserAvatarPath(userRole, userFullName, userScore);
       const avatarImg = document.getElementById("userAvatarImg");
       if (avatarImg) {
         avatarImg.src = avatarPath;
         avatarImg.onerror = () => {
-          avatarImg.src = "./images2/avatar/default.jpg"; // Запасний варіант
+          avatarImg.src = "./images2/avatar/default.jpg"; 
         };
       }
 
-      // Словник назв тренінгів та продуктів
       const trainingNamesMap = {
         "trening1.html": "Visit structure (Базовий тренінг МП)",
         "trening2.html": "Decision-maker (Тренінг по роботі з ЛПР)",
@@ -329,6 +352,9 @@
               let rawUrl = item.courseUrl || "";
               let displayText = rawUrl;
               let actionButtons = "";
+              
+              // Якщо РМ або Адмін дивиться завдання, виводимо кому воно призначене
+              let assignedUserLabel = item.userEmail && item.userEmail !== allowedEmail ? `👤 Для співробітника: ${item.userEmail}` : "";
 
               if (rawUrl.includes("посилання:")) {
                 const parts = rawUrl.split("| посилання:");
@@ -354,6 +380,7 @@
 
               coursesContainer.innerHTML += `
                 <li>
+                  ${assignedUserLabel ? `<span style="font-size: 11px; font-weight: bold; color: #2980b9; display: block; margin-bottom: 2px;">${assignedUserLabel}</span>` : ""}
                   <div style="font-weight: 500; color: #2c3e50; margin-bottom: 4px; word-break: break-word;">${displayText}</div>
                   <span style="font-size: 11px; color: #64748b; display: block; margin-bottom: 4px;">Статус: ${item.status}</span>
                   ${actionButtons}
@@ -361,7 +388,7 @@
               `;
             });
           } else {
-            coursesContainer.innerHTML = `<p style="color: #757575; font-size: 13px;">Наразі немає нових призначень від керівника.</p>`;
+            coursesContainer.innerHTML = `<p style="color: #757575; font-size: 13px;">Наразі немає нових призначень.</p>`;
           }
         }
       } catch (error) {
@@ -375,6 +402,8 @@
       if (logoutBtn) {
         logoutBtn.addEventListener("click", () => {
           localStorage.removeItem("allowedEmail");
+          localStorage.removeItem("userRole");
+          localStorage.removeItem("userFullName");
           window.location.href = "./index.html";
         });
       }
@@ -413,6 +442,6 @@
   <script src="headfoot.js"></script>
   <script src="theme-toggle.js"></script>
   <script src="tracking.js"></script>
-<script src="zoom.js"></script>
+  <script src="zoom.js"></script>
 </body>
 </html>

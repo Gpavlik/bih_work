@@ -1,9 +1,8 @@
 document.addEventListener("DOMContentLoaded", () => {
   const audio = document.getElementById("bg-audio");
-  if (!audio) return;
 
-  // 1. Плавний старт (фейдін) при першій взаємодії (клік, скрол, рух) (1 раз за сесію)
-  if (!sessionStorage.getItem("audioPlayed")) {
+  // 1. Плавний старт (фейдін) при першій взаємодії (1 раз за сесію)
+  if (audio && !sessionStorage.getItem("audioPlayed")) {
     audio.volume = 0;
     
     const playWithFadeIn = () => {
@@ -43,59 +42,75 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // 2. Обробка форми входу: перевірка пошти, ефект безодні, плавне затухання звуку та редірект
+  // 2. Обробка форми входу: перевірка логіна та пароля через бекенд
   const loginForm = document.getElementById("loginForm");
   
   if (loginForm) {
-    loginForm.addEventListener("submit", function(event) {
+    loginForm.addEventListener("submit", async function(event) {
       event.preventDefault();
 
-      const emailInput = document.getElementById("emailInput");
-      const email = emailInput ? emailInput.value.trim().toLowerCase() : "";
+      const loginInput = document.getElementById("loginInput");
+      const passwordInput = document.getElementById("passwordInput");
+      
+      const login = loginInput ? loginInput.value.trim() : "";
+      const password = passwordInput ? passwordInput.value.trim() : "";
 
-      const emailsList = [
-          "rm1", "rm2", "rm3", 
-          "mp11", "mp12", "mp13", 
-          "mp21", "mp22", "mp23", 
-          "mp31", "mp32", "mp33", 
-          "admin"
-      ];
+      if (!login || !password) {
+        alert("Будь ласка, заповніть логін та пароль!");
+        return;
+      }
 
-      if (emailsList.includes(email)) {
-        localStorage.setItem("allowedEmail", email);
+      // URL вашого нового веб-додатка Google Apps Script
+      const SCRIPT_LOGIN_URL = "https://script.google.com/macros/s/AKfycby6gDrwZw1pJG52yulXne3U6fgldpXvGgbWgzzCkS60i0lVvhoEtH_8FkhqgMtLb432WQ/exec";
 
-        // Визначаємо куди спрямувати користувача (адмінка чи кабінет)
-        const adminEmails = ["rm1", "rm2", "rm3", "admin"]; 
-        const targetPage = adminEmails.includes(email) ? "./admin.html" : "./cabinet.html";
+      try {
+        const response = await fetch(`${SCRIPT_LOGIN_URL}?action=login&login=${encodeURIComponent(login)}&password=${encodeURIComponent(password)}`);
+        const result = await response.json();
 
-        // Візуальний ефект занурення
-        document.body.classList.add("abyss-effect");
+        if (result.status === "success") {
+          // Зберігаємо дані сесії
+          localStorage.setItem("allowedEmail", login);
+          localStorage.setItem("userRole", result.role); // admin, rm, mp
+          localStorage.setItem("userFullName", result.fullName);
 
-        // Плавне затухання звуку перед переходом
-        if (!audio.paused && audio.volume > 0) {
-          let currentVolume = audio.volume;
-          const fadeDuration = 1500; 
-          const steps = 30;
-          const stepTime = fadeDuration / steps;
-          const volumeStep = currentVolume / steps;
+          // Визначаємо сторінку призначення залежно від ролі
+          let targetPage = "./cabinet.html";
+          if (result.role === "admin" || result.role === "rm") {
+            targetPage = "./admin.html";
+          }
 
-          const fadeOutInterval = setInterval(() => {
-            if (audio.volume > volumeStep) {
-              audio.volume -= volumeStep;
-            } else {
-              audio.volume = 0;
-              clearInterval(fadeOutInterval);
-            }
-          }, stepTime);
+          // Візуальний ефект занурення
+          document.body.classList.add("abyss-effect");
+
+          // Плавне затухання звуку перед переходом (якщо аудіо елемент існує)
+          if (audio && !audio.paused && audio.volume > 0) {
+            let currentVolume = audio.volume;
+            const fadeDuration = 1500; 
+            const steps = 30;
+            const stepTime = fadeDuration / steps;
+            const volumeStep = currentVolume / steps;
+
+            const fadeOutInterval = setInterval(() => {
+              if (audio.volume > volumeStep) {
+                audio.volume -= volumeStep;
+              } else {
+                audio.volume = 0;
+                clearInterval(fadeOutInterval);
+              }
+            }, stepTime);
+          }
+
+          // Перехід на відповідну сторінку через 1.2 секунди
+          setTimeout(() => {
+            window.location.href = targetPage;
+          }, 1200);
+
+        } else {
+          alert("❌ Помилка входу: " + (result.message || "Невірний логін або пароль"));
         }
-
-        // Перехід на сторінку через 1.2 секунди
-        setTimeout(() => {
-          window.location.href = targetPage;
-        }, 1200);
-
-      } else {
-        alert("Доступ заборонено!");
+      } catch (err) {
+        console.error("Помилка з'єднання з сервером авторизації:", err);
+        alert("❌ Помилка підключення до сервера бази даних.");
       }
     });
   }

@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Редактор продуктів | Адмін-панель</title>
+  <link rel="shortcut icon" href="https://behealth.com.ua/assets/img/favicon.ico" type="img/png">
   <link rel="stylesheet" href="./css/main.css">
   <style>
     body { font-family: 'Roboto', sans-serif; background-color: #f4f6f9; padding: 20px; color: #333; }
@@ -27,8 +28,9 @@
   </style>
 </head>
 <body>
+  <div id="header-container"></div>
   <div class="editor-container">
-    <a href="./admin_3.html" class="nav-back">&larr; Назад до адмін-панелі</a>
+    <a href="./admin.html" class="nav-back">&larr; Назад до адмін-панелі</a>
     <h2>📦 Повний візуальний редактор сторінок продуктів</h2>
     <p style="color: #64748b; margin-bottom: 15px;">Керуйте текстами всіх секцій препарату, зображеннями та посиланнями.</p>
 
@@ -38,9 +40,7 @@
       <div class="form-group">
         <label for="fileSelect">Оберіть файл продукту:</label>
         <select id="fileSelect" required>
-          <option value="">-- Оберіть файл --</option>
-          <option value="pantofytol.html">Пантофітол (pantofytol.html)</option>
-          <option value="eupatileks.html">Еупатілекс (eupatileks.html)</option>
+          <option value="">⏳ Завантаження бази продуктів...</option>
         </select>
       </div>
 
@@ -70,8 +70,12 @@
         <input type="text" id="prodSubtitle">
       </div>
       <div class="form-group">
-        <label>Основний опис (Вступний абзац):</label>
+        <label>Короткий опис (для картки в каталозі):</label>
         <textarea id="prodDescShort"></textarea>
+      </div>
+      <div class="form-group">
+        <label>Повний опис (для детальної сторінки продукту):</label>
+        <textarea id="descLong"></textarea>
       </div>
 
       <!-- Вибір зображень через провідник комп'ютера -->
@@ -141,9 +145,42 @@
       </div>
     </div>
   </div>
-
+<div id="footer-container"></div>
+  <script src="./js/menu.js"></script>
+  <script src="theme-toggle.js"></script>
+  <script src="tracking.js"></script>
+  <script src="headfoot.js"></script>
+<script src="scrbtn.js"></script>
   <script>
-    const PRODUCTS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzCYxWnF5nDnmJQA3BKVTSbdPlz39PeHTZzClctcC41YGWDas7vmv85iqCD8jE4gDHO/exec";
+    const PRODUCTS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbytaIqinqy-8usncHA3Ndhr10ob36OZ8t-2s5i-lq5o2KbnWAk56oYBY8DTS8WI6W0K/exec";
+
+    // 1. АВТОМАТИЧНЕ ЗАВАНТАЖЕННЯ СПИСКУ ПРОДУКТІВ З ТАБЛИЦІ
+    document.addEventListener("DOMContentLoaded", async () => {
+      const select = document.getElementById("fileSelect");
+      try {
+        const response = await fetch(`${PRODUCTS_SCRIPT_URL}?action=getCatalog`);
+        const result = await response.json();
+        
+        if (result.status === "success") {
+          select.innerHTML = '<option value="">-- Оберіть файл продукту --</option>'; // Очищаємо текст завантаження
+          
+          result.data.forEach(prod => {
+            if (prod.filename) {
+              const opt = document.createElement("option");
+              opt.value = prod.filename;
+              // Виводимо красиву назву, а в дужках залишаємо ID файлу
+              opt.textContent = `${prod.title || 'Без назви'} (${prod.filename})`;
+              select.appendChild(opt);
+            }
+          });
+        } else {
+          select.innerHTML = '<option value="">❌ Помилка завантаження бази</option>';
+        }
+      } catch (err) {
+        console.error("Помилка завантаження списку продуктів:", err);
+        select.innerHTML = '<option value="">❌ Помилка з\'єднання з сервером</option>';
+      }
+    });
 
     // Функція транслітерації для генерації назви файлу англійською
     function transliterate(text) {
@@ -222,6 +259,7 @@
       // Очищення полів
       document.getElementById("prodSubtitle").value = "";
       document.getElementById("prodDescShort").value = "";
+      document.getElementById("descLong").value = "";
       document.getElementById("imgMain").value = "";
       document.getElementById("imgMainPreview").style.display = "none";
       document.getElementById("imgSec").value = "";
@@ -251,7 +289,7 @@
       }
     });
 
-    // Завантаження даних продукту з таблиці
+    // Завантаження даних продукту з таблиці при виборі зі списку
     document.getElementById("fileSelect").addEventListener("change", async (e) => {
       const fileName = e.target.value;
       if (!fileName) return;
@@ -266,6 +304,7 @@
           document.getElementById("prodTitle").value = data.title || "";
           document.getElementById("prodSubtitle").value = data.subtitle || "";
           document.getElementById("prodDescShort").value = data.descShort || "";
+          document.getElementById("descLong").value = data.descLong || ""; 
           
           if (data.imgMain) {
             document.getElementById("imgMain").value = data.imgMain;
@@ -301,7 +340,7 @@
       }
     });
 
-    // Збереження даних (включаючи автоматичне додавання картки в портфоліо)
+    // Збереження даних (відправка payload)
     document.getElementById("productEditForm").addEventListener("submit", async (e) => {
       e.preventDefault();
       
@@ -310,6 +349,7 @@
       const title = document.getElementById("prodTitle").value;
       const subtitle = document.getElementById("prodSubtitle").value;
       const descShort = document.getElementById("prodDescShort").value;
+      const descLong = document.getElementById("descLong").value;
       const imgMain = document.getElementById("imgMain").value;
 
       const payload = {
@@ -318,6 +358,7 @@
         title: title,
         subtitle: subtitle,
         descShort: descShort,
+        descLong: descLong,
         imgMain: imgMain,
         imgSec: document.getElementById("imgSec").value,
         sec1Title: document.getElementById("sec1Title").value,
@@ -337,19 +378,19 @@
         linkTest: document.getElementById("linkTest").value,
         linkCompetitor: document.getElementById("linkCompetitor").value,
         
-        // Інструкція для скрипта портфоліо
+        // Інструкція для скрипта портфоліо (залишаємо для зворотної сумісності)
         updatePortfolio: true,
         portfolioCardHtml: `
           <li class="description">
             <div class="overflow">
               <picture><img src="${imgMain}" alt="${title}" width="450" height="294" loading="lazy" /></picture>
-              <a class="atext" href="./${filename}">
+              <a class="atext" href="./product.html?id=${filename}">
                 <div class="bg"><p class="bg__uppertext">${subtitle || title}</p></div>
               </a>
             </div>
             <div class="text">
               <h3 class="text__work">${title}</h3>
-              <p class="text__sub">Дієтична добавка</p>
+              <p class="text__sub">${descShort || 'Дієтична добавка'}</p>
             </div>
           </li>
         `
@@ -362,7 +403,7 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload)
         });
-        alert("✅ Продукт успішно збережено, а посилання в портфоліо оновлено!");
+        alert("✅ Продукт успішно збережено в базі!");
       } catch (err) {
         alert("❌ Помилка при збереженні.");
       }

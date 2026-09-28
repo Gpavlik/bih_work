@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="uk">
-<head><link rel="shortcut icon" href="https://behealth.com.ua/assets/img/favicon.ico" type="img/png">
+<head>
+  <link rel="shortcut icon" href="https://behealth.com.ua/assets/img/favicon.ico" type="img/png">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title></title>
@@ -9,6 +10,74 @@
   <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@700&family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/modern-normalize/1.1.0/modern-normalize.css" integrity="sha512-Y0MM+V6ymRKN2zStTqzQ227DWhhp4Mzdo6gnlRnuaNCbc+YN/ZH0sBCLTM4M0oSy9c9VKiCvd4Jk44aCLrNS5Q==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <link rel="stylesheet" href="./css/main.css" />
+      <style>
+      /* Базовий список */
+.nav-list {
+  display: flex;
+  gap: 12px;
+  list-style: none;
+  padding: 0;
+  margin: 0 auto;
+  justify-content: center;
+}
+
+/* Спільні стилі для кнопок та посилань-кнопок */
+.btn-link {
+  display: inline-block;
+  padding: 8px 16px;
+  font-size: 0.875rem; /* аналог font-size: smaller */
+  text-decoration: none;
+  color: inherit;
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  text-align: center;
+}
+.btn-link:hover {
+  background-color: #069606;
+  text-decoration: none;
+  color: #fff;
+
+}
+
+/* Стан недоступного посилання (замість inline-стилів для "Тестування") */
+.btn-link.is-disabled {
+  opacity: 0.5;
+  pointer-events: none;
+  cursor: default;
+}
+
+/* Випадаюче меню */
+.has-dropdown {
+  position: relative;
+}
+
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: #fff;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  border-radius: 4px;
+  min-width: 160px;
+  z-index: 10;
+}
+
+.dropdown-menu a {
+  display: block;
+  padding: 8px 12px;
+  text-decoration: none;
+  color: #333;
+}
+
+/* Відображення меню при наведенні */
+.has-dropdown:hover .dropdown-menu {
+  display: block;
+  transition: opacity 0.3s ease;
+}
+    </style>
 </head>
 <body>
   <div id="page-loader">
@@ -20,17 +89,48 @@
       <div class="container">
         <h2 class="title" style="color: black; text-align: center; font-size: 24px; margin-bottom: 25px;"></h2>
         <h3 class="product-subtitle" style="text-align: center;"></h3>
-        <ul class="button">
-          <li class="button-section"><button class="btn" type="button"><a id="campaign" style="text-decoration: none; font-size: smaller;" class="text__work" href="#">Кампейн</a></button></li>
-          <li class="button-section"><button class="btn" type="button" style="text-decoration: none; font-size: smaller;">Відео</button><div class="menu"><a id="video" href="#" target="_blank" rel="noopener noreferrer">Вебінар</a></div></li>
-          <li class="button-section"><button class="btn" type="button" style="text-decoration: none; font-size: smaller;">Презентації</button><div class="menu"><a href="#" target="_blank" rel="noopener noreferrer">Навчальна Презентація</a><a id="presentation" href="#" target="_blank" rel="noopener noreferrer">На візит</a></div></li>
-          <li class="button-section"><button class="btn" type="button"><a style="text-decoration: none; font-size: smaller;" class="text__work" href="#">Інструкція</a></button></li>
-          <li class="button-section"><button class="btn" type="button"><a style="text-decoration: none; font-size: smaller;" class="text__work" href="#">Конкурентне оточення</a></button></li>
-          <li class="button-section"><div class="test-wrapper"><button class="btn" type="button"><a id="test" style="text-decoration: none; font-size: smaller; opacity: 0.5; pointer-events: none;" class="text__work" href="#" target="_blank" rel="noopener noreferrer">Тестування</a></button></div></li>
-          <li class="button-section"><button class="btn" type="button" onclick="event.stopPropagation()"><a style="text-decoration: none; font-size: smaller;" class="text__work" href="./portfolio products.html">До переліку</a></button></li>
-          <li class="button-section"><button class="btn" type="button"><a style="text-decoration: none; font-size: smaller;" class="text__work" href="./portfolio products.html#kidneys">Мій кабінет</a></button></li>
-                
-        </ul>
+        <nav class="navigation">
+  <ul class="nav-list">
+    <li class="nav-item">
+      <a id="campaign" href="#" class="btn-link" target="_blank" rel="noopener noreferrer">Кампейн</a>
+    </li>
+
+    <li class="nav-item has-dropdown">
+      <button class="btn-link" type="button">Відео</button>
+      <div class="dropdown-menu">
+        <a id="video" href="#" target="_blank" rel="noopener noreferrer">Вебінар</a>
+      </div>
+    </li>
+
+    <li class="nav-item has-dropdown">
+      <button class="btn-link" type="button">Презентації</button>
+      <div class="dropdown-menu">
+        <a href="#" target="_blank" rel="noopener noreferrer">Навчальна Презентація</a>
+        <a id="presentation" href="#" target="_blank" rel="noopener noreferrer">На візит</a>
+      </div>
+    </li>
+
+    <li class="nav-item">
+      <a href="#" class="btn-link" target="_blank" rel="noopener noreferrer">Інструкція</a>
+    </li>
+
+    <li class="nav-item">
+      <a href="#" class="btn-link" target="_blank" rel="noopener noreferrer">Конкурентне оточення</a>
+    </li>
+
+    <li class="nav-item">
+      <a id="test" href="#" class="btn-link" target="_blank" rel="noopener noreferrer">Тестування</a>
+    </li>
+
+    <li class="nav-item">
+      <a href="./portfolio products.html" class="btn-link">До переліку</a>
+    </li>
+
+    <li class="nav-item">
+      <a href="./portfolio products.html#kidneys" class="btn-link">Мій кабінет</a>
+    </li>
+  </ul>
+</nav>
         <div class="product-details">
           <div class="product-layout">
             <img class="product-image zoomable-img" src="" alt="" width="450" height="294" loading="lazy" />
@@ -71,16 +171,48 @@
             <h4></h4>
             <p></p>
           </div>
-        </div>
-         <ul class="button">
-          <li class="button-section"><button class="btn" type="button"><a id="campaign" style="text-decoration: none; font-size: smaller;" class="text__work" href="#">Кампейн</a></button></li>
-          <li class="button-section"><button class="btn" type="button" style="text-decoration: none; font-size: smaller;">Відео</button><div class="menu"><a id="video" href="#" target="_blank" rel="noopener noreferrer">Вебінар</a></div></li>
-          <li class="button-section"><button class="btn" type="button" style="text-decoration: none; font-size: smaller;">Презентації</button><div class="menu"><a href="#" target="_blank" rel="noopener noreferrer">Навчальна Презентація</a><a id="presentation" href="#" target="_blank" rel="noopener noreferrer">На візит</a></div></li>
-          <li class="button-section"><button class="btn" type="button"><a style="text-decoration: none; font-size: smaller;" class="text__work" href="#">Інструкція</a></button></li>
-          <li class="button-section"><button class="btn" type="button"><a style="text-decoration: none; font-size: smaller;" class="text__work" href="#">Конкурентне оточення</a></button></li>
-          <li class="button-section"><div class="test-wrapper"><button class="btn" type="button"><a id="test" style="text-decoration: none; font-size: smaller; opacity: 0.5; pointer-events: none;" class="text__work" href="#" target="_blank" rel="noopener noreferrer">Тестування</a></button></div></li>
-          <li class="button-section"><button class="btn" type="button" onclick="event.stopPropagation()"><a style="text-decoration: none; font-size: smaller;" class="text__work" href="./index.html">До переліку</a></button></li>
-        </ul>
+        <nav class="navigation">
+  <ul class="nav-list">
+    <li class="nav-item">
+      <a id="campaign" href="#" class="btn-link" target="_blank" rel="noopener noreferrer">Кампейн</a>
+    </li>
+
+    <li class="nav-item has-dropdown">
+      <button class="btn-link" type="button">Відео</button>
+      <div class="dropdown-menu">
+        <a id="video" href="#" target="_blank" rel="noopener noreferrer">Вебінар</a>
+      </div>
+    </li>
+
+    <li class="nav-item has-dropdown">
+      <button class="btn-link" type="button">Презентації</button>
+      <div class="dropdown-menu">
+        <a href="#" target="_blank" rel="noopener noreferrer">Навчальна Презентація</a>
+        <a id="presentation" href="#" target="_blank" rel="noopener noreferrer">На візит</a>
+      </div>
+    </li>
+
+    <li class="nav-item">
+      <a href="#" class="btn-link" target="_blank" rel="noopener noreferrer">Інструкція</a>
+    </li>
+
+    <li class="nav-item">
+      <a href="#" class="btn-link" target="_blank" rel="noopener noreferrer">Конкурентне оточення</a>
+    </li>
+
+    <li class="nav-item">
+      <a id="test" href="#" class="btn-link" target="_blank" rel="noopener noreferrer">Тестування</a>
+    </li>
+
+    <li class="nav-item">
+      <a href="./portfolio products.html" class="btn-link">До переліку</a>
+    </li>
+
+    <li class="nav-item">
+      <a href="./portfolio products.html#kidneys" class="btn-link">Мій кабінет</a>
+    </li>
+  </ul>
+</nav>
       </div>
     </section>
   </main>

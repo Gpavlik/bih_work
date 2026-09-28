@@ -3,15 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Фармацевтичне Тестування: 16 Продуктів</title>
+    <title>Тестування Гастро напрямок</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="./css/main.css" />
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f8fafc;
-            color: #1e293b;
+            background-color: #d9dbd9;
+            color: #66f43e;
         }
         .custom-scrollbar::-webkit-scrollbar {
             width: 6px;
@@ -24,16 +25,16 @@
             border-radius: 4px;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: #069606;
+            background: green;
         }
     </style>
 </head>
 <body class="min-h-screen flex flex-col justify-between custom-scrollbar">
-
-    <header class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+<div id="header-container"></div>
+    <dheader class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm" style="backdrop-filter: blur(10px); background-color: rgba(255, 255, 255, 0.8); margin-top: 10%;">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
             <div class="flex items-center space-x-3 cursor-pointer" onclick="navigateTo('home')">
-                <div class="bg-blue-600 text-white p-2.5 rounded-xl shadow-md">
+                <div class="bg-green-600 text-white p-2.5 rounded-xl shadow-md">
                     <i data-lucide="pill" class="w-6 h-6"></i>
                 </div>
                 <div>
@@ -42,24 +43,24 @@
                 </div>
             </div>
             <div class="flex items-center space-x-3">
-                <button onclick="navigateTo('home')" id="nav-home-btn" class="hidden sm:flex items-center space-x-2 text-sm font-medium text-slate-600 hover:text-blue-600 px-3 py-2 rounded-lg hover:bg-slate-100 transition-colors">
+                <button onclick="navigateTo('home')" id="nav-home-btn" class="hidden sm:flex items-center space-x-2 text-sm font-medium text-slate-600 hover:text-green-600 px-3 py-2 rounded-lg hover:bg-slate-100 transition-colors">
                     <i data-lucide="layout-grid" class="w-4 h-4"></i>
                     <span>Всі тести</span>
                 </button>
             </div>
         </div>
-    </header>
+    </dheader>
 
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow w-full" id="main-content">
         <!-- Content dynamically injected via JavaScript -->
     </main>
 
-    <footer class="bg-white border-t border-slate-200 py-6 mt-12">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-sm text-slate-500">
-            <p>© 2026 Навчальний Фармацевтичний Портал Тестування. Всі права захищено.</p>
-        </div>
-    </footer>
-
+   <div id="footer-container"></div>
+  <script src="./js/menu.js"></script>
+  <script src="theme-toggle.js"></script>
+  <script src="tracking.js"></script>
+  <script src="headfoot.js"></script>
+<script src="scrbtn.js"></script>
     <script>
         const productsData = [
             {
@@ -263,7 +264,7 @@
                 category: "Гастроентерологія",
                 subtitle: "Комплексний рослинний прокінетик",
                 badge: "Ряст + Іпомея ніл",
-                color: "indigo",
+                color: "yellow",
                 questions: [
                     {
                         q: "Які рослинні екстракти входять до складу препарату Пантофітол?",
@@ -328,7 +329,7 @@
                 category: "Гастроентерологія",
                 subtitle: "Рослинний цитопротектор шлунка",
                 badge: "Artemisia argyi 60 мг",
-                color: "green",
+                color: "yellow",
                 questions: [
                     {
                         q: "Що є активною речовиною препарату Еупатілекс?",
@@ -653,7 +654,7 @@
                 category: "Нефрологія / Ендокринологія",
                 subtitle: "Селективний фосфат-біндер",
                 badge: "Ацетат Ca 667 мг",
-                color: "yellow",
+                color: "green",
                 questions: [
                     {
                         q: "Яка сполука та в якій дозі є активним компонентом КАЛЬБІНДУ і скільки елементарного кальцію вона містить?",
@@ -913,7 +914,7 @@
                 category: "Неврологія / Метаболізм",
                 subtitle: "Морський магній Simag™ + В13 + В6",
                 badge: "Simag™ + Вітамін B13",
-                color: "blue",
+                color: "green",
                 questions: [
                     {
                         q: "Які активні речовини та в яких дозах містяться в 1 капсулі НЕЙРОМІНЕРІЙ?",
@@ -1148,12 +1149,12 @@
             const main = document.getElementById('main-content');
             
             let html = `
-                <div class="bg-gradient-to-r from-blue-700 to-indigo-800 text-white rounded-2xl p-6 sm:p-8 mb-8 shadow-xl">
+                <div class="bg-gradient-to-r from-green-700 to-yellow-800 text-white rounded-2xl p-6 sm:p-8 mb-8 shadow-xl">
                     <div class="max-w-3xl">
-                        <span class="inline-block bg-blue-500/30 text-blue-100 text-xs font-semibold px-3 py-1 rounded-full mb-3 uppercase tracking-wider border border-blue-400/30">Платформа тестування</span>
-                        <h2 class="text-2xl sm:text-3xl font-extrabold mb-3">База знань з 16 фармацевтичних продуктів</h2>
-                        <p class="text-blue-100 text-sm sm:text-base leading-relaxed mb-6">
-                            Оберіть необхідний препарат нижче для проходження інтерактивного тесту (5 запитань вище середньої складності) або використайте кнопку "Копіювати посилання" для інтеграції тесту на сайт.
+                        <span class="inline-block bg-green-500/30 text-green-100 text-xs font-semibold px-3 py-1 rounded-full mb-3 uppercase tracking-wider border border-green-400/30">Тести гастро напрямок</span>
+                        <h2 class="text-2xl sm:text-3xl font-extrabold mb-3">Перевір свої знання</h2>
+                        <p class="text-green-100 text-sm sm:text-base leading-relaxed mb-6">
+                            Оберіть необхідний препарат нижче для проходження інтерактивного тесту
                         </p>
                     </div>
                 </div>
@@ -1168,9 +1169,9 @@
                         <div class="p-5">
                             <div class="flex justify-between items-start mb-3">
                                 <span class="text-xs font-semibold px-2.5 py-1 rounded-md bg-slate-100 text-slate-700">${p.category}</span>
-                                <span class="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-100">5 питань</span>
+                                <span class="text-xs font-medium text-green-600 bg-green-50 px-2 py-0.5 rounded border border-green-100">5 питань</span>
                             </div>
-                            <h3 class="text-lg font-bold text-slate-900 group-hover:text-blue-600 transition-colors">${p.name}</h3>
+                            <h3 class="text-lg font-bold text-slate-900 group-hover:text-green-600 transition-colors">${p.name}</h3>
                             <p class="text-xs font-medium text-slate-500 mb-3">${p.subtitle}</p>
                             <div class="inline-block bg-slate-50 text-slate-600 text-xs px-2.5 py-1 rounded border border-slate-200 font-mono mb-4">
                                 ${p.badge}
@@ -1178,11 +1179,8 @@
                         </div>
 
                         <div class="bg-slate-50 px-5 py-3 border-t border-slate-100 flex items-center justify-between gap-2">
-                            <button onclick="copyProductLink('${p.id}')" class="flex items-center space-x-1 text-xs font-medium text-slate-600 hover:text-blue-600 bg-white border border-slate-200 hover:border-blue-300 px-3 py-1.5 rounded-lg transition-all" title="Копіювати пряме посилання">
-                                <i data-lucide="link" class="w-3.5 h-3.5"></i>
-                                <span>URL</span>
-                            </button>
-                            <button onclick="navigateTo('quiz', '${p.id}')" class="flex-grow flex items-center justify-center space-x-1 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 px-4 py-1.5 rounded-lg transition-colors shadow-sm">
+                          
+                            <button onclick="navigateTo('quiz', '${p.id}')" class="flex-grow flex items-center justify-center space-x-1 text-xs font-semibold text-white bg-green-600 hover:bg-green-700 px-4 py-1.5 rounded-lg transition-colors shadow-sm">
                                 <span>Пройти тест</span>
                                 <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
                             </button>
@@ -1231,17 +1229,10 @@
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
                         <div>
                             <div class="flex items-center space-x-2">
-                                <span class="text-xs font-semibold px-2.5 py-0.5 rounded bg-blue-100 text-blue-800">${product.category}</span>
+                                <span class="text-xs font-semibold px-2.5 py-0.5 rounded bg-green-100 text-green-800">${product.category}</span>
                                 <span class="text-xs text-slate-400">• Тест перевірки знань</span>
                             </div>
                             <h2 class="text-2xl font-bold text-slate-900 mt-1">${product.name}</h2>
-                        </div>
-                        <div class="flex items-center space-x-2 bg-slate-50 p-2 rounded-lg border border-slate-200 text-xs">
-                            <span class="text-slate-500 font-mono text-[11px] truncate max-w-[200px] sm:max-w-[300px]">${fullUrl}</span>
-                            <button onclick="copyProductLink('${product.id}')" class="bg-white hover:bg-slate-100 text-slate-700 px-2.5 py-1 rounded border border-slate-300 font-medium transition-colors flex items-center space-x-1">
-                                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
-                                <span>Скопіювати</span>
-                            </button>
                         </div>
                     </div>
 
@@ -1251,7 +1242,7 @@
                         <span>${Math.round(((currentQIndex + 1) / totalQ) * 100)}% Завершено</span>
                     </div>
                     <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-                        <div class="bg-blue-600 h-full transition-all duration-300" style="width: ${((currentQIndex + 1) / totalQ) * 100}%"></div>
+                        <div class="bg-green-600 h-full transition-all duration-300" style="width: ${((currentQIndex + 1) / totalQ) * 100}%"></div>
                     </div>
                 </div>
 
@@ -1268,11 +1259,11 @@
                 html += `
                     <label onclick="selectAnswer(${idx})" class="flex items-start p-4 rounded-xl border cursor-pointer transition-all ${
                         isSelected 
-                            ? 'border-blue-600 bg-blue-50/50 ring-2 ring-blue-500/20' 
+                            ? 'border-green-600 bg-green-50/50 ring-2 ring-green-500/20' 
                             : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50'
                     }">
                         <div class="flex items-center h-5 mt-0.5">
-                            <input type="radio" name="option" ${isSelected ? 'checked' : ''} class="h-4 w-4 text-blue-600 border-slate-300 focus:ring-blue-500">
+                            <input type="radio" name="option" ${isSelected ? 'checked' : ''} class="h-4 w-4 text-green-600 border-slate-300 focus:ring-green-500">
                         </div>
                         <span class="ml-3 text-sm sm:text-base text-slate-700 font-medium">${option}</span>
                     </label>
@@ -1295,7 +1286,7 @@
                                 <span>Завершити тест</span>
                             </button>
                         ` : `
-                            <button onclick="nextQuestion()" class="flex items-center space-x-1 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 px-5 py-2.5 rounded-lg transition-colors shadow-sm">
+                            <button onclick="nextQuestion()" class="flex items-center space-x-1 text-sm font-semibold text-white bg-green-600 hover:bg-green-700 px-5 py-2.5 rounded-lg transition-colors shadow-sm">
                                 <span>Далі</span>
                                 <i data-lucide="chevron-right" class="w-4 h-4"></i>
                             </button>
@@ -1360,7 +1351,7 @@
                             <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
                             <span>Пройти знову</span>
                         </button>
-                        <button onclick="navigateTo('home')" class="flex items-center space-x-2 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg transition-colors">
+                        <button onclick="navigateTo('home')" class="flex items-center space-x-2 text-xs font-semibold text-white bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg transition-colors">
                             <i data-lucide="layout-grid" class="w-3.5 h-3.5"></i>
                             <span>До всіх тестів</span>
                         </button>
@@ -1396,7 +1387,7 @@
                         </div>
 
                         <div class="bg-white p-3 rounded-lg border border-slate-200 text-xs text-slate-600 flex items-start space-x-2">
-                            <i data-lucide="info" class="w-4 h-4 text-blue-500 flex-shrink-0 mt-0.5"></i>
+                            <i data-lucide="info" class="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5"></i>
                             <div>
                                 <span class="font-semibold text-slate-700">Фармацевтичне обґрунтування:</span> ${q.explanation}
                             </div>

@@ -6,6 +6,7 @@
     <title>Тестування Гастро, Ендокринологія та Неврологія (16 продуктів)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="shortcut icon" href="https://behealth.com.ua/assets/img/favicon.ico" type="img/png">
     <link rel="stylesheet" href="./css/main.css" />
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
@@ -2292,6 +2293,325 @@
         }
 
         document.addEventListener('DOMContentLoaded', initApp);
+        // ==========================================
+// 2. ЛОГІКА ДОДАТКУ (РАНДОМІЗАЦІЯ + ТАЙМЕР)
+// ==========================================
+
+
+// Функція Фішера-Йейтса для перемішування масиву
+function shuffleArray(array) {
+    let currentIndex = array.length, randomIndex;
+    while (currentIndex !== 0) {
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex--;
+        [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+    }
+    return array;
+}
+
+function initApp() {
+    window.addEventListener('hashchange', handleRouting);
+    handleRouting();
+}
+
+function handleRouting() {
+    const hash = window.location.hash.replace('#', '');
+    if (!hash || hash === 'home') {
+        showCatalogView();
+    } else {
+        const product = productsData.find(p => p.id === hash);
+        if (product) showQuizView(product.id);
+        else showCatalogView();
+    }
+    if (window.lucide) lucide.createIcons();
+}
+
+function navigateTo(view, productId = null) {
+    if (view === 'home') window.location.hash = 'home';
+    else if (view === 'quiz' && productId) window.location.hash = productId;
+}
+
+function showCatalogView() {
+    currentProductId = null;
+    clearInterval(quizState.timerInterval);
+    const main = document.getElementById('main-content');
+    
+    let html = `
+        <div class="mb-8 bg-white p-6 border border-slate-200 border-l-4 border-l-[#069606]">
+            <h1 class="text-2xl font-bold text-slate-900 mb-2">Навчальне тестування БІХЕЛС — Частина 2</h1>
+            <p class="text-sm text-slate-600">Оберіть продукт для проходження тестування. Кожне тестування складається з 10 питань. <b>Питання та варіанти відповідей перемішуються випадковим чином</b>. На кожне питання відводиться <b>1 хвилина</b>.</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    `;
+
+    productsData.forEach(p => {
+        html += `
+            <div class="bg-white rounded-none border border-slate-200 border-l-4 border-l-[#069606] shadow-sm hover:shadow-md transition-all flex flex-col justify-between overflow-hidden group">
+                <div class="p-5">
+                    <div class="flex justify-between items-start mb-3">
+                        <span class="text-xs font-bold px-2.5 py-1 bg-slate-100 text-slate-700 uppercase tracking-wide">${p.category}</span>
+                        <span class="text-xs font-bold text-[#069606] bg-green-50 px-2.5 py-1 border border-green-200">10 питань</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 group-hover:text-[#069606] transition-colors mb-1">${p.name}</h3>
+                    <p class="text-xs font-medium text-slate-500 mb-3">${p.subtitle}</p>
+                    <div class="inline-block bg-slate-50 text-slate-700 text-xs px-2.5 py-1.5 border border-slate-200 font-mono mb-4">${p.badge}</div>
+                </div>
+                <div class="bg-slate-50 px-5 py-3 border-t border-slate-100 flex items-center justify-between gap-2">
+                    <button onclick="navigateTo('quiz', '${p.id}')" class="flex-grow flex items-center justify-center space-x-1 text-xs font-bold btn-custom px-4 py-2 rounded-none shadow-sm">
+                        <span>Пройти тест</span>
+                        <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                    </button>
+                </div>
+            </div>
+        `;
+    });
+    html += `</div>`;
+    main.innerHTML = html;
+}
+
+function showQuizView(productId) {
+    currentProductId = productId;
+    const product = productsData.find(p => p.id === productId);
+    if (!product) return showCatalogView();
+
+    // Глибоке копіювання питань для збереження оригіналу
+    let shuffledQuestions = JSON.parse(JSON.stringify(product.questions));
+    
+    // Рандомізація порядку питань
+    shuffledQuestions = shuffleArray(shuffledQuestions);
+
+    // Рандомізація варіантів відповідей всередині кожного питання
+    shuffledQuestions.forEach(q => {
+        let optionsWithTracker = q.options.map((opt, idx) => ({
+            text: opt,
+            isCorrect: idx === q.correct
+        }));
+        
+        optionsWithTracker = shuffleArray(optionsWithTracker);
+        
+        q.options = optionsWithTracker.map(o => o.text);
+        q.correct = optionsWithTracker.findIndex(o => o.isCorrect);
+    });
+
+    quizState = {
+        currentQuestionIndex: 0,
+        answers: new Array(shuffledQuestions.length).fill(null),
+        isSubmitted: false,
+        questions: shuffledQuestions,
+        timeLeft: 60,
+        timerInterval: null
+    };
+
+    startTimer();
+    renderQuizContent();
+}
+
+function startTimer() {
+    clearInterval(quizState.timerInterval);
+    quizState.timeLeft = 60;
+    
+    // Відразу оновлюємо UI, щоб не було затримки в 1 секунду
+    updateTimerUI(); 
+    
+    quizState.timerInterval = setInterval(() => {
+        quizState.timeLeft--;
+        updateTimerUI();
+        
+        if (quizState.timeLeft <= 0) {
+            clearInterval(quizState.timerInterval);
+            handleTimeOut();
+        }
+    }, 1000);
+}
+
+function updateTimerUI() {
+    const timerEl = document.getElementById('quiz-timer');
+    if (timerEl) {
+        let m = Math.floor(quizState.timeLeft / 60).toString().padStart(2, '0');
+        let s = (quizState.timeLeft % 60).toString().padStart(2, '0');
+        timerEl.innerText = `${m}:${s}`;
+        
+        if (quizState.timeLeft <= 10) {
+            timerEl.classList.remove('text-slate-700', 'bg-slate-100');
+            timerEl.classList.add('text-white', 'bg-rose-500', 'animate-pulse');
+        } else {
+            timerEl.classList.add('text-slate-700', 'bg-slate-100');
+            timerEl.classList.remove('text-white', 'bg-rose-500', 'animate-pulse');
+        }
+    }
+}
+
+function handleTimeOut() {
+    // Якщо час вийшов, вважаємо відповідь не обраною (null) і йдемо далі
+    const totalQ = quizState.questions.length;
+    if (quizState.currentQuestionIndex < totalQ - 1) {
+        nextQuestion();
+    } else {
+        submitQuiz();
+    }
+}
+
+function renderQuizContent() {
+    const main = document.getElementById('main-content');
+    const product = productsData.find(p => p.id === currentProductId);
+    const totalQ = quizState.questions.length;
+    const currentQIndex = quizState.currentQuestionIndex;
+    const currentQ = quizState.questions[currentQIndex];
+
+    if (quizState.isSubmitted) {
+        renderQuizResults();
+        return;
+    }
+
+    let html = `
+        <div class="bg-white rounded-none border border-slate-200 border-l-4 border-l-[#069606] p-5 mb-6 shadow-sm">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+                <div>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-xs font-bold px-2.5 py-0.5 bg-green-100 text-[#069606] uppercase">${product.category}</span>
+                        <span class="text-xs text-slate-400">• Атестаційне тестування</span>
+                    </div>
+                    <h2 class="text-2xl font-bold text-slate-900 mt-1">${product.name}</h2>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <span class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Залишилось часу:</span>
+                    <div id="quiz-timer" class="text-lg font-mono font-bold text-slate-700 bg-slate-100 px-3 py-1 border border-slate-200 transition-colors">
+                        01:00
+                    </div>
+                </div>
+            </div>
+            <div class="mt-4 flex items-center justify-between text-xs font-semibold text-slate-500 mb-2">
+                <span>Запитання ${currentQIndex + 1} з ${totalQ}</span>
+                <span>${Math.round(((currentQIndex) / totalQ) * 100)}% Прогрес</span>
+            </div>
+            <div class="w-full bg-slate-100 h-2.5 overflow-hidden">
+                <div class="bg-[#069606] h-full transition-all duration-300" style="width: ${((currentQIndex) / totalQ) * 100}%"></div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-none border border-slate-200 border-l-4 border-l-[#069606] p-6 sm:p-8 shadow-sm">
+            <h3 class="text-lg sm:text-xl font-bold text-slate-900 mb-6 leading-relaxed">${currentQIndex + 1}. ${currentQ.q}</h3>
+            <div class="space-y-3 mb-8">
+    `;
+
+    currentQ.options.forEach((option, idx) => {
+        const isSelected = quizState.answers[currentQIndex] === idx;
+        html += `
+            <div onclick="selectAnswer(${idx})" class="flex items-start p-4 rounded-none border cursor-pointer transition-all ${
+                isSelected 
+                    ? 'border-[#069606] border-l-4 border-l-[#069606] bg-green-50/50 text-slate-900 font-semibold' 
+                    : 'border-slate-200 hover:border-[#069606] hover:bg-slate-50 text-slate-700'
+            }">
+                <div class="flex items-center h-5 mt-0.5">
+                    <input type="radio" name="option" ${isSelected ? 'checked' : ''} class="h-4 w-4 text-[#069606] border-slate-300">
+                </div>
+                <span class="ml-3 text-sm sm:text-base leading-snug">${option}</span>
+            </div>
+        `;
+    });
+
+    html += `
+            </div>
+            <div class="flex items-center justify-between pt-4 border-t border-slate-100">
+                <button onclick="prevQuestion()" ${currentQIndex === 0 ? 'disabled class="opacity-40 cursor-not-allowed text-sm font-medium text-slate-400 px-4 py-2 bg-slate-100"' : 'class="text-sm font-medium btn-custom-secondary px-4 py-2 bg-slate-50 border border-slate-200"'}>
+                    Назад
+                </button>
+                ${currentQIndex === totalQ - 1 ? `
+                    <button onclick="submitQuiz()" class="text-sm font-bold btn-custom px-6 py-2.5 shadow-sm">Завершити тест</button>
+                ` : `
+                    <button onclick="nextQuestion()" class="text-sm font-bold btn-custom px-5 py-2.5 shadow-sm">Далі</button>
+                `}
+            </div>
+        </div>
+    `;
+    main.innerHTML = html;
+    
+    // Оновлюємо UI таймера після рендеру DOM
+    updateTimerUI();
+    if (window.lucide) lucide.createIcons();
+}
+
+function selectAnswer(index) {
+    quizState.answers[quizState.currentQuestionIndex] = index;
+    renderQuizContent();
+}
+
+function nextQuestion() {
+    if (quizState.currentQuestionIndex < quizState.questions.length - 1) {
+        quizState.currentQuestionIndex++;
+        startTimer(); // Скидаємо таймер для нового питання
+        renderQuizContent();
+    }
+}
+
+function prevQuestion() {
+    if (quizState.currentQuestionIndex > 0) {
+        quizState.currentQuestionIndex--;
+        startTimer(); // Скидаємо таймер при поверненні назад
+        renderQuizContent();
+    }
+}
+
+function submitQuiz() {
+    clearInterval(quizState.timerInterval);
+    quizState.isSubmitted = true;
+    renderQuizResults();
+}
+
+function renderQuizResults() {
+    const main = document.getElementById('main-content');
+    const product = productsData.find(p => p.id === currentProductId);
+    
+    let score = 0;
+    // Працюємо із перемішаними питаннями (quizState.questions), щоб відобразити коректні результати
+    quizState.questions.forEach((q, idx) => {
+        if (quizState.answers[idx] === q.correct) score++;
+    });
+    const percent = Math.round((score / quizState.questions.length) * 100);
+
+    let html = `
+        <div class="bg-white rounded-none border border-slate-200 border-l-4 border-l-[#069606] p-6 sm:p-8 mb-8 text-center shadow-sm">
+            <h2 class="text-2xl font-bold text-slate-900 mb-1">Результат тесту: ${product.name}</h2>
+            <p class="text-sm text-slate-500 mb-6">Ви відповіли правильно на ${score} з ${quizState.questions.length} питань (${percent}%)</p>
+            <div class="flex justify-center items-center space-x-3">
+                <button onclick="showQuizView('${product.id}')" class="text-xs font-bold btn-custom-secondary px-5 py-2.5 border border-slate-300">Пройти знову</button>
+                <button onclick="navigateTo('home')" class="text-xs font-bold btn-custom px-5 py-2.5">До всіх тестів</button>
+            </div>
+        </div>
+
+        <h3 class="text-lg font-bold text-slate-900 mb-4 uppercase tracking-wide">Детальний аналіз відповідей:</h3>
+        <div class="space-y-4">
+    `;
+
+    quizState.questions.forEach((q, idx) => {
+        const userAnswer = quizState.answers[idx];
+        const isCorrect = userAnswer === q.correct;
+        html += `
+            <div class="bg-white rounded-none border border-l-4 border-l-[#069606] ${isCorrect ? 'border-emerald-200 bg-emerald-50/20' : 'border-rose-200 bg-rose-50/20'} p-5">
+                <div class="flex items-start justify-between mb-3">
+                    <h4 class="text-sm font-bold text-slate-900 w-5/6">${idx + 1}. ${q.q}</h4>
+                    <span class="text-xs font-bold px-2 py-0.5 ${isCorrect ? 'bg-emerald-100 text-[#069606]' : 'bg-rose-100 text-rose-800'}">
+                        ${isCorrect ? 'Правильно' : 'Помилка'}
+                    </span>
+                </div>
+                <div class="space-y-1.5 mb-3 text-xs sm:text-sm">
+                    <p class="${userAnswer === q.correct ? 'text-[#069606] font-semibold' : 'text-rose-700 font-semibold'}">
+                        <span class="text-slate-500 font-normal">Ваша відповідь:</span> ${userAnswer !== null ? q.options[userAnswer] : 'Час вийшов (Не обрано)'}
+                    </p>
+                    ${!isCorrect ? `<p class="text-[#069606] font-semibold"><span class="text-slate-500 font-normal">Правильна відповідь:</span> ${q.options[q.correct]}</p>` : ''}
+                </div>
+                <div class="bg-white p-3 rounded-none border border-slate-200 border-l-4 border-l-[#069606] text-xs text-slate-600">
+                    <span class="font-semibold text-slate-800">Обґрунтування:</span> ${q.explanation}
+                </div>
+            </div>
+        `;
+    });
+    html += `</div>`;
+    main.innerHTML = html;
+    if (window.lucide) lucide.createIcons();
+}
+
+document.addEventListener('DOMContentLoaded', initApp);
     </script>
 </body>
 </html>

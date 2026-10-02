@@ -112,9 +112,14 @@ document.addEventListener("DOMContentLoaded", async () => {
           sec3Title: rowData["sec3title"] || "", sec3Text: rowData["sec3text"] || "",
           sec4Title: rowData["sec4title"] || "", sec4Text: rowData["sec4text"] || "",
           sec5Title: rowData["sec5title"] || "", sec5Text: rowData["sec5text"] || "",
-          linkCampaign: rowData["linkcampaign"] || "", linkVideo: rowData["linkvideo"] || "",
-          linkPresentation: rowData["linkpresentation"] || "", linkInstruction: rowData["linkinstruction"] || "",
-          linkTest: rowData["linktest"] || "", linkCompetitor: rowData["linkcompetitor"] || ""
+          linkCampaign: rowData["linkcampaign"] || "", 
+          linkVideo: rowData["linkvideo"] || "",
+          linkPresentation: rowData["linkpresentation"] || "", 
+          linkInstruction: rowData["linkinstruction"] || "",
+          linkTest: rowData["linktest"] || "", 
+          linkCompetitor: rowData["linkcompetitor"] || "",
+          // Додаємо парсинг тестів із таблиці
+          questions: rowData["testsdata"] ? JSON.parse(rowData["testsdata"]) : []
         });
       });
 

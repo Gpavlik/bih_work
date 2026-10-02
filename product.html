@@ -8,84 +8,238 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@700&family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/modern-normalize/1.1.0/modern-normalize.css" integrity="sha512-Y0MM+V6ymRKN2zStTqzQ227DWhhp4Mzdo6gnlRnuaNCbc+YN/ZH0sBCLTM4M0oSy9c9VKiCvd4Jk44aCLrNS5Q==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/modern-normalize/1.1.0/modern-normalize.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <link rel="stylesheet" href="./css/main.css" />
-      <style>
-      /* Базовий список */
-.nav-list {
-  display: flex;
-  gap: 12px;
-  list-style: none;
-  padding: 0;
-  margin: 0 auto;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-body.dark-mode .btn-link { 
-  background-color: #000000;
-}
-/* Спільні стилі для кнопок та посилань-кнопок */
-.btn-link {
-  display: inline-block;
-  padding: 10px 16px;
-  font-size: 0.875rem; /* аналог font-size: smaller */
-  text-decoration: none;
-  color: #069606;
-  background-color: #f0f0f0;
-  border: 1px solid #ccc;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.4);
-  cursor: pointer;
-  text-align: center;
-}
-.btn-link:hover {
-  background-color: #069606;
-  text-decoration: none;
-  color: #fff;
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+    /* Стилі для модального вікна тестування */
+/* Стилі для модального вікна тестування */
+    .quiz-modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.65);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      padding: 20px;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+    .quiz-modal-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+    
+    /* Додали більше повітря (padding) та збільшили максимальну ширину */
+    .quiz-modal-content {
+      top: 5%;
+      background: #ffffff;
+      width: 100%;
+      max-width: 780px;
+      max-height: 90vh;
+      overflow-y: auto;
+      border-radius: 12px;
+      position: fixed;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+      padding: 40px 45px;
+      transform: translateY(20px);
+      transition: transform 0.3s ease;
+    }
+    .quiz-modal-overlay.active .quiz-modal-content {
+      transform: translateY(0);
+    }
+    .quiz-close-btn {
+      position: absolute;
+      top: 20px;
+      right: 25px;
+      background: none;
+      border: none;
+      font-size: 32px;
+      cursor: pointer;
+      color: #64748b;
+      transition: color 0.2s;
+    }
+    .quiz-close-btn:hover {
+      color: #0f172a;
+    }
 
-}
+    /* Стилізація варіантів відповідей (зручні великі кнопки для тапу) */
+    .quiz-option-card {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px 20px;
+      border: 2px solid #e2e8f0;
+      background-color: #f8fafc;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-bottom: 12px;
+      transition: all 0.2s ease;
+    }
+    .quiz-option-card:hover {
+      border-color: #069606;
+      background-color: #f0fdf4;
+    }
+    .quiz-option-card.selected {
+      border-color: #069606;
+      background-color: #f0fdf4;
+      font-weight: 600;
+    }
+    .quiz-option-card input[type="radio"] {
+      width: 20px;
+      height: 20px;
+      accent-color: #069606;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
 
-/* Стан недоступного посилання (замість inline-стилів для "Тестування") */
-.btn-link.is-disabled {
-  opacity: 0.5;
-  pointer-events: none;
-  cursor: default;
-}
+    /* --- ПОКРАЩЕНА ТЕМНА ТЕМА ДЛЯ МОДАЛКИ (#2f303a) --- */
+    body.dark-mode .quiz-modal-content {
+      background-color: #2f303a !important;
+      color: #22c55e !important;
+      border: 1px solid #4a4b52;
+    }
+    body.dark-mode .quiz-modal-content h3,
+    body.dark-mode .quiz-modal-content h4,
+    body.dark-mode .quiz-modal-content h5 {
+      color: #ffffff !important;
+    }
+    body.dark-mode .quiz-modal-content p,
+    body.dark-mode .quiz-modal-content span {
+      color: #e2e8f0 !important;
+    }
+    body.dark-mode .quiz-modal-content .bg-white {
+      background-color: #2f303a !important;
+      color: #f8fafc !important;
+    }
+    body.dark-mode .quiz-modal-content .bg-slate-50,
+    body.dark-mode .quiz-modal-content .bg-slate-100 {
+      background-color: #3b3c48 !important;
+      color: #f1f5f9 !important;
+    }
+    body.dark-mode .quiz-modal-content .border-slate-200,
+    body.dark-mode .quiz-modal-content .border-slate-100 {
+      border-color: #4b4c59 !important;
+    }
+    /* Картки відповідей у темній темі */
+    body.dark-mode .quiz-option-card {
+      background-color: #3b3c48 !important;
+      border-color: #4b4c59 !important;
+      color: #f8fafc !important;
+    }
+    body.dark-mode .quiz-option-card:hover {
+      border-color: #069606 !important;
+      background-color: #353642 !important;
+    }
+    body.dark-mode .quiz-option-card.selected {
+      background-color: rgba(6, 150, 6, 0.25) !important;
+      border-color: #069606 !important;
+      color: #ffffff !important;
+    }
+    body.dark-mode .quiz-close-btn {
+      color: #cbd5e1;
+    }
+    body.dark-mode .quiz-close-btn:hover {
+      color: #ffffff;
+    }
+        .nav-list {
+      display: flex;
+      gap: 12px;
+      list-style: none;
+      padding: 0;
+      margin: 0 auto;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    body.dark-mode .btn-link { 
+      background-color: #000000;
+    }
+    .btn-link {
+      display: inline-block;
+      padding: 10px 16px;
+      font-size: 0.875rem;
+      text-decoration: none;
+      color: #069606;
+      background-color: #f0f0f0;
+      border: 1px solid #ccc;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+      cursor: pointer;
+      text-align: center;
+    }
+    .btn-link:hover {
+      background-color: #069606;
+      text-decoration: none;
+      color: #fff;
+    }
+    .btn-link.is-disabled {
+      opacity: 0.5;
+      pointer-events: none;
+      cursor: default;
+    }
+    .has-dropdown {
+      position: relative;
+    }
+    .dropdown-menu {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background: #fff;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      border-radius: 4px;
+      min-width: 160px;
+      z-index: 10;
+    }
+    .dropdown-menu a {
+      display: block;
+      padding: 8px 12px;
+      text-decoration: none;
+      color: #333;
+    }
+    .has-dropdown:hover .dropdown-menu {
+      display: block;
+    }
 
-/* Випадаюче меню */
-.has-dropdown {
-  position: relative;
-}
-
-.dropdown-menu {
-  display: none;
-  position: absolute;
-  top: 100%;
-  left: 0;
-  background: #fff;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-  border-radius: 4px;
-  min-width: 160px;
-  z-index: 10;
-}
-
-.dropdown-menu a {
-  display: block;
-  padding: 8px 12px;
-  text-decoration: none;
-  color: #333;
-}
-
-/* Відображення меню при наведенні */
-.has-dropdown:hover .dropdown-menu {
-  display: block;
-  transition: opacity 0.3s ease;
-}
-    </style>
+    /* Стилі для інтегрованого тесту */
+    .quiz-container-box {
+      font-family: 'Inter', sans-serif;
+      background-color: #f5f4fa;
+      color: #334155;
+      margin-top: 40px;
+      padding: 20px;
+      border: 1px solid #e2e8f0;
+    }
+    .btn-custom {
+      background-color: #f5f4fa !important;
+      color: #069606 !important;
+      border: 1px solid #069606 !important;
+      transition: all 0.2s ease-in-out;
+    }
+    .btn-custom:hover {
+      background-color: #069606 !important;
+      color: #ffffff !important;
+    }
+    .btn-custom-secondary {
+      background-color: #f5f4fa !important;
+      color: #334155 !important;
+      border: 1px solid #cbd5e1 !important;
+    }
+    .btn-custom-secondary:hover {
+      background-color: #069606 !important;
+      color: #ffffff !important;
+      border-color: #069606 !important;
+    }
+  </style>
 </head>
 <body>
   <div id="page-loader">
-  <div class="spinner"></div>
-</div>
+    <div class="spinner"></div>
+  </div>
   <div id="header-container"></div>
   <main>
     <section class="works">
@@ -94,17 +248,13 @@ body.dark-mode .btn-link {
         <h3 class="product-subtitle" style="text-align: center;"></h3>
         <nav class="navigation">
   <ul class="nav-list">
-    <li class="nav-item">
-      <a id="campaign" href="#" class="btn-link" target="_blank" rel="noopener noreferrer">Кампейн</a>
-    </li>
-
+    <li class="nav-item"><a id="campaign" href="#" class="btn-link" target="_blank" rel="noopener noreferrer">Кампейн</a></li>
     <li class="nav-item has-dropdown">
       <button class="btn-link" type="button">Відео</button>
       <div class="dropdown-menu">
         <a id="video" href="#" target="_blank" rel="noopener noreferrer">Вебінар</a>
       </div>
     </li>
-
     <li class="nav-item has-dropdown">
       <button class="btn-link" type="button">Презентації</button>
       <div class="dropdown-menu">
@@ -112,114 +262,56 @@ body.dark-mode .btn-link {
         <a id="presentation" href="#" target="_blank" rel="noopener noreferrer">На візит</a>
       </div>
     </li>
-
-    <li class="nav-item">
-      <a href="#" class="btn-link" target="_blank" rel="noopener noreferrer">Інструкція</a>
-    </li>
-
-    <li class="nav-item">
-      <a href="#" class="btn-link" target="_blank" rel="noopener noreferrer">Конкурентне оточення</a>
-    </li>
-
-    <li class="nav-item">
-      <a id="test" href="#" class="btn-link" target="_blank" rel="noopener noreferrer">Тестування</a>
-    </li>
-
-    <li class="nav-item">
-      <a href="./portfolio products.html" class="btn-link">До переліку</a>
-    </li>
-
-    <li class="nav-item">
-      <a href="./portfolio products.html#kidneys" class="btn-link">Мій кабінет</a>
-    </li>
+    <!-- Додано id="instruction" -->
+    <li class="nav-item"><a id="instruction" href="#" class="btn-link" target="_blank" rel="noopener noreferrer">Інструкція</a></li>
+    <!-- Додано id="competitor" -->
+    <li class="nav-item"><a id="competitor" href="#" class="btn-link" target="_blank" rel="noopener noreferrer">Конкурентне оточення</a></li>
+    <li class="nav-item"><a id="test" href="javascript:void(0);" class="btn-link">Тестування</a></li>
+    <li class="nav-item"><a href="./portfolio products.html" class="btn-link">До переліку</a></li>
+    <li class="nav-item"><a href="#my-cabinet" class="btn-link">Мій кабінет</a></li>
   </ul>
 </nav>
+
         <div class="product-details">
           <div class="product-layout">
             <img class="product-image zoomable-img" src="" alt="" width="450" height="294" loading="lazy" />
             <div class="product-info" style="width: 100%;">
               <div class="product-info-inner" style="margin-top: 47px;">
                 <div style="flex: 1;"> 
-              <h3></h3>
-              <p class="product-subtitle"></p>
-              <p class="product-description-text"></p>
-           </div>
+                  <h3></h3>
+                  <p class="product-subtitle"></p>
+                  <p class="product-description-text"></p>
+                </div>
                 <div class="secondary-image-container">
                   <img class="secondary-product-image zoomable-img" src="" alt="" width="225" height="147" loading="lazy" />
                 </div>
               </div>
             </div>
           </div>
-          <div class="product-section">
-            <h4></h4>
-            <p></p>
-          </div>
-          <div class="product-section">
-            <h4></h4>
-            <ul>
-              
-            </ul>
-          </div>
-          <div class="product-section">
-            <h4></h4>
-            <ul>
-   
-            </ul>
-          </div>
-          <div class="product-section">
-            <h4></h4>
-            <p></p>
-          </div>
-          <div class="product-section">
-            <h4></h4>
-            <p></p>
-          </div>
-        <nav class="navigation">
-  <ul class="nav-list">
-    <li class="nav-item">
-      <a id="campaign" href="#" class="btn-link" target="_blank" rel="noopener noreferrer">Кампейн</a>
-    </li>
+          <div class="product-section"><h4></h4><p></p></div>
+          <div class="product-section"><h4></h4><ul></ul></div>
+          <div class="product-section"><h4></h4><ul></ul></div>
+          <div class="product-section"><h4></h4><p></p></div>
+          <div class="product-section"><h4></h4><p></p></div>
 
-    <li class="nav-item has-dropdown">
-      <button class="btn-link" type="button">Відео</button>
-      <div class="dropdown-menu">
-        <a id="video" href="#" target="_blank" rel="noopener noreferrer">Вебінар</a>
+          <!-- Модальне вікно тестування -->
+  <div id="quiz-modal" class="quiz-modal-overlay">
+    <div class="quiz-modal-content">
+      <button id="close-quiz-modal" class="quiz-close-btn">&times;</button>
+      <div id="quiz-main-wrapper">
+        <!-- Вміст тесту підтягується динамічно -->
+        <div class="bg-white p-6 border border-slate-200 text-center">
+          <h3 class="text-xl font-bold text-slate-800 mb-2">Атестаційне тестування продукту</h3>
+          <p class="text-sm text-slate-600">Завантаження тестових питань...</p>
+        </div>
       </div>
-    </li>
-
-    <li class="nav-item has-dropdown">
-      <button class="btn-link" type="button">Презентації</button>
-      <div class="dropdown-menu">
-        <a href="#" target="_blank" rel="noopener noreferrer">Навчальна Презентація</a>
-        <a id="presentation" href="#" target="_blank" rel="noopener noreferrer">На візит</a>
-      </div>
-    </li>
-
-    <li class="nav-item">
-      <a id="instruction" href="#" class="btn-link" target="_blank" rel="noopener noreferrer">Інструкція</a>
-    </li>
-
-    <li class="nav-item">
-      <a id="competitor" href="#" class="btn-link" target="_blank" rel="noopener noreferrer">Конкурентне оточення</a>
-    </li>
-
-    <li class="nav-item">
-      <a id="test" href="#" class="btn-link" target="_blank" rel="noopener noreferrer">Тестування</a>
-    </li>
-
-    <li class="nav-item">
-      <a href="./portfolio products.html" class="btn-link">До переліку</a>
-    </li>
-
-    <li class="nav-item">
-      <a href="./portfolio products.html#kidneys" class="btn-link">Мій кабінет</a>
-    </li>
-  </ul>
-</nav>
+    </div>
+  </div>
       </div>
     </section>
-  </main>
+    </main>
   <div id="footer-container"></div>
+  
   <script src="./js/menu.js"></script>
   <script src="theme-toggle.js"></script>
   <script src="tracking.js"></script>

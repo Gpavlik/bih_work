@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
   const email = localStorage.getItem("allowedEmail");
-  const GA_MEASUREMENT_ID = "G-5BZZCV5DRK"; // Замінити на свій ідентифікатор
+  const GA_MEASUREMENT_ID = "G-5BZZCV5DRK"; // Ідентифікатор Google Analytics[cite: 14]
 
   function applyUserId(nameOrEmail) {
     // Зберігаємо в sessionStorage
@@ -17,24 +17,11 @@ document.addEventListener("DOMContentLoaded", function () {
     if (el) {
       el.textContent = "Ви зайшли як: " + nameOrEmail;
     }
-
-    // Відображаємо привітання в хедері (перенесено сюди)
-    //const greeting = document.getElementById("greetingMessage");
-    //if (greeting) {
-      //greeting.textContent = "Вітаємо, " + nameOrEmail + "!";
-   // }
   }
 
+  // Оскільки users.json видалено, одразу передаємо email
   if (email) {
-    fetch("./users.json")
-      .then(res => res.json())
-      .then(directory => {
-        const name = directory[email] || email;
-        applyUserId(name);
-      })
-      .catch(() => {
-        applyUserId(email); // Якщо users.json не завантажився
-      });
+    applyUserId(email);
   } else {
     // Якщо email відсутній (наприклад, нова вкладка)
     const cachedName = sessionStorage.getItem("activeUserName");
@@ -55,7 +42,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-  // 🧭 Трекінг всіх <a> посилань
+  // 🧭 Трекінг всіх <a> посилань[cite: 14]
   document.querySelectorAll("a").forEach(link => {
     const href = link.getAttribute("href");
     if (!href) return;

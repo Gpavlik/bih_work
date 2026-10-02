@@ -25,6 +25,9 @@
     .modal-box { background: #fff; padding: 25px; border-radius: 8px; width: 100%; max-width: 450px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
     .file-preview { display: flex; align-items: center; gap: 10px; margin-top: 5px; }
     .file-preview img { width: 50px; height: 50px; object-fit: contain; border: 1px solid #cbd5e1; border-radius: 4px; background: #f8fafc; }
+    
+    .question-card { background: #f8fafc; border: 1px solid #cbd5e1; padding: 15px; margin-bottom: 15px; border-radius: 6px; }
+    .option-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
   </style>
 </head>
 <body>
@@ -32,7 +35,7 @@
   <div class="editor-container">
     <a href="./admin.html" class="nav-back">&larr; Назад до адмін-панелі</a>
     <h2>📦 Повний візуальний редактор сторінок продуктів</h2>
-    <p style="color: #64748b; margin-bottom: 15px;">Керуйте текстами всіх секцій препарату, зображеннями та посиланнями.</p>
+    <p style="color: #64748b; margin-bottom: 15px;">Керуйте текстами всіх секцій препарату, зображеннями та тестуванням.</p>
 
     <button type="button" class="btn-create" id="openModalBtn">➕ Створити новий продукт</button>
 
@@ -78,7 +81,7 @@
         <textarea id="descLong"></textarea>
       </div>
 
-      <!-- Вибір зображень через провідник комп'ютера -->
+      <!-- Зображення -->
       <div class="form-group">
         <label>Головне зображення (ліворуч):</label>
         <div class="file-preview">
@@ -127,6 +130,13 @@
       <div class="form-group"><label>Тестування:</label><input type="text" id="linkTest"></div>
       <div class="form-group"><label>Конкурентне оточення:</label><input type="text" id="linkCompetitor"></div>
 
+      <!-- Блок керування тестами -->
+      <h3>Управління тестами препарату</h3>
+      <div id="questionsContainer">
+        <!-- Сюди динамічно додаватимуться картки питань -->
+      </div>
+      <button type="button" id="addQuestionBtn" class="btn-create" style="background-color: #3b82f6; margin-top: 5px;">+ Додати запитання</button>
+
       <button type="submit" class="btn-save">💾 Зберегти зміни в базі продуктів</button>
     </form>
   </div>
@@ -145,14 +155,15 @@
       </div>
     </div>
   </div>
-<div id="footer-container"></div>
+
+  <div id="footer-container"></div>
   <script src="./js/menu.js"></script>
   <script src="theme-toggle.js"></script>
   <script src="tracking.js"></script>
   <script src="headfoot.js"></script>
-<script src="scrbtn.js"></script>
+  <script src="scrbtn.js"></script>
   <script>
-    const PRODUCTS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbytaIqinqy-8usncHA3Ndhr10ob36OZ8t-2s5i-lq5o2KbnWAk56oYBY8DTS8WI6W0K/exec";
+    const PRODUCTS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzr4EGyt0YuynW_lKK9Qtpghr5n_8s3E4ndvT1POv-KhHNBnh--6x9Dm2um8lOr7GW-/exec";
 
     // 1. АВТОМАТИЧНЕ ЗАВАНТАЖЕННЯ СПИСКУ ПРОДУКТІВ З ТАБЛИЦІ
     document.addEventListener("DOMContentLoaded", async () => {
@@ -162,13 +173,11 @@
         const result = await response.json();
         
         if (result.status === "success") {
-          select.innerHTML = '<option value="">-- Оберіть файл продукту --</option>'; // Очищаємо текст завантаження
-          
+          select.innerHTML = '<option value="">-- Оберіть файл продукту --</option>';
           result.data.forEach(prod => {
             if (prod.filename) {
               const opt = document.createElement("option");
               opt.value = prod.filename;
-              // Виводимо красиву назву, а в дужках залишаємо ID файлу
               opt.textContent = `${prod.title || 'Без назви'} (${prod.filename})`;
               select.appendChild(opt);
             }
@@ -182,7 +191,7 @@
       }
     });
 
-    // Функція транслітерації для генерації назви файлу англійською
+    // Транслітерація
     function transliterate(text) {
       const ukrMap = {
         'а':'a', 'б':'b', 'в':'v', 'г':'h', 'ґ':'g', 'д':'d', 'е':'e', 'є':'ye', 'ж':'zh',
@@ -197,7 +206,7 @@
       }).join('').replace(/_+/g, '_').replace(/^_|_$/g, '');
     }
 
-    // Обробка завантаження зображень через провідник та конвертація в Base64
+    // Завантаження зображень
     function handleImageUpload(inputElement, hiddenInputId, previewImgId) {
       inputElement.addEventListener("change", (e) => {
         const file = e.target.files[0];
@@ -256,7 +265,7 @@
       document.getElementById("prodTitle").value = title;
       document.getElementById("prodFilename").value = translitName;
 
-      // Очищення полів
+      // Очищення полів форми та тестів
       document.getElementById("prodSubtitle").value = "";
       document.getElementById("prodDescShort").value = "";
       document.getElementById("descLong").value = "";
@@ -275,13 +284,13 @@
       document.getElementById("linkInstruction").value = "";
       document.getElementById("linkTest").value = "";
       document.getElementById("linkCompetitor").value = "";
+      document.getElementById("questionsContainer").innerHTML = "";
 
       modal.style.display = "none";
       document.getElementById("newProdTitleInput").value = "";
       alert(`✅ Створено новий файл: ${translitName}`);
     });
 
-    // Автоматичне оновлення імені файлу при зміні назви
     document.getElementById("prodTitle").addEventListener("input", (e) => {
       const title = e.target.value;
       if (title) {
@@ -289,9 +298,120 @@
       }
     });
 
-    // Завантаження даних продукту з таблиці при виборі зі списку
+    // Функції роботи з тестами (необмежена кількість варіантів та множинний вибір)
+    function addQuestionCard(qData = {}) {
+      const container = document.getElementById('questionsContainer');
+      const index = container.children.length + 1;
+
+      const card = document.createElement('div');
+      card.className = 'question-card';
+
+      card.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <strong>Запитання №<span class="q-num">${index}</span></strong>
+            <button type="button" onclick="this.closest('.question-card').remove(); reindexQuestions();" style="background: #ef4444; color: white; border: none; padding: 4px 8px; cursor: pointer; border-radius: 4px;">Видалити питання</button>
+        </div>
+        <div style="margin-bottom: 8px;">
+            <label>Текст запитання:</label>
+            <input type="text" class="q-text" value="${qData.text || ''}" style="width: 100%; padding: 6px;" required>
+        </div>
+        <label style="margin-top: 8px; display: block; font-weight: 500;">Варіанти відповідей (позначте галочками правильні):</label>
+        <div class="options-container" style="margin-bottom: 8px;">
+            <!-- Динамічні рядки варіантів -->
+        </div>
+        <button type="button" class="btn-add-option" style="background: #3b82f6; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 13px; margin-bottom: 10px;">+ Додати варіант відповіді</button>
+        <div>
+            <label>Обґрунтування (пояснення):</label>
+            <textarea class="q-explanation" style="width: 100%; height: 50px; padding: 6px;">${qData.explanation || ''}</textarea>
+        </div>
+      `;
+
+      const optionsContainer = card.querySelector('.options-container');
+
+      const appendOptionRow = (optText = '', isCorrect = false) => {
+        const optIndex = optionsContainer.children.length + 1;
+        const row = document.createElement('div');
+        row.className = 'option-row';
+        row.innerHTML = `
+            <span style="font-weight: bold; min-width: 20px;">${optIndex}.</span>
+            <input type="text" class="opt-text" value="${optText}" placeholder="Текст варіанту" style="flex: 1; padding: 5px;" required>
+            <label style="display: flex; align-items: center; gap: 4px; font-size: 13px; cursor: pointer; white-space: nowrap;">
+                <input type="checkbox" class="opt-correct" ${isCorrect ? 'checked' : ''}> Правильна
+            </label>
+            <button type="button" onclick="this.closest('.option-row').remove(); renumberOptions(this.closest('.question-card'));" style="background: #ef4444; color: white; border: none; padding: 2px 6px; cursor: pointer; border-radius: 3px; font-size: 12px;">✕</button>
+        `;
+        optionsContainer.appendChild(row);
+      };
+
+      card.querySelector('.btn-add-option').addEventListener('click', () => appendOptionRow());
+
+      // Завантаження існуючих варіантів
+      if (qData.options && Array.isArray(qData.options)) {
+        qData.options.forEach((optText, optIdx) => {
+          let isCorrect = false;
+          if (Array.isArray(qData.correct)) {
+            isCorrect = qData.correct.includes(optIdx);
+          } else if (typeof qData.correct === 'number') {
+            isCorrect = (qData.correct === optIdx);
+          }
+          appendOptionRow(optText, isCorrect);
+        });
+      } else {
+        // Стандартно створюємо 3 пусті варіанти для зручності
+        appendOptionRow('', false);
+        appendOptionRow('', false);
+        appendOptionRow('', false);
+      }
+
+      container.appendChild(card);
+    }
+
+    function renumberOptions(card) {
+      const rows = card.querySelectorAll('.option-row');
+      rows.forEach((row, idx) => {
+        row.querySelector('span').textContent = (idx + 1) + '.';
+      });
+    }
+
+    function reindexQuestions() {
+      document.querySelectorAll('.question-card').forEach((card, idx) => {
+        card.querySelector('.q-num').textContent = idx + 1;
+      });
+    }
+
+    document.getElementById('addQuestionBtn').addEventListener('click', () => addQuestionCard());
+
+    function collectTestData() {
+      const cards = document.querySelectorAll('.question-card');
+      let questions = [];
+      cards.forEach(card => {
+        const optionRows = card.querySelectorAll('.option-row');
+        let options = [];
+        let correctIndices = [];
+
+        optionRows.forEach((row, idx) => {
+          options.push(row.querySelector('.opt-text').value);
+          if (row.querySelector('.opt-correct').checked) {
+            correctIndices.push(idx); // Зберігаємо індекс від 0 під капотом для коду
+          }
+        });
+
+        questions.push({
+          text: card.querySelector('.q-text').value,
+          options: options,
+          correct: correctIndices, // Масив правильних індексів
+          explanation: card.querySelector('.q-explanation').value
+        });
+      });
+      return JSON.stringify(questions);
+    }
+
+    // Завантаження даних продукту (включно з тестами) при виборі зі списку
     document.getElementById("fileSelect").addEventListener("change", async (e) => {
       const fileName = e.target.value;
+      const container = document.getElementById('questionsContainer');
+      container.innerHTML = ""; // Очищаємо попередні питання
+
       if (!fileName) return;
 
       document.getElementById("prodFilename").value = fileName;
@@ -334,31 +454,41 @@
           document.getElementById("linkInstruction").value = data.linkInstruction || "";
           document.getElementById("linkTest").value = data.linkTest || "";
           document.getElementById("linkCompetitor").value = data.linkCompetitor || "";
+
+          // Завантаження тестів з бази
+          if (data.testsData) {
+            try {
+              let questionsArray = JSON.parse(data.testsData);
+              if (Array.isArray(questionsArray)) {
+                questionsArray.forEach(q => addQuestionCard(q));
+              }
+            } catch(err) {
+              console.error("Помилка розбору тестових даних:", err);
+            }
+          }
         }
       } catch (err) {
-        console.log("Новий товар.");
+        console.log("Новий товар або помилка завантаження.");
       }
     });
 
-    // Збереження даних (відправка payload)
+    // Збереження даних (разом із тестами)
     document.getElementById("productEditForm").addEventListener("submit", async (e) => {
       e.preventDefault();
       
       const filename = document.getElementById("prodFilename").value;
-      const category = document.getElementById("prodCategory").value;
       const title = document.getElementById("prodTitle").value;
       const subtitle = document.getElementById("prodSubtitle").value;
       const descShort = document.getElementById("prodDescShort").value;
-      const descLong = document.getElementById("descLong").value;
       const imgMain = document.getElementById("imgMain").value;
 
       const payload = {
         filename: filename,
-        category: category,
+        category: document.getElementById("prodCategory").value,
         title: title,
         subtitle: subtitle,
         descShort: descShort,
-        descLong: descLong,
+        descLong: document.getElementById("descLong").value,
         imgMain: imgMain,
         imgSec: document.getElementById("imgSec").value,
         sec1Title: document.getElementById("sec1Title").value,
@@ -377,8 +507,8 @@
         linkInstruction: document.getElementById("linkInstruction").value,
         linkTest: document.getElementById("linkTest").value,
         linkCompetitor: document.getElementById("linkCompetitor").value,
+        testsData: collectTestData(),
         
-        // Інструкція для скрипта портфоліо (залишаємо для зворотної сумісності)
         updatePortfolio: true,
         portfolioCardHtml: `
           <li class="description">
@@ -397,13 +527,13 @@
       };
 
       try {
-        await fetch(PRODUCTS_SCRIPT_URL, {
+        await fetch(PRODUCTS_URL || PRODUCTS_SCRIPT_URL, {
           method: "POST",
           mode: "no-cors",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload)
         });
-        alert("✅ Продукт успішно збережено в базі!");
+        alert("✅ Продукт та тести успішно збережено в базі!");
       } catch (err) {
         alert("❌ Помилка при збереженні.");
       }

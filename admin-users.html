@@ -32,7 +32,7 @@
   <div class="container-admin">
     <a href="./admin.html" class="nav-back">&larr; Назад до панелі управління</a>
     <h2>👥 Управління кадровим складом та ієрархією</h2>
-    <p style="color: #64748b; margin-bottom: 20px;">Створюйте нових співробітників, призначайте паролі, ролі та керуйте підпорядкуванням (РМ та МП).</p>
+    <p style="color: #64748b; margin-bottom: 20px;">Створюйте нових співробітників, призначайте паролі, ролі, напрямки, регіони та керуйте підпорядкуванням.</p>
 
     <!-- ФОРМА СТВОРЕННЯ / РЕДАГУВАННЯ -->
     <form id="userForm">
@@ -54,13 +54,32 @@
           <select id="userRole" required>
             <option value="mp">Медичний представник (МП)</option>
             <option value="rm">Регіональний менеджер (РМ)</option>
-            <option value="admin">Адміністратор / Офіс</option>
+            <option value="office">Офіс</option>
+            <option value="admin">Адміністратор</option>
           </select>
         </div>
         <div class="form-group" id="managerGroup">
           <label for="userManager">Керівник:</label>
           <select id="userManager">
             <option value="">-- Оберіть Керівника --</option>
+          </select>
+        </div>
+        <div class="form-group" id="directionGroup">
+          <label for="userDirection">Напрямок:</label>
+          <select id="userDirection">
+            <option value="">-- Оберіть напрямок --</option>
+            <option value="Уро-гінеко">Уро-гінеко</option>
+            <option value="Гастро">Гастро</option>
+          </select>
+        </div>
+        <div class="form-group" id="regionGroup">
+          <label for="userRegion">Регіон:</label>
+          <select id="userRegion">
+            <option value="">-- Оберіть регіон --</option>
+            <option value="Захід">Захід</option>
+            <option value="Схід">Схід</option>
+            <option value="Південь">Південь</option>
+            <option value="Центр">Центр</option>
           </select>
         </div>
       </div>
@@ -76,11 +95,13 @@
             <th>ПІБ</th>
             <th>Роль</th>
             <th>Керівник</th>
+            <th>Напрямок</th>
+            <th>Регіон</th>
             <th>Дії</th>
           </tr>
         </thead>
         <tbody>
-          <tr><td colspan="5" style="text-align: center; color: #888;">Завантаження бази співробітників...</td></tr>
+          <tr><td colspan="7" style="text-align: center; color: #888;">Завантаження бази співробітників...</td></tr>
         </tbody>
       </table>
     </div>
@@ -89,23 +110,35 @@
   <div id="footer-container"></div>
   <script>
     // URL вашого розгорнутого Google Apps Script
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby6gDrwZw1pJG52yulXne3U6fgldpXvGgbWgzzCkS60i0lVvhoEtH_8FkhqgMtLb432WQ/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzexGNhyqt1QTIv2M6YMD_hFvhru9cWdFyvMTLeRRBdqk24JwRCT5SMZ2lBC9GobxNoMA/exec";
 
     let allUsers = [];
 
-    // Динамічне приховування вибору менеджера, якщо створюється Адмін або РМ
+    // Динамічне керування видимістю полів залежно від ролі
     document.getElementById("userRole").addEventListener("change", (e) => {
-      const role = e.target.value;
-      const managerGroup = document.getElementById("managerGroup");
-      if (role === "admin") {
-        managerGroup.style.display = "none";
-        document.getElementById("userManager").value = "";
-      } else {
-        managerGroup.style.display = "block";
-      }
+      updateRoleFieldsVisibility(e.target.value);
     });
 
-    // Завантаження списку співробітників та заповнення селектів РМ
+    function updateRoleFieldsVisibility(role) {
+      const managerGroup = document.getElementById("managerGroup");
+      const directionGroup = document.getElementById("directionGroup");
+      const regionGroup = document.getElementById("regionGroup");
+
+      if (role === "admin" || role === "office") {
+        if (managerGroup) managerGroup.style.display = "none";
+        if (directionGroup) directionGroup.style.display = "none";
+        if (regionGroup) regionGroup.style.display = "none";
+        document.getElementById("userManager").value = "";
+        document.getElementById("userDirection").value = "";
+        document.getElementById("userRegion").value = "";
+      } else {
+        if (managerGroup) managerGroup.style.display = "block";
+        if (directionGroup) directionGroup.style.display = "block";
+        if (regionGroup) regionGroup.style.display = "block";
+      }
+    }
+
+    // Завантаження списку співробітників та заповнення селектів
     async function loadUsersData() {
       try {
         const response = await fetch(`${SCRIPT_URL}?action=getUsersHierarchy`);
@@ -115,7 +148,7 @@
           allUsers = result.users || [];
           renderTableAndManagers();
         } else {
-          document.querySelector("#usersTable tbody").innerHTML = `<tr><td colspan="5" style="text-align: center; color: red;">Помилка завантаження даних</td></tr>`;
+          document.querySelector("#usersTable tbody").innerHTML = `<tr><td colspan="7" style="text-align: center; color: red;">Помилка завантаження даних</td></tr>`;
         }
       } catch (err) {
         console.error("Помилка з'єднання:", err);
@@ -129,7 +162,6 @@
       tbody.innerHTML = "";
       managerSelect.innerHTML = '<option value="">-- Оберіть РМ --</option>';
 
-      // Фільтруємо РМ для випадаючого списку
       allUsers.forEach(u => {
         if (u.role === "rm" || u.role === "admin") {
           const opt = document.createElement("option");
@@ -138,14 +170,19 @@
           managerSelect.appendChild(opt);
         }
 
-        // Рендеримо рядок таблиці
-        let roleBadge = u.role === "admin" ? "🔴 Адмін" : (u.role === "rm" ? "🔵 РМ" : "🟢 МП");
+        let roleBadge = "🟢 МП";
+        if (u.role === "admin") roleBadge = "🔴 Адмін";
+        else if (u.role === "rm") roleBadge = "🔵 РМ";
+        else if (u.role === "office") roleBadge = "🟠 Офіс";
+
         tbody.innerHTML += `
           <tr>
             <td><strong>${u.login}</strong></td>
             <td>${u.fullName}</td>
             <td>${roleBadge}</td>
             <td>${u.manager || "—"}</td>
+            <td>${u.direction || "—"}</td>
+            <td>${u.region || "—"}</td>
             <td>
               <button class="btn-edit" onclick="editUser('${u.login}')">✏️ Редагувати</button>
             </td>
@@ -154,42 +191,42 @@
       });
 
       if (allUsers.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #888;">База порожня. Створіть першого співробітника вище.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #888;">База порожня. Створіть першого співробітника вище.</td></tr>`;
       }
     }
 
-    // Заповнення форми для редагування
+    // Заповнення форми для редагування[cite: 14]
     window.editUser = function(login) {
       const user = allUsers.find(u => u.login === login);
       if (!user) return;
 
       document.getElementById("userLogin").value = user.login;
-      document.getElementById("userLogin").readOnly = true; // Логін не міняємо при редагуванні
-      document.getElementById("userPassword").value = user.password || ""; // За бажанням
+      document.getElementById("userLogin").readOnly = true; 
+      document.getElementById("userPassword").value = user.password || ""; 
       document.getElementById("userFullName").value = user.fullName;
       document.getElementById("userRole").value = user.role;
       document.getElementById("userManager").value = user.manager || "";
+      document.getElementById("userDirection").value = user.direction || "";
+      document.getElementById("userRegion").value = user.region || "";
       
-      if (user.role === "admin" || user.role === "rm") {
-        document.getElementById("managerGroup").style.display = "none";
-      } else {
-        document.getElementById("managerGroup").style.display = "block";
-      }
-
+      updateRoleFieldsVisibility(user.role);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
-    // Відправка форми на збереження
+    // Відправка форми на збереження[cite: 14]
     document.getElementById("userForm").addEventListener("submit", async (e) => {
       e.preventDefault();
 
+      const roleVal = document.getElementById("userRole").value;
       const payload = {
         action: "saveUser",
         login: document.getElementById("userLogin").value.trim(),
         password: document.getElementById("userPassword").value.trim(),
         fullName: document.getElementById("userFullName").value.trim(),
-        role: document.getElementById("userRole").value,
-        manager: document.getElementById("userManager").value
+        role: roleVal,
+        manager: (roleVal === "admin" || roleVal === "office") ? "" : document.getElementById("userManager").value,
+        direction: (roleVal === "admin" || roleVal === "office") ? "" : document.getElementById("userDirection").value,
+        region: (roleVal === "admin" || roleVal === "office") ? "" : document.getElementById("userRegion").value
       };
 
       try {
@@ -203,14 +240,13 @@
         alert("✅ Співробітника успішно збережено в базі!");
         document.getElementById("userForm").reset();
         document.getElementById("userLogin").readOnly = false;
-        document.getElementById("managerGroup").style.display = "block";
-        loadUsersData(); // Перезавантажуємо таблицю
+        updateRoleFieldsVisibility("mp");
+        loadUsersData(); 
       } catch (err) {
         alert("❌ Помилка при збереженні співробітника.");
       }
     });
 
-    // Завантажуємо дані при відкритті сторінки
     document.addEventListener("DOMContentLoaded", loadUsersData);
   </script>
   <script src="./js/menu.js"></script>

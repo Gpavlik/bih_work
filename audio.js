@@ -61,7 +61,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       // URL вашого нового веб-додатка Google Apps Script
-      const SCRIPT_LOGIN_URL = "https://script.google.com/macros/s/AKfycby6gDrwZw1pJG52yulXne3U6fgldpXvGgbWgzzCkS60i0lVvhoEtH_8FkhqgMtLb432WQ/exec";
+      const SCRIPT_LOGIN_URL = "https://script.google.com/macros/s/AKfycbzexGNhyqt1QTIv2M6YMD_hFvhru9cWdFyvMTLeRRBdqk24JwRCT5SMZ2lBC9GobxNoMA/exec";
 
       try {
         const response = await fetch(`${SCRIPT_LOGIN_URL}?action=login&login=${encodeURIComponent(login)}&password=${encodeURIComponent(password)}`);

@@ -588,7 +588,7 @@
           const location = document.getElementById("inviteLocation").value.trim();
 
           const datePart = dateTime.split("T")[0];
-          const trainingDetailsText = `📌 Тренінг: "${theme}" \vert{} 📅 Дедлайн: ${datePart} (Час: ${dateTime.split("T")[1]}) \vert{} 📍 Де: ${location}`;
+          const trainingDetailsText = `📌 Тренінг: "${theme}" | 📅 Дедлайн: ${datePart} (Час: ${dateTime.split("T")[1]}) | 📍 Де: ${location}`;
 
           try {
             await Promise.all(selectedEmpEmails.map(email => 
@@ -625,7 +625,7 @@
 
           const emails = selectedOpts.map(opt => opt.value);
           const trainingNameReadable = trainingNamesMap[training] || training;
-          const textPayload = `📌 Тренінг: ${trainingNameReadable} | 📅 Дедлайн: ${deadline} \vert{} посилання:${training}`;
+          const textPayload = `📌 Тренінг: ${trainingNameReadable} | 📅 Дедлайн: ${deadline} | посилання:${training}`;
 
           try {
             await Promise.all(emails.map(email => 
@@ -664,7 +664,7 @@
           const productNames = selectedProducts.map(opt => trainingNamesMap[opt.value] || opt.textContent);
           const productValues = selectedProducts.map(opt => opt.value);
 
-          const textPayload = `💊 Вивчення продуктів: ${productNames.join(", ")} | 📅 Дедлайн: ${deadline} \vert{} посилання:${productValues.join(",")}`;
+         const textPayload = `💊 Вивчення продуктів: ${productNames.join(", ")} | 📅 Дедлайн: ${deadline} | посилання:${productValues.join(",")}`;
 
           try {
             await Promise.all(emails.map(email => 
@@ -697,7 +697,7 @@
           if (!deadline) { alert("Оберіть дедлайн!"); return; }
 
           const emails = selectedOpts.map(opt => opt.value);
-          const textPayload = `📋 Стандарт / Інструкція | 📅 Дедлайн: ${deadline} \vert{} посилання:${standardUrl}`;
+         const textPayload = `📋 Стандарт / Інструкція | 📅 Дедлайн: ${deadline} | посилання:${standardUrl}`;
 
           try {
             await Promise.all(emails.map(email => 

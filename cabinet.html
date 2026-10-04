@@ -139,7 +139,6 @@
             <p class="subtitle" id="welcomeUserText">Вітаємо у навчальному просторі академії!</p>
           </div>
           <div style="display: flex; gap: 10px; align-items: center;">
-            <!-- Кнопка повернення до адмін-панелі (спочатку прихована, з'явиться для admin або rm) -->
             <a href="./admin.html" id="goToAdminBtn" class="admin-nav-btn" style="display: none;">🛠️ Панель управління</a>
             <button class="logout-btn" id="logoutBtn" type="button">Вийти з кабінету</button>
           </div>
@@ -164,8 +163,21 @@
           <div class="cabinet-card" style="border-left: 4px solid #2196F3;">
             <h3>📋 Призначені активності та ДЗ</h3>
             <div id="activeTaskContainer">
-              <span class="task-badge">Навчальний план</span>
-              <div id="assignedCoursesList" style="max-height: 220px; overflow-y: auto;">
+             
+              
+              <!-- Панель сортування -->
+              <div style="margin: 10px 0 15px 0; display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                <label style="font-size: 12px; font-weight: 500; color: #64748b;">Сортування:</label>
+                <select id="sortTasksSelect" style="padding: 5px 8px; font-size: 12px; border: 1px solid #cbd5e1; border-radius: 4px; background: #fff; cursor: pointer;">
+                  <option value="default">За замовчуванням</option>
+                  <option value="date-asc">За дедлайном (спочатку раніші)</option>
+                  <option value="date-desc">За дедлайном (спочатку пізніші)</option>
+                  <option value="employee">За співробітником</option>
+                  <option value="activity">За назвою активності</option>
+                </select>
+              </div>
+
+              <div id="assignedCoursesList" style="max-height: 250px; overflow-y: auto;">
                 <p style="color: #757575;">Завантаження призначень...</p>
               </div>
             </div>
@@ -201,12 +213,9 @@
 
  <div id="footer-container"></div>
 
-  <script src="user.js"></script>
-  <!-- Скрипт логіки кабінету -->
   <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzexGNhyqt1QTIv2M6YMD_hFvhru9cWdFyvMTLeRRBdqk24JwRCT5SMZ2lBC9GobxNoMA/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby6gDrwZw1pJG52yulXne3U6fgldpXvGgbWgzzCkS60i0lVvhoEtH_8FkhqgMtLb432WQ/exec";
 
-    // Функція визначення аватара за роллю та ПІБ
     function getUserAvatarPath(role, userFullName, userScore = 0) {
       if (role === "admin") {
         return "./images2/avatar/ad.jpg";
@@ -242,9 +251,37 @@
       return `./images2/avatar/${genderCode}${gradeCode}.jpg`;
     }
 
+    // Допоміжна функція для розбору тексту завдання
+    function parseCourseItem(rawUrl) {
+      let titlePart = rawUrl;
+      let deadlinePart = "";
+      let deadlineDate = "";
+      let linkTarget = "";
+
+      if (rawUrl.includes("посилання:")) {
+        const parts = rawUrl.split("посилання:");
+        linkTarget = parts[1] ? parts[1].trim() : "";
+        let metaPart = parts[0]; 
+        
+        if (metaPart.includes("|")) {
+          const subParts = metaPart.split("|");
+          titlePart = subParts[0].replace(/\|/g, "").trim();
+          deadlinePart = subParts[1] ? subParts[1].replace(/\|/g, "").trim() : "";
+          
+          const dateMatch = deadlinePart.match(/\d{4}-\d{2}-\d{2}/);
+          if (dateMatch) {
+            deadlineDate = dateMatch[0];
+          }
+        } else {
+          titlePart = metaPart.trim();
+        }
+      }
+      return { titlePart, deadlinePart, deadlineDate, linkTarget };
+    }
+
     document.addEventListener("DOMContentLoaded", async () => {
-      const allowedEmail = localStorage.getItem("allowedEmail"); // У нас тут зберігається логін співробітника
-      const userRole = localStorage.getItem("userRole");         // Зберігаємо роль (admin, rm, mp)
+      const allowedEmail = localStorage.getItem("allowedEmail");
+      const userRole = localStorage.getItem("userRole");
       const userFullName = localStorage.getItem("userFullName") || "Співробітник";
 
       if (!allowedEmail) {
@@ -252,7 +289,6 @@
         return;
       }
 
-      // Перевірка прав доступу: показуємо кнопку адмін-панелі для admin або rm
       const goToAdminBtn = document.getElementById("goToAdminBtn");
       if (goToAdminBtn && (userRole === "admin" || userRole === "rm")) {
         goToAdminBtn.style.display = "inline-block";
@@ -338,62 +374,102 @@
         "neyromineriy.html": "Нейромінерій"
       };
 
+      // Функція рендерингу списку завдань
+      function renderCoursesList(coursesToRender) {
+        const coursesContainer = document.getElementById("assignedCoursesList");
+        if (!coursesToRender || coursesToRender.length === 0) {
+          coursesContainer.innerHTML = `<p style="color: #757575; font-size: 13px;">Наразі немає нових призначень.</p>`;
+          return;
+        }
+
+        coursesContainer.innerHTML = "";
+        coursesToRender.forEach(item => {
+          let rawUrl = item.courseUrl || "";
+          let parsed = parseCourseItem(rawUrl);
+          let assignedUserLabel = item.userEmail && item.userEmail !== allowedEmail ? `👤 Для співробітника: ${item.userEmail}` : "";
+
+          let href = "";
+          let inlineLinksHTML = "";
+
+          if (parsed.linkTarget) {
+            if (parsed.linkTarget.includes(",")) {
+              let linksArray = parsed.linkTarget.split(",");
+              inlineLinksHTML = `<div style="margin-top: 6px; display: flex; flex-wrap: wrap; gap: 6px;">`;
+              linksArray.forEach(l => {
+                let cl = l.trim();
+                let name = trainingNamesMap[cl] || cl;
+                let lHref = (cl.startsWith("http://") || cl.startsWith("https://")) ? cl : `./${cl}`;
+                inlineLinksHTML += `<a href="${lHref}" target="_blank" class="cabinet-link" style="margin: 0; font-size: 11px; padding: 5px 10px;">🔗 ${name}</a>`;
+              });
+              inlineLinksHTML += `</div>`;
+            } else {
+              href = (parsed.linkTarget.startsWith("http://") || parsed.linkTarget.startsWith("https://")) ? parsed.linkTarget : `./${parsed.linkTarget}`;
+            }
+          } else if (rawUrl.startsWith("http") || rawUrl.startsWith("./") || rawUrl.startsWith("/")) {
+            href = rawUrl;
+          }
+
+          let titleHtml = `<div style="font-weight: 600; color: #2c3e50; font-size: 14px; margin-bottom: 4px;">${parsed.titlePart}</div>`;
+          if (href) {
+            titleHtml = `<a href="${href}" target="_blank" class="cabinet-link" style="margin-bottom: 6px; display: inline-block;">🔗 ${parsed.titlePart}</a>`;
+          }
+
+          coursesContainer.innerHTML += `
+            <li style="padding: 12px; margin-bottom: 12px;">
+              ${assignedUserLabel ? `<span style="font-size: 11px; font-weight: bold; color: #2980b9; display: block; margin-bottom: 4px;">${assignedUserLabel}</span>` : ""}
+              <div>
+                ${titleHtml}
+                ${inlineLinksHTML}
+              </div>
+              <div style="font-size: 12px; color: #64748b; margin-top: 6px;">
+                ${parsed.deadlinePart} • Статус: <span style="font-weight: 500; color: #069606;">${item.status}</span>
+              </div>
+            </li>
+          `;
+        });
+      }
+
+      let originalCourses = [];
+
       try {
         const response = await fetch(`${SCRIPT_URL}?email=${encodeURIComponent(allowedEmail)}`);
         const result = await response.json();
 
         if (result.status === "success") {
           completedModules = result.completedModules || 0;
-
-          const coursesContainer = document.getElementById("assignedCoursesList");
-          if (result.courses && result.courses.length > 0) {
-            coursesContainer.innerHTML = "";
-            result.courses.forEach(item => {
-              let rawUrl = item.courseUrl || "";
-              let displayText = rawUrl;
-              let actionButtons = "";
-              
-              // Якщо РМ або Адмін дивиться завдання, виводимо кому воно призначене
-              let assignedUserLabel = item.userEmail && item.userEmail !== allowedEmail ? `👤 Для співробітника: ${item.userEmail}` : "";
-
-              if (rawUrl.includes("посилання:")) {
-                const parts = rawUrl.split("| посилання:");
-                displayText = parts[0].trim();
-                let linksPart = parts[1] ? parts[1].trim() : "";
-
-                if (linksPart.includes(",")) {
-                  let linksArray = linksPart.split(",");
-                  actionButtons = `<div style="margin-top: 8px; display: flex; flex-wrap: wrap; gap: 6px;">`;
-                  linksArray.forEach(l => {
-                    let cl = l.trim();
-                    let name = trainingNamesMap[cl] || cl;
-                    actionButtons += `<a href="./${cl}" target="_blank" class="cabinet-link" style="margin: 0; font-size: 11px; padding: 4px 8px;">📖 ${name}</a>`;
-                  });
-                  actionButtons += `</div>`;
-                } else if (linksPart) {
-                  let name = trainingNamesMap[linksPart] || linksPart;
-                  actionButtons = `<div style="margin-top: 6px;"><a href="./${linksPart}" target="_blank" class="cabinet-link" style="margin: 0; font-size: 12px; padding: 4px 10px;">📖 Відкрити: ${name}</a></div>`;
-                }
-              } else if (rawUrl.startsWith("http") || rawUrl.startsWith("./")) {
-                actionButtons = `<div style="margin-top: 6px;"><a href="${rawUrl}" target="_blank" class="cabinet-link" style="margin: 0;">Відкрити матеріали &rarr;</a></div>`;
-              }
-
-              coursesContainer.innerHTML += `
-                <li>
-                  ${assignedUserLabel ? `<span style="font-size: 11px; font-weight: bold; color: #2980b9; display: block; margin-bottom: 2px;">${assignedUserLabel}</span>` : ""}
-                  <div style="font-weight: 500; color: #2c3e50; margin-bottom: 4px; word-break: break-word;">${displayText}</div>
-                  <span style="font-size: 11px; color: #64748b; display: block; margin-bottom: 4px;">Статус: ${item.status}</span>
-                  ${actionButtons}
-                </li>
-              `;
-            });
-          } else {
-            coursesContainer.innerHTML = `<p style="color: #757575; font-size: 13px;">Наразі немає нових призначень.</p>`;
-          }
+          originalCourses = result.courses || [];
+          renderCoursesList(originalCourses);
         }
       } catch (error) {
         console.error("Помилка завантаження даних кабінету:", error);
         document.getElementById("assignedCoursesList").innerHTML = `<p style="color: #e74c3c; font-size: 13px;">Помилка завантаження даних з сервера.</p>`;
+      }
+
+      // Обробник події зміни сортування
+      const sortSelect = document.getElementById("sortTasksSelect");
+      if (sortSelect) {
+        sortSelect.addEventListener("change", (e) => {
+          const sortVal = e.target.value;
+          let sorted = [...originalCourses];
+
+          sorted.sort((a, b) => {
+            let parsedA = parseCourseItem(a.courseUrl || "");
+            let parsedB = parseCourseItem(b.courseUrl || "");
+
+            if (sortVal === "date-asc") {
+              return (parsedA.deadlineDate || "").localeCompare(parsedB.deadlineDate || "");
+            } else if (sortVal === "date-desc") {
+              return (parsedB.deadlineDate || "").localeCompare(parsedA.deadlineDate || "");
+            } else if (sortVal === "employee") {
+              return (a.userEmail || "").localeCompare(b.userEmail || "");
+            } else if (sortVal === "activity") {
+              return parsedA.titlePart.localeCompare(parsedB.titlePart);
+            }
+            return 0; // Початковий порядок
+          });
+
+          renderCoursesList(sorted);
+        });
       }
 
       updateProgressUI(completedModules, totalModules);

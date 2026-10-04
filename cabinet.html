@@ -163,7 +163,6 @@
           <div class="cabinet-card" style="border-left: 4px solid #2196F3;">
             <h3>📋 Призначені активності та ДЗ</h3>
             <div id="activeTaskContainer">
-             
               
               <!-- Панель сортування -->
               <div style="margin: 10px 0 15px 0; display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
@@ -172,6 +171,7 @@
                   <option value="default">За замовчуванням</option>
                   <option value="date-asc">За дедлайном (спочатку раніші)</option>
                   <option value="date-desc">За дедлайном (спочатку пізніші)</option>
+                  <option value="status">За статусом</option>
                   <option value="employee">За співробітником</option>
                   <option value="activity">За назвою активності</option>
                 </select>
@@ -214,7 +214,7 @@
  <div id="footer-container"></div>
 
   <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby6gDrwZw1pJG52yulXne3U6fgldpXvGgbWgzzCkS60i0lVvhoEtH_8FkhqgMtLb432WQ/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxRIikqmFpNHv6S5C5wudLc025PtDo6WHWMxVxJsAH2DIkVNeO4GnXs6jVD-4FNes0y3g/exec";
 
     function getUserAvatarPath(role, userFullName, userScore = 0) {
       if (role === "admin") {
@@ -251,7 +251,46 @@
       return `./images2/avatar/${genderCode}${gradeCode}.jpg`;
     }
 
-    // Допоміжна функція для розбору тексту завдання
+    async function updateTaskStatusOnServer(email, courseUrl, newStatus) {
+      try {
+        await fetch(SCRIPT_URL, {
+          method: "POST",
+          body: JSON.stringify({
+            action: "updateCourseStatus",
+            email: email,
+            courseUrl: courseUrl,
+            status: newStatus
+          })
+        });
+      } catch (err) {
+        console.error("Помилка оновлення статусу:", err);
+      }
+    }
+
+    window.changeStatusAction = async function(email, encodedUrl, newStatus) {
+      let rawUrl = decodeURIComponent(encodedUrl);
+      try {
+        const response = await fetch(SCRIPT_URL, {
+          method: "POST",
+          body: JSON.stringify({
+            action: "updateCourseStatus",
+            email: email,
+            courseUrl: rawUrl,
+            status: newStatus
+          })
+        });
+        const resJson = await response.json();
+        if (resJson.status === "success") {
+          location.reload();
+        } else {
+          alert("Помилка оновлення статусу на сервері.");
+        }
+      } catch (err) {
+        console.error(err);
+        alert("Помилка зв'язку з сервером.");
+      }
+    };
+
     function parseCourseItem(rawUrl) {
       let titlePart = rawUrl;
       let deadlinePart = "";
@@ -277,6 +316,16 @@
         }
       }
       return { titlePart, deadlinePart, deadlineDate, linkTarget };
+    }
+
+    function getDisplayStatus(item, parsed) {
+      const todayStr = new Date().toISOString().split('T')[0];
+      if (parsed.deadlineDate && item.status !== "Виконано") {
+        if (parsed.deadlineDate < todayStr) {
+          return "Протерміновано";
+        }
+      }
+      return item.status;
     }
 
     document.addEventListener("DOMContentLoaded", async () => {
@@ -374,7 +423,6 @@
         "neyromineriy.html": "Нейромінерій"
       };
 
-      // Функція рендерингу списку завдань
       function renderCoursesList(coursesToRender) {
         const coursesContainer = document.getElementById("assignedCoursesList");
         if (!coursesToRender || coursesToRender.length === 0) {
@@ -383,49 +431,122 @@
         }
 
         coursesContainer.innerHTML = "";
+        
         coursesToRender.forEach(item => {
           let rawUrl = item.courseUrl || "";
           let parsed = parseCourseItem(rawUrl);
           let assignedUserLabel = item.userEmail && item.userEmail !== allowedEmail ? `👤 Для співробітника: ${item.userEmail}` : "";
 
-          let href = "";
+          let displayStatus = getDisplayStatus(item, parsed);
+          let statusColor = "#7f8c8d";
+
+          // Унікальний колір для кожного статусу
+          if (displayStatus === "Протерміновано") statusColor = "#e74c3c";         // Червоний
+          else if (displayStatus === "Доопрацювати") statusColor = "#e67e22";      // Помаранчевий
+          else if (displayStatus === "Потребує перевірки") statusColor = "#8e44ad"; // Фіолетовий
+          else if (displayStatus === "Розпочато навчання") statusColor = "#3498db"; // Синій
+          else if (displayStatus === "Переглянуто") statusColor = "#16a085";        // Бірюзовий
+          else if (displayStatus === "Призначено") statusColor = "#7f8c8d";         // Сірий
+          else if (displayStatus === "Виконано") statusColor = "#27ae60";           // Зелений
+
+let href = "";
           let inlineLinksHTML = "";
 
           if (parsed.linkTarget) {
             if (parsed.linkTarget.includes(",")) {
+              // Якщо призначено кілька продуктів через кому
               let linksArray = parsed.linkTarget.split(",");
               inlineLinksHTML = `<div style="margin-top: 6px; display: flex; flex-wrap: wrap; gap: 6px;">`;
               linksArray.forEach(l => {
                 let cl = l.trim();
                 let name = trainingNamesMap[cl] || cl;
-                let lHref = (cl.startsWith("http://") || cl.startsWith("https://")) ? cl : `./${cl}`;
-                inlineLinksHTML += `<a href="${lHref}" target="_blank" class="cabinet-link" style="margin: 0; font-size: 11px; padding: 5px 10px;">🔗 ${name}</a>`;
+                
+                // Визначаємо шлях: зовнішнє посилання, тренінг чи продукт через шаблон product.html
+                let lHref = "";
+                if (cl.startsWith("http://") || cl.startsWith("https://")) {
+                  lHref = cl;
+                } else if (cl.toLowerCase().startsWith("trening")) {
+                  lHref = `./${cl}`;
+                } else {
+                  lHref = `./product.html?id=${cl}`; // Шаблон продукту
+                }
+
+                inlineLinksHTML += `<a href="${lHref}" target="_blank" class="cabinet-link task-click-link" data-email="${item.userEmail}" data-url="${rawUrl}" data-target="${cl}" style="margin: 0; font-size: 11px; padding: 5px 10px;">🔗 ${name}</a>`;
               });
               inlineLinksHTML += `</div>`;
             } else {
-              href = (parsed.linkTarget.startsWith("http://") || parsed.linkTarget.startsWith("https://")) ? parsed.linkTarget : `./${parsed.linkTarget}`;
+              // Одинарне посилання (тренінг, стандарт або продукт)
+              let target = parsed.linkTarget.trim();
+              if (target.startsWith("http://") || target.startsWith("https://")) {
+                href = target;
+              } else if (target.toLowerCase().startsWith("trening")) {
+                href = `./${target}`;
+              } else {
+                href = `./product.html?id=${target}`; // Шаблон продукту
+              }
             }
           } else if (rawUrl.startsWith("http") || rawUrl.startsWith("./") || rawUrl.startsWith("/")) {
             href = rawUrl;
           }
-
           let titleHtml = `<div style="font-weight: 600; color: #2c3e50; font-size: 14px; margin-bottom: 4px;">${parsed.titlePart}</div>`;
           if (href) {
-            titleHtml = `<a href="${href}" target="_blank" class="cabinet-link" style="margin-bottom: 6px; display: inline-block;">🔗 ${parsed.titlePart}</a>`;
+            titleHtml = `<a href="${href}" target="_blank" class="cabinet-link task-click-link" data-email="${item.userEmail}" data-url="${rawUrl}" data-target="${parsed.linkTarget}" style="margin-bottom: 6px; display: inline-block;">🔗 ${parsed.titlePart}</a>`;
           }
 
-          coursesContainer.innerHTML += `
-            <li style="padding: 12px; margin-bottom: 12px;">
-              ${assignedUserLabel ? `<span style="font-size: 11px; font-weight: bold; color: #2980b9; display: block; margin-bottom: 4px;">${assignedUserLabel}</span>` : ""}
-              <div>
-                ${titleHtml}
-                ${inlineLinksHTML}
-              </div>
-              <div style="font-size: 12px; color: #64748b; margin-top: 6px;">
-                ${parsed.deadlinePart} • Статус: <span style="font-weight: 500; color: #069606;">${item.status}</span>
-              </div>
-            </li>
+          let managerActionsHTML = "";
+          const isManagerOrAdmin = (userRole === "admin" || userRole === "rm");
+          
+          if (isManagerOrAdmin && item.userEmail) {
+            if (item.status === "Потребує перевірки") {
+              managerActionsHTML = `
+                <div style="margin-top: 8px; display: flex; gap: 6px; flex-wrap: wrap;">
+                  <button onclick="changeStatusAction('${item.userEmail}', '${encodeURIComponent(rawUrl)}', 'Виконано')" style="background: #27ae60; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 500;">✅ Виконано</button>
+                  <button onclick="changeStatusAction('${item.userEmail}', '${encodeURIComponent(rawUrl)}', 'Доопрацювати')" style="background: #e74c3c; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 500;">🔄 Доопрацювати</button>
+                </div>
+              `;
+            } else if (item.status === "Доопрацювати") {
+              managerActionsHTML = `
+                <div style="margin-top: 8px;">
+                  <button onclick="changeStatusAction('${item.userEmail}', '${encodeURIComponent(rawUrl)}', 'Призначено')" style="background: #f39c12; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 500;">🔓 Дозволити повторне тестування</button>
+                </div>
+              `;
+            }
+          }
+
+          let li = document.createElement("li");
+          li.style.cssText = "padding: 12px; margin-bottom: 12px;";
+          li.innerHTML = `
+            ${assignedUserLabel ? `<span style="font-size: 11px; font-weight: bold; color: #2980b9; display: block; margin-bottom: 4px;">${assignedUserLabel}</span>` : ""}
+            <div>
+              ${titleHtml}
+              ${inlineLinksHTML}
+            </div>
+            <div style="font-size: 12px; color: #64748b; margin-top: 6px;">
+              ${parsed.deadlinePart} • Статус: <span style="font-weight: 600; color: ${statusColor};">${displayStatus}</span>
+            </div>
+            ${managerActionsHTML}
           `;
+
+          const taskLinks = li.querySelectorAll(".task-click-link");
+          taskLinks.forEach(link => {
+            link.addEventListener("click", async () => {
+              let currentStatus = item.status;
+              let titleLower = parsed.titlePart.toLowerCase();
+              let targetLower = (parsed.linkTarget || "").toLowerCase();
+
+              if (titleLower.includes("стандарт") || titleLower.includes("запрошення") || targetLower.includes("portfolio standart.html")) {
+                if (currentStatus !== "Виконано") {
+                  await updateTaskStatusOnServer(item.userEmail, rawUrl, "Виконано");
+                }
+              } else {
+                if (currentStatus === "Призначено") {
+                  await updateTaskStatusOnServer(item.userEmail, rawUrl, "Переглянуто");
+                }
+              }
+            });
+          });
+
+          coursesContainer.appendChild(li);
         });
       }
 
@@ -445,12 +566,21 @@
         document.getElementById("assignedCoursesList").innerHTML = `<p style="color: #e74c3c; font-size: 13px;">Помилка завантаження даних з сервера.</p>`;
       }
 
-      // Обробник події зміни сортування
       const sortSelect = document.getElementById("sortTasksSelect");
       if (sortSelect) {
         sortSelect.addEventListener("change", (e) => {
           const sortVal = e.target.value;
           let sorted = [...originalCourses];
+
+          const statusPriority = {
+            "Протерміновано": 1,
+            "Доопрацювати": 2,
+            "Потребує перевірки": 3,
+            "Розпочато навчання": 4,
+            "Переглянуто": 5,
+            "Призначено": 6,
+            "Виконано": 7
+          };
 
           sorted.sort((a, b) => {
             let parsedA = parseCourseItem(a.courseUrl || "");
@@ -460,12 +590,16 @@
               return (parsedA.deadlineDate || "").localeCompare(parsedB.deadlineDate || "");
             } else if (sortVal === "date-desc") {
               return (parsedB.deadlineDate || "").localeCompare(parsedA.deadlineDate || "");
+            } else if (sortVal === "status") {
+              let statA = getDisplayStatus(a, parsedA);
+              let statB = getDisplayStatus(b, parsedB);
+              return (statusPriority[statA] || 99) - (statusPriority[statB] || 99);
             } else if (sortVal === "employee") {
               return (a.userEmail || "").localeCompare(b.userEmail || "");
             } else if (sortVal === "activity") {
               return parsedA.titlePart.localeCompare(parsedB.titlePart);
             }
-            return 0; // Початковий порядок
+            return 0;
           });
 
           renderCoursesList(sorted);

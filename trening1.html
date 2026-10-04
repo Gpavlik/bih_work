@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head><link rel="shortcut icon" href="https://behealth.com.ua/assets/img/favicon.ico" type="img/png">
+<head>
+  <link rel="shortcut icon" href="https://behealth.com.ua/assets/img/favicon.ico" type="img/png">
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -14,34 +15,14 @@
     integrity="sha512-Y0MM+V6ymRKN2zStTqzQ227DWhhp4Mzdo6gnlRnuaNCbc+YN/ZH0sBCLTM4M0oSy9c9VKiCvd4Jk44aCLrNS5Q=="
     crossorigin="anonymous" referrerpolicy="no-referrer" />
   <link rel="stylesheet" href="./css/main.css" />
-  
 
-<!-- Google tag (gtag.js) -->
-
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-5BZZCV5DRK"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag("js", new Date());
-  gtag("config", "G-5BZZCV5DRK");
-</script>
-<script>
-  const email = localStorage.getItem("allowedEmail");
-  if (email) {
-    gtag("set", "user_properties", {
-      user_id: email
-    });
-  }
-</script>
-<script>
-  function sha256(input) {
-    const encoder = new TextEncoder();
-    const data = encoder.encode(input);
-    return crypto.subtle.digest("SHA-256", data).then(hash => {
-      return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
-    });
-  }
-</script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-5BZZCV5DRK"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag("js", new Date());
+    gtag("config", "G-5BZZCV5DRK");
+  </script>
 </head>
 <body>
   <div id="header-container"></div>
@@ -53,9 +34,8 @@
           <li class="button-section"><button class="btn" type="button"><a style="text-decoration: none; font-size: smaller;" class="text__work" href="./tr/Тренінг для нових співробітників.pdf" target="_blank" rel="noopener noreferrer">Презентація</a></button></li>
           <li class="button-section"><button class="btn" type="button"><a style="text-decoration: none; font-size: smaller;" class="text__work" href="./trening1 task.html">Завдання</a></button></li>
           <li class="button-section"><button class="btn" type="button"><a style="text-decoration: none; font-size: smaller;" class="text__work" href="https://docs.google.com/spreadsheets/d/11JUeUJSrHMm_NEEHFO4E6waD7ZGPV-S1QLKX8kXo0i0/edit?usp=sharing#gid=0" target="_blank" rel="noopener noreferrer">Ваші запитання</a></button></li>
-        <li class="button-section"><button class="btn" type="button" onclick="event.stopPropagation()"><a style="text-decoration: none; font-size: smaller;" class="text__work" href="./portfolio trenings.html">До переліку</a></button></li>
-          <li class="button-section"><button class="btn" type="button"><a style="text-decoration: none; font-size: smaller;" class="text__work" href="./portfolio trenings.html">Мій кабінет</a></button></li>
-                
+          <li class="button-section"><button class="btn" type="button" onclick="event.stopPropagation()"><a style="text-decoration: none; font-size: smaller;" class="text__work" href="./cabinet.html">До переліку</a></button></li>
+          <li class="button-section"><button class="btn" type="button"><a style="text-decoration: none; font-size: smaller;" class="text__work" href="./cabinet.html">Мій кабінет</a></button></li>
         </ul>
       </div>
   </section>
@@ -64,10 +44,10 @@
   <script src="./js/menu.js"></script>
   <script src="theme-toggle.js"></script>
   <script src="tracking.js"></script>
-<script src="headfoot.js"></script>
-<script src="scroll.js"></script>
-<script src="scrbtn.js"></script>
-<script src="zoom.js"></script>
-</body>
+  <script src="headfoot.js"></script>
+  <script src="scroll.js"></script>
+  <script src="scrbtn.js"></script>
+  <script src="trening.js"></script>
 
+</body>
 </html>

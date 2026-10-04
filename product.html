@@ -13,7 +13,6 @@
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
     /* Стилі для модального вікна тестування */
-/* Стилі для модального вікна тестування */
     .quiz-modal-overlay {
       position: fixed;
       top: 0;
@@ -35,7 +34,6 @@
       visibility: visible;
     }
     
-    /* Додали більше повітря (padding) та збільшили максимальну ширину */
     .quiz-modal-content {
       top: 5%;
       background: #ffffff;
@@ -68,7 +66,6 @@
       color: #0f172a;
     }
 
-    /* Стилізація варіантів відповідей (зручні великі кнопки для тапу) */
     .quiz-option-card {
       display: flex;
       align-items: center;
@@ -98,7 +95,6 @@
       flex-shrink: 0;
     }
 
-    /* --- ПОКРАЩЕНА ТЕМНА ТЕМА ДЛЯ МОДАЛКИ (#2f303a) --- */
     body.dark-mode .quiz-modal-content {
       background-color: #2f303a !important;
       color: #22c55e !important;
@@ -126,7 +122,6 @@
     body.dark-mode .quiz-modal-content .border-slate-100 {
       border-color: #4b4c59 !important;
     }
-    /* Картки відповідей у темній темі */
     body.dark-mode .quiz-option-card {
       background-color: #3b3c48 !important;
       border-color: #4b4c59 !important;
@@ -147,7 +142,7 @@
     body.dark-mode .quiz-close-btn:hover {
       color: #ffffff;
     }
-        .nav-list {
+    .nav-list {
       display: flex;
       gap: 12px;
       list-style: none;
@@ -205,7 +200,6 @@
       display: block;
     }
 
-    /* Стилі для інтегрованого тесту */
     .quiz-container-box {
       font-family: 'Inter', sans-serif;
       background-color: #f5f4fa;
@@ -247,30 +241,28 @@
         <h2 class="title" style="color: black; text-align: center; font-size: 24px; margin-bottom: 25px;"></h2>
         <h3 class="product-subtitle" style="text-align: center;"></h3>
         <nav class="navigation">
-  <ul class="nav-list">
-    <li class="nav-item"><a id="campaign" href="#" class="btn-link" target="_blank" rel="noopener noreferrer">Кампейн</a></li>
-    <li class="nav-item has-dropdown">
-      <button class="btn-link" type="button">Відео</button>
-      <div class="dropdown-menu">
-        <a id="video" href="#" target="_blank" rel="noopener noreferrer">Вебінар</a>
-      </div>
-    </li>
-    <li class="nav-item has-dropdown">
-      <button class="btn-link" type="button">Презентації</button>
-      <div class="dropdown-menu">
-        <a href="#" target="_blank" rel="noopener noreferrer">Навчальна Презентація</a>
-        <a id="presentation" href="#" target="_blank" rel="noopener noreferrer">На візит</a>
-      </div>
-    </li>
-    <!-- Додано id="instruction" -->
-    <li class="nav-item"><a id="instruction" href="#" class="btn-link" target="_blank" rel="noopener noreferrer">Інструкція</a></li>
-    <!-- Додано id="competitor" -->
-    <li class="nav-item"><a id="competitor" href="#" class="btn-link" target="_blank" rel="noopener noreferrer">Конкурентне оточення</a></li>
-    <li class="nav-item"><a id="test" href="javascript:void(0);" class="btn-link">Тестування</a></li>
-    <li class="nav-item"><a href="./portfolio products.html" class="btn-link">До переліку</a></li>
-    <li class="nav-item"><a href="#my-cabinet" class="btn-link">Мій кабінет</a></li>
-  </ul>
-</nav>
+          <ul class="nav-list">
+            <li class="nav-item"><a id="campaign" href="#" class="btn-link product-action-btn" target="_blank" rel="noopener noreferrer">Кампейн</a></li>
+            <li class="nav-item has-dropdown">
+              <button class="btn-link product-action-btn" type="button">Відео</button>
+              <div class="dropdown-menu">
+                <a id="video" class="product-action-btn" href="#" target="_blank" rel="noopener noreferrer">Вебінар</a>
+              </div>
+            </li>
+            <li class="nav-item has-dropdown">
+              <button class="btn-link product-action-btn" type="button">Презентації</button>
+              <div class="dropdown-menu">
+                <a href="#" class="product-action-btn" target="_blank" rel="noopener noreferrer">Навчальна Презентація</a>
+                <a id="presentation" class="product-action-btn" href="#" target="_blank" rel="noopener noreferrer">На візит</a>
+              </div>
+            </li>
+            <li class="nav-item"><a id="instruction" href="#" class="btn-link product-action-btn" target="_blank" rel="noopener noreferrer">Інструкція</a></li>
+            <li class="nav-item"><a id="competitor" href="#" class="btn-link product-action-btn" target="_blank" rel="noopener noreferrer">Конкурентне оточення</a></li>
+            <li class="nav-item"><a id="test" href="javascript:void(0);" class="btn-link product-action-btn">Тестування</a></li>
+            <li class="nav-item"><a href="./portfolio products.html" class="btn-link">До переліку</a></li>
+            <li class="nav-item"><a href="./cabinet.html" class="btn-link">Мій кабінет</a></li>
+          </ul>
+        </nav>
 
         <div class="product-details">
           <div class="product-layout">
@@ -295,23 +287,96 @@
           <div class="product-section"><h4></h4><p></p></div>
 
           <!-- Модальне вікно тестування -->
-  <div id="quiz-modal" class="quiz-modal-overlay">
-    <div class="quiz-modal-content">
-      <button id="close-quiz-modal" class="quiz-close-btn">&times;</button>
-      <div id="quiz-main-wrapper">
-        <!-- Вміст тесту підтягується динамічно -->
-        <div class="bg-white p-6 border border-slate-200 text-center">
-          <h3 class="text-xl font-bold text-slate-800 mb-2">Атестаційне тестування продукту</h3>
-          <p class="text-sm text-slate-600">Завантаження тестових питань...</p>
+          <div id="quiz-modal" class="quiz-modal-overlay">
+            <div class="quiz-modal-content">
+              <button id="close-quiz-modal" class="quiz-close-btn">&times;</button>
+              <div id="quiz-main-wrapper">
+                <div class="bg-white p-6 border border-slate-200 text-center">
+                  <h3 class="text-xl font-bold text-slate-800 mb-2">Атестаційне тестування продукту</h3>
+                  <p class="text-sm text-slate-600">Завантаження тестових питань...</p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-  </div>
-      </div>
     </section>
-    </main>
+  </main>
   <div id="footer-container"></div>
   
+  <!-- Скрипт життєвого циклу навчання для продукту -->
+  <script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxRIikqmFpNHv6S5C5wudLc025PtDo6WHWMxVxJsAH2DIkVNeO4GnXs6jVD-4FNes0y3g/exec";
+    const allowedEmail = localStorage.getItem("allowedEmail");
+    
+    // Отримуємо справжній ідентифікатор продукту з URL (наприклад, argisDuo.html)
+    const urlParams = new URLSearchParams(window.location.search);
+    const productId = urlParams.get('id');
+
+    async function updateProductTaskStatus(status) {
+      if (!allowedEmail || !productId) return;
+      try {
+        await fetch(SCRIPT_URL, {
+          method: "POST",
+          mode: "no-cors",
+          body: JSON.stringify({
+            action: "updateCourseStatus",
+            email: allowedEmail,
+            courseUrl: productId,
+            status: status
+          })
+        });
+      } catch (err) {
+        console.error("Помилка оновлення статусу продукту:", err);
+      }
+    }
+
+    // При кліку на будь-яку кнопку матеріалу — статус "Розпочато навчання"
+    document.addEventListener("DOMContentLoaded", () => {
+      const actionButtons = document.querySelectorAll(".product-action-btn");
+      actionButtons.forEach(btn => {
+        btn.addEventListener("click", () => {
+          updateProductTaskStatus("Розпочато навчання");
+        });
+      });
+    });
+
+    // Оцінка результату тесту
+    window.handleTestCompletion = async function(scorePercentage) {
+      let wrapper = document.getElementById("quiz-main-wrapper");
+      if (scorePercentage >= 90) {
+        await updateProductTaskStatus("Виконано");
+        if (wrapper) {
+          wrapper.innerHTML = `
+            <div style="text-align: center; padding: 20px;">
+              <h3 style="color: #069606; margin-bottom: 10px;">🎉 Вітаємо! Тест складено успішно!</h3>
+              <p>Ваш результат: <b>${scorePercentage}%</b> (необхідно від 90%).</p>
+              <p style="margin-top: 15px; color: #64748b;">Статус завдання оновлено на: <b>Виконано</b>.</p>
+            </div>
+          `;
+        }
+      } else {
+        await updateProductTaskStatus("Доопрацювати");
+        if (wrapper) {
+          wrapper.innerHTML = `
+            <div style="text-align: center; padding: 20px;">
+              <h3 style="color: #e74c3c; margin-bottom: 10px;">⚠️ Тест не складено</h3>
+              <p>Ваш результат: <b>${scorePercentage}%</b> (потрібно мінімум 90%).</p>
+              <p style="margin-top: 10px; color: #64748b;">Статус завдання змінено на: <b>Доопрацювати</b>.</p>
+              <button id="retryQuizBtn" class="btn-link" style="margin-top: 20px; background: #e74c3c; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer;">Пройти тест повторно</button>
+            </div>
+          `;
+
+          document.getElementById("retryQuizBtn").addEventListener("click", async () => {
+            await updateProductTaskStatus("Доопрацювати");
+            alert("Запит на повторне проходження надіслано керівнику.");
+            location.reload();
+          });
+        }
+      }
+    };
+  </script>
+
   <script src="./js/menu.js"></script>
   <script src="theme-toggle.js"></script>
   <script src="tracking.js"></script>

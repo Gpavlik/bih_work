@@ -63,73 +63,14 @@
   
   <div id="footer-container"></div>
   
-  <script src="./user.js"></script>
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const userEmail = localStorage.getItem("allowedEmail");
-      let mpName = "Медичний представник";
-
-      if (userEmail && typeof users !== 'undefined' && users[userEmail]) {
-        mpName = users[userEmail];
-      }
-
-      document.getElementById("displayMpName").textContent = mpName;
-
-      const form = document.getElementById("trainingTaskForm");
-      form.addEventListener("submit", async (e) => {
-        e.preventDefault();
-
-        const reportText = document.getElementById("taskReportText").value.trim();
-        if (!reportText) {
-          alert("Будь ласка, заповніть відповідь на завдання!");
-          return;
-        }
-
-        const submitBtn = document.getElementById("submitTaskBtn");
-        submitBtn.textContent = "⏳ Надсилається звіт...";
-        submitBtn.disabled = true;
-
-        const taskData = {
-          type: "taskReport",
-          mpName: mpName,
-          rmName: "Призначений керівник",
-          skill: "Тренінг: Управління продажами",
-          products: "Тренінгове завдання №8",
-          reportText: reportText,
-          reportLink: "Відсутнє",
-          status: "Очікує перевірки",
-          dateSubmitted: new Date().toLocaleDateString('uk-UA')
-        };
-
-        const scriptURL = "  https://script.google.com/macros/s/AKfycbzexGNhyqt1QTIv2M6YMD_hFvhru9cWdFyvMTLeRRBdqk24JwRCT5SMZ2lBC9GobxNoMA/exec";
-
-        try {
-          await fetch(scriptURL, {
-            method: "POST",
-            mode: "no-cors",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(taskData)
-          });
-
-          alert("✅ Ваше завдання успішно надіслано в систему на перевірку керівнику та супервайзеру!");
-          window.location.href = "./cabinet.html";
-        } catch (error) {
-          console.error("Помилка:", error);
-          alert("❌ Сталася помилка при надсиланні. Спробуйте ще раз.");
-          submitBtn.textContent = "📤 Надіслати на перевірку РМ та супервайзеру";
-          submitBtn.disabled = false;
-        }
-      });
-    });
-  </script>
-
-  <script src="./js/menu.js"></script>
+   <script src="./js/menu.js"></script>
   <script src="theme-toggle.js"></script>
   <script src="tracking.js"></script>
   <script src="headfoot.js"></script>
   <script src="scroll.js"></script>
   <script src="scrbtn.js"></script>
-<script src="zoom.js"></script>
+
+<script src="task.js"></script>
 </body>
 
 </html>

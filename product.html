@@ -306,7 +306,7 @@
   
   <!-- Скрипт життєвого циклу навчання для продукту -->
   <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxRIikqmFpNHv6S5C5wudLc025PtDo6WHWMxVxJsAH2DIkVNeO4GnXs6jVD-4FNes0y3g/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby87iUOv2tul_QrIBiuJ8JgcfCOl4WQ3igIuIDNWpZS4CN2y27RRtD752dyePFZRvGf8A/exec";
     const allowedEmail = localStorage.getItem("allowedEmail");
     
     // Отримуємо справжній ідентифікатор продукту з URL (наприклад, argisDuo.html)
@@ -316,15 +316,16 @@
     async function updateProductTaskStatus(status) {
       if (!allowedEmail || !productId) return;
       try {
-        await fetch(SCRIPT_URL, {
-          method: "POST",
-          mode: "no-cors",
-          body: JSON.stringify({
-            action: "updateCourseStatus",
-            email: allowedEmail,
-            courseUrl: productId,
-            status: status
-          })
+        const payload = {
+          action: "updateCourseStatus",
+          email: allowedEmail,
+          courseUrl: productId,
+          status: status
+        };
+        const params = new URLSearchParams(payload).toString();
+        
+        await fetch(`${SCRIPT_URL}?${params}`, {
+          method: "GET"
         });
       } catch (err) {
         console.error("Помилка оновлення статусу продукту:", err);

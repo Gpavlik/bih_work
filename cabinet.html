@@ -16,113 +16,22 @@
     crossorigin="anonymous" referrerpolicy="no-referrer" />
   <link rel="stylesheet" href="./css/main.css" />
   <style>
-    .cabinet-hero {
-      padding-top: 40px;
-      padding-bottom: 40px;
-    }
-    .cabinet-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 30px;
-      margin-top: 30px;
-    }
-    .cabinet-card {
-      background: var(--bg-card, #ffffff);
-      border: 1px solid #e1e1e1;
-      padding: 25px;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-    .cabinet-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 10px 15px rgba(0,0,0,0.1);
-    }
-    .cabinet-card h3 {
-      font-size: 20px;
-      margin-bottom: 15px;
-      color: var(--text-color, #212121);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .cabinet-card p, .cabinet-card ul {
-      font-size: 14px;
-      line-height: 1.6;
-      color: #757575;
-    }
-    .cabinet-card ul {
-      list-style-type: none;
-      padding-left: 0;
-      margin-top: 10px;
-    }
-    .cabinet-card li {
-      margin-bottom: 10px;
-      padding: 8px 12px;
-      background: #f8fafc;
-      border-radius: 6px;
-      border: 1px solid #e2e8f0;
-    }
-    .cabinet-link {
-      display: inline-block;
-      margin-top: 5px;
-      color: #ffffff;
-      background: #2196F3;
-      padding: 6px 12px;
-      border-radius: 4px;
-      text-decoration: none;
-      font-size: 13px;
-      font-weight: 500;
-    }
-    .cabinet-link:hover {
-      background: #069606;
-      text-decoration: none;
-    }
-    .logout-btn {
-      background-color: #f5f4fa;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-      border: none;
-      padding: 10px 20px;
-      cursor: pointer;
-      font-weight: 500;
-      transition: background 0.2s;
-    }
-    .logout-btn:hover {
-      background-color: #d32f2f;
-      color: white;
-    }
-    .admin-nav-btn {
-      background-color: #f5f4fa;
-      border: none;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-      padding: 10px 20px;
-      text-decoration: none;
-      font-weight: 500;
-      display: inline-block;
-      transition: background 0.2s;
-    }
-    .admin-nav-btn:hover {
-      background-color: #069606;
-      color: white;
-      text-decoration: none;
-    }
-    .task-badge {
-      display: inline-block;
-      background: #e3f2fd;
-      color: #069606;
-      padding: 4px 8px;
-      border-radius: 4px;
-      font-size: 12px;
-      font-weight: 700;
-      margin-bottom: 10px;
-    }
-    .user-avatar {
-      width: 120px;
-      height: 120px;
-      border-radius: 10%;
-      object-fit: cover;
-      margin-bottom: 12px;
-      border: 2px solid #069606;
-    }
+    .cabinet-hero { padding-top: 40px; padding-bottom: 40px; }
+    .cabinet-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; margin-top: 30px; }
+    .cabinet-card { background: var(--bg-card, #ffffff); border: 1px solid #e1e1e1; padding: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); transition: transform 0.3s ease, box-shadow 0.3s ease; }
+    .cabinet-card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px rgba(0,0,0,0.1); }
+    .cabinet-card h3 { font-size: 20px; margin-bottom: 15px; color: var(--text-color, #212121); display: flex; align-items: center; gap: 10px; }
+    .cabinet-card p, .cabinet-card ul { font-size: 14px; line-height: 1.6; color: #757575; }
+    .cabinet-card ul { list-style-type: none; padding-left: 0; margin-top: 10px; }
+    .cabinet-card li { margin-bottom: 10px; padding: 8px 12px; background: #f8fafc; border-radius: 6px; border: 1px solid #e2e8f0; }
+    .cabinet-link { display: inline-block; margin-top: 5px; color: #ffffff; background: #2196F3; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 13px; font-weight: 500; }
+    .cabinet-link:hover { background: #069606; text-decoration: none; }
+    .logout-btn { background-color: #f5f4fa; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border: none; padding: 10px 20px; cursor: pointer; font-weight: 500; transition: background 0.2s; }
+    .logout-btn:hover { background-color: #d32f2f; color: white; }
+    .admin-nav-btn { background-color: #f5f4fa; border: none; box-shadow: 0 2px 4px rgba(0,0,0,0.05); padding: 10px 20px; text-decoration: none; font-weight: 500; display: inline-block; transition: background 0.2s; }
+    .admin-nav-btn:hover { background-color: #069606; color: white; text-decoration: none; }
+    .task-badge { display: inline-block; background: #e3f2fd; color: #069606; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 700; margin-bottom: 10px; }
+    .user-avatar { width: 120px; height: 120px; border-radius: 10%; object-fit: cover; margin-bottom: 12px; border: 2px solid #069606; }
   </style>
 </head>
 
@@ -146,7 +55,7 @@
 
         <div class="cabinet-grid">
           
-          <!-- 1. Профіль користувача з аватаркою -->
+          <!-- Профіль користувача -->
           <div class="cabinet-card" style="text-align: center; border-left: 4px solid #069606;">
             <img id="userAvatarImg" class="user-avatar" src="" alt="Аватар користувача">
             <h3 style="justify-content: center;" id="userNameField">Користувач</h3>
@@ -159,7 +68,7 @@
             </div>
           </div>
 
-          <!-- 2. Призначені завдання / тренінги / продукти -->
+          <!-- Призначені завдання -->
           <div class="cabinet-card" style="border-left: 4px solid #2196F3;">
             <h3>📋 Призначені активності та ДЗ</h3>
             <div id="activeTaskContainer">
@@ -183,7 +92,7 @@
             </div>
           </div>
 
-          <!-- 3. Навчальні матеріали та модулі -->
+          <!-- Навчальні матеріали -->
           <div class="cabinet-card" style="border-left: 4px solid #ff0000;">
             <h3>📚 Матеріали та модулі</h3>
             <p>Швидкий доступ до баз знань та каталогів:</p>
@@ -194,7 +103,7 @@
             </ul>
           </div>
           
-          <!-- 5. БЛОК: Останні новини та оновлення на порталі -->
+          <!-- Останні новини -->
           <div class="cabinet-card" style="grid-column: 1 / -1; border-left: 4px solid #ff9800;">
             <h3>📢 Останні оновлення на порталі (23.09.2026)</h3>
             <div style="background-color: #f9f9f9; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; margin-top: 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);">
@@ -214,51 +123,31 @@
  <div id="footer-container"></div>
 
   <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxRIikqmFpNHv6S5C5wudLc025PtDo6WHWMxVxJsAH2DIkVNeO4GnXs6jVD-4FNes0y3g/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby87iUOv2tul_QrIBiuJ8JgcfCOl4WQ3igIuIDNWpZS4CN2y27RRtD752dyePFZRvGf8A/exec";
 
     function getUserAvatarPath(role, userFullName, userScore = 0) {
-      if (role === "admin") {
-        return "./images2/avatar/ad.jpg";
-      }
-
+      if (role === "admin") return "./images2/avatar/ad.jpg";
       let isFemale = false;
       if (userFullName) {
         const parts = userFullName.trim().split(" ");
-        if (parts.length >= 3) {
-          let patronymic = parts[2].toLowerCase();
-          if (patronymic.endsWith("вна")) {
-            isFemale = true;
-          }
-        }
+        if (parts.length >= 3 && parts[2].toLowerCase().endsWith("вна")) isFemale = true;
       }
-
-      if (role === "rm") {
-        return isFemale ? "./images2/avatar/frm.jpg" : "./images2/avatar/mrm.jpg";
-      }
-
-      let gradeCode = "j"; 
-      if (userScore > 80) {
-        gradeCode = "p"; 
-      } else if (userScore > 60) {
-        gradeCode = "e"; 
-      } else if (userScore > 40) {
-        gradeCode = "s"; 
-      } else if (userScore > 20) {
-        gradeCode = "m"; 
-      }
-
-      let genderCode = isFemale ? "f" : "m";
-      return `./images2/avatar/${genderCode}${gradeCode}.jpg`;
+      if (role === "rm") return isFemale ? "./images2/avatar/frm.jpg" : "./images2/avatar/mrm.jpg";
+      let gradeCode = userScore > 80 ? "p" : userScore > 60 ? "e" : userScore > 40 ? "s" : userScore > 20 ? "m" : "j";
+      return `./images2/avatar/${isFemale ? "f" : "m"}${gradeCode}.jpg`;
     }
 
-    async function updateTaskStatusOnServer(email, courseUrl, newStatus) {
+    // Відправка статусу за чітким assignmentId
+    async function updateTaskStatusOnServer(assignmentId, email, courseUrl, newStatus) {
+      if (!assignmentId) return;
       try {
         await fetch(SCRIPT_URL, {
           method: "POST",
           body: JSON.stringify({
             action: "updateCourseStatus",
-            email: email,
-            courseUrl: courseUrl,
+            assignmentId: assignmentId,
+            email: email, 
+            courseUrl: courseUrl, 
             status: newStatus
           })
         });
@@ -267,50 +156,56 @@
       }
     }
 
-    window.changeStatusAction = async function(email, encodedUrl, newStatus) {
+    // Дія менеджера (кнопки ✅ Виконано / 🔄 Доопрацювати)
+    // Оновлена дія менеджера з передачею коментаря
+    window.submitManagerReview = async function(assignmentId, email, encodedUrl, newStatus) {
       let rawUrl = decodeURIComponent(encodedUrl);
+      let commentInput = document.getElementById(`comment_${assignmentId}`);
+      let gradeSelect = document.getElementById(`grade_${assignmentId}`);
+      
+      let comment = commentInput ? commentInput.value.trim() : "";
+      let grade = gradeSelect ? gradeSelect.value : "";
+
+      if (newStatus === "Доопрацювати" && !comment) {
+        alert("Будь ласка, напишіть коментар для доопрацювання.");
+        return;
+      }
+
       try {
         const response = await fetch(SCRIPT_URL, {
           method: "POST",
           body: JSON.stringify({
             action: "updateCourseStatus",
+            assignmentId: assignmentId,
             email: email,
             courseUrl: rawUrl,
-            status: newStatus
+            status: newStatus,
+            managerComment: comment,
+            grade: grade // Передаємо оцінку для грейду
           })
         });
         const resJson = await response.json();
         if (resJson.status === "success") {
           location.reload();
         } else {
-          alert("Помилка оновлення статусу на сервері.");
+          alert("Помилка збереження на сервері.");
         }
       } catch (err) {
-        console.error(err);
         alert("Помилка зв'язку з сервером.");
       }
     };
-
     function parseCourseItem(rawUrl) {
-      let titlePart = rawUrl;
-      let deadlinePart = "";
-      let deadlineDate = "";
-      let linkTarget = "";
-
+      let titlePart = rawUrl, deadlinePart = "", deadlineDate = "", linkTarget = "";
       if (rawUrl.includes("посилання:")) {
         const parts = rawUrl.split("посилання:");
         linkTarget = parts[1] ? parts[1].trim() : "";
         let metaPart = parts[0]; 
-        
         if (metaPart.includes("|")) {
           const subParts = metaPart.split("|");
           titlePart = subParts[0].replace(/\|/g, "").trim();
           deadlinePart = subParts[1] ? subParts[1].replace(/\|/g, "").trim() : "";
-          
           const dateMatch = deadlinePart.match(/\d{4}-\d{2}-\d{2}/);
-          if (dateMatch) {
-            deadlineDate = dateMatch[0];
-          }
+          if (dateMatch) deadlineDate = dateMatch[0];
         } else {
           titlePart = metaPart.trim();
         }
@@ -320,10 +215,8 @@
 
     function getDisplayStatus(item, parsed) {
       const todayStr = new Date().toISOString().split('T')[0];
-      if (parsed.deadlineDate && item.status !== "Виконано") {
-        if (parsed.deadlineDate < todayStr) {
-          return "Протерміновано";
-        }
+      if (parsed.deadlineDate && item.status !== "Виконано" && parsed.deadlineDate < todayStr) {
+        return "Протерміновано";
       }
       return item.status;
     }
@@ -339,88 +232,26 @@
       }
 
       const goToAdminBtn = document.getElementById("goToAdminBtn");
-      if (goToAdminBtn && (userRole === "admin" || userRole === "rm")) {
-        goToAdminBtn.style.display = "inline-block";
-      }
+      if (goToAdminBtn && (userRole === "admin" || userRole === "rm")) goToAdminBtn.style.display = "inline-block";
 
-      const emailField = document.getElementById("userEmailField");
-      const nameField = document.getElementById("userNameField");
-
-      if (emailField) emailField.textContent = allowedEmail;
-      if (nameField) nameField.textContent = userFullName;
+      document.getElementById("userEmailField").textContent = allowedEmail;
+      document.getElementById("userNameField").textContent = userFullName;
 
       let completedModules = 0;
-      const totalModules = 30;
-
-      let userScore = completedModules * 5; 
-      const avatarPath = getUserAvatarPath(userRole, userFullName, userScore);
       const avatarImg = document.getElementById("userAvatarImg");
       if (avatarImg) {
-        avatarImg.src = avatarPath;
-        avatarImg.onerror = () => {
-          avatarImg.src = "./images2/avatar/default.jpg"; 
-        };
+        avatarImg.src = getUserAvatarPath(userRole, userFullName, 0);
+        avatarImg.onerror = () => { avatarImg.src = "./images2/avatar/default.jpg"; };
       }
 
       const trainingNamesMap = {
         "trening1.html": "Visit structure (Базовий тренінг МП)",
         "trening2.html": "Decision-maker (Тренінг по роботі з ЛПР)",
         "trening3.html": "Presentation (Тренінг з презентації продукту)",
-        "trening4.html": "Business emailing (Тренінг з ділового листування)",
-        "trening5.html": "Handling objections (Робота з запереченнями)",
-        "trening6.html": "Dealing with competitor (Робота з конкурентами)",
-        "trening7.html": "Reviews writing (Тренінг з написання відгуків)",
-        "trening8.html": "Sales management (Тренінг з управління продажами)",
-        "trening9.html": "Targeting (Створення партнерської бази)",
-        "trening10.html": "Situational leadership (Ситуаційне лідерство)",
-        "trening11.html": "People development (Розвиток персоналу)",
-        "trening12.html": "Negotiation process (Тренінг з ведення переговорів)",
-        "trening13.html": "Presentation making (Тренінг з підготовки презентацій)",
-        "trening14.html": "Time management (Тренінг з тайм-менеджменту)",
-        "trening15.html": "Quality control (Тренінг з контролю якості)",
-        "trening16.html": "Call sales (Тренінг з дистанційного продажу)",
-        "trening17.html": "Discounts offering (Тренінг по роботі зі знижками)",
-        "trening18.html": "Conference activities (Тренінг по роботі на конференціях)",
-        "trening19.html": "Needs (Тренінг з визначення потреб)",
-        "Trening20.html": "Пропозиції (до бізнес тренера)",
-        "trening21.html": "Pharmacovigilance (Тренінг з фармаконагляду)",
-        "trening22.html": "Effective communication (Тренінг з ефективної комунікації)",
-        "trening23.html": "Pharm-unit work (Тренінг з роботи в аптечному юніті)",
         "argisDuo.html": "Аргіс ДУО свічки №10",
         "bilord.html": "Білорд",
         "veriksa.html": "Верікса",
-        "dekaboost2000.html": "ДеКаБуст 2000",
-        "pregnemag.html": "Прегнемаг",
-        "feminozyd.html": "Фемінозид",
-        "helivayn.html": "Хелівайн",
-        "cyklofitForte.html": "Циклофіт Форте №30",
-        "ixindol.html": "Іксіндол №30",
-        "bravol.html": "Бравол",
-        "valeoprost.html": "Валеопрост",
-        "voger.html": "Вогер №30",
-        "zagest.html": "Загест №30",
-        "staton.html": "Статон",
-        "aneza.html": "Анеза",
-        "kalbind.html": "Кальбінд",
-        "liberaForte.html": "Лібера Форте №30",
-        "libera.html": "Лібера №30",
-        "renohels.html": "Ренохелс №30",
-        "uropak36.html": "УроПак-36 №30",
-        "butrykol.html": "Бутрикол №10",
-        "esbulardi.html": "Есбуларді",
-        "eupatileks.html": "Еупатілекс",
-        "mastykozyn.html": "Мастикозин",
-        "pantofytol.html": "Пантофітол",
-        "travitafer.html": "Травітафер №30",
-        "glykomycel.html": "Глікоміцел",
-        "liberaArginin.html": "Лібера Аргінін №30",
-        "selefiks.html": "Селефікс",
-        "spirona.html": "Спірона",
-        "tarnityn.html": "Тарнітин",
-        "tirbizod.html": "Тірбізод",
-        "shugard.html": "Шугард №30",
-        "gippomycel.html": "Гіппоміцел",
-        "neyromineriy.html": "Нейромінерій"
+        // Додайте інші ваші продукти за потреби...
       };
 
       function renderCoursesList(coursesToRender) {
@@ -436,78 +267,91 @@
           let rawUrl = item.courseUrl || "";
           let parsed = parseCourseItem(rawUrl);
           let assignedUserLabel = item.userEmail && item.userEmail !== allowedEmail ? `👤 Для співробітника: ${item.userEmail}` : "";
-
           let displayStatus = getDisplayStatus(item, parsed);
+          
           let statusColor = "#7f8c8d";
+          if (displayStatus === "Протерміновано") statusColor = "#e74c3c";
+          else if (displayStatus === "Доопрацювати") statusColor = "#e67e22";
+          else if (displayStatus === "Потребує перевірки") statusColor = "#8e44ad";
+          else if (displayStatus === "Розпочато навчання") statusColor = "#3498db";
+          else if (displayStatus === "Переглянуто") statusColor = "#16a085";
+          else if (displayStatus === "Виконано") statusColor = "#27ae60";
 
-          // Унікальний колір для кожного статусу
-          if (displayStatus === "Протерміновано") statusColor = "#e74c3c";         // Червоний
-          else if (displayStatus === "Доопрацювати") statusColor = "#e67e22";      // Помаранчевий
-          else if (displayStatus === "Потребує перевірки") statusColor = "#8e44ad"; // Фіолетовий
-          else if (displayStatus === "Розпочато навчання") statusColor = "#3498db"; // Синій
-          else if (displayStatus === "Переглянуто") statusColor = "#16a085";        // Бірюзовий
-          else if (displayStatus === "Призначено") statusColor = "#7f8c8d";         // Сірий
-          else if (displayStatus === "Виконано") statusColor = "#27ae60";           // Зелений
-
-let href = "";
+          let href = "";
           let inlineLinksHTML = "";
 
           if (parsed.linkTarget) {
             if (parsed.linkTarget.includes(",")) {
-              // Якщо призначено кілька продуктів через кому
               let linksArray = parsed.linkTarget.split(",");
               inlineLinksHTML = `<div style="margin-top: 6px; display: flex; flex-wrap: wrap; gap: 6px;">`;
               linksArray.forEach(l => {
                 let cl = l.trim();
                 let name = trainingNamesMap[cl] || cl;
+                let lHref = (cl.startsWith("http") ? cl : (cl.toLowerCase().startsWith("trening") ? `./${cl}` : `./product.html?id=${cl}`));
                 
-                // Визначаємо шлях: зовнішнє посилання, тренінг чи продукт через шаблон product.html
-                let lHref = "";
-                if (cl.startsWith("http://") || cl.startsWith("https://")) {
-                  lHref = cl;
-                } else if (cl.toLowerCase().startsWith("trening")) {
-                  lHref = `./${cl}`;
-                } else {
-                  lHref = `./product.html?id=${cl}`; // Шаблон продукту
+                // ПРОКИДАЄМО ID В URL
+                if (item.assignmentId) {
+                  let char = lHref.includes('?') ? '&' : '?';
+                  lHref += `${char}assignmentId=${item.assignmentId}`;
                 }
 
-                inlineLinksHTML += `<a href="${lHref}" target="_blank" class="cabinet-link task-click-link" data-email="${item.userEmail}" data-url="${rawUrl}" data-target="${cl}" style="margin: 0; font-size: 11px; padding: 5px 10px;">🔗 ${name}</a>`;
+                inlineLinksHTML += `<a href="${lHref}" target="_blank" class="cabinet-link task-click-link" data-id="${item.assignmentId}" style="margin: 0; font-size: 11px; padding: 5px 10px;">🔗 ${name}</a>`;
               });
               inlineLinksHTML += `</div>`;
             } else {
-              // Одинарне посилання (тренінг, стандарт або продукт)
               let target = parsed.linkTarget.trim();
-              if (target.startsWith("http://") || target.startsWith("https://")) {
-                href = target;
-              } else if (target.toLowerCase().startsWith("trening")) {
-                href = `./${target}`;
-              } else {
-                href = `./product.html?id=${target}`; // Шаблон продукту
+              href = (target.startsWith("http") ? target : (target.toLowerCase().startsWith("trening") ? `./${target}` : `./product.html?id=${target}`));
+              
+              // ПРОКИДАЄМО ID В URL
+              if (item.assignmentId) {
+                let char = href.includes('?') ? '&' : '?';
+                href += `${char}assignmentId=${item.assignmentId}`;
               }
             }
-          } else if (rawUrl.startsWith("http") || rawUrl.startsWith("./") || rawUrl.startsWith("/")) {
-            href = rawUrl;
           }
+
           let titleHtml = `<div style="font-weight: 600; color: #2c3e50; font-size: 14px; margin-bottom: 4px;">${parsed.titlePart}</div>`;
           if (href) {
-            titleHtml = `<a href="${href}" target="_blank" class="cabinet-link task-click-link" data-email="${item.userEmail}" data-url="${rawUrl}" data-target="${parsed.linkTarget}" style="margin-bottom: 6px; display: inline-block;">🔗 ${parsed.titlePart}</a>`;
+            titleHtml = `<a href="${href}" target="_blank" class="cabinet-link task-click-link" data-id="${item.assignmentId}" style="margin-bottom: 6px; display: inline-block;">🔗 ${parsed.titlePart}</a>`;
           }
 
           let managerActionsHTML = "";
           const isManagerOrAdmin = (userRole === "admin" || userRole === "rm");
+          const isNotSelf = (item.userEmail !== allowedEmail);
           
-          if (isManagerOrAdmin && item.userEmail) {
+          if (isManagerOrAdmin && isNotSelf && item.userEmail) {
             if (item.status === "Потребує перевірки") {
               managerActionsHTML = `
-                <div style="margin-top: 8px; display: flex; gap: 6px; flex-wrap: wrap;">
-                  <button onclick="changeStatusAction('${item.userEmail}', '${encodeURIComponent(rawUrl)}', 'Виконано')" style="background: #27ae60; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 500;">✅ Виконано</button>
-                  <button onclick="changeStatusAction('${item.userEmail}', '${encodeURIComponent(rawUrl)}', 'Доопрацювати')" style="background: #e74c3c; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 500;">🔄 Доопрацювати</button>
+                <div style="margin-top: 12px; padding: 12px; background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 6px;">
+                  <p style="font-size: 12px; color: #475569; margin-top: 0; margin-bottom: 6px;">
+                    <strong>📝 Звіт співробітника:</strong> <span style="color: #64748b; font-style: italic;">${item.reportText || "(Текст відсутній)"}</span>
+                  </p>
+                  
+                  <!-- Поле для оцінки керівником -->
+                  <div style="margin-bottom: 8px;">
+                    <label style="font-size: 11px; font-weight: 500; color: #334155;">Оцінка за завдання (бали):</label>
+                    <select id="grade_${item.assignmentId}" style="padding: 4px 6px; font-size: 12px; border: 1px solid #cbd5e1; border-radius: 4px; background: #fff; margin-left: 6px;">
+                      <option value="5" selected>5 — Вище очикувань</option>
+                      <option value="4">4 — Відмінно</option>
+                      <option value="3">3 — Добре</option>
+                      <option value="2">2 — Задовільно</option>
+                      <option value="1">1 — Нижче очикувань</option>
+                      <option value="0">0 — Незадовільно</option>
+                      </select>
+                  </div>
+
+                  <textarea id="comment_${item.assignmentId}" placeholder="Коментар керівника..." style="width: 100%; height: 50px; padding: 8px; font-size: 12px; border: 1px solid #cbd5e1; border-radius: 4px; margin-bottom: 8px; resize: vertical; box-sizing: border-box;"></textarea>
+                  
+                  <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                    <button onclick="submitManagerReview('${item.assignmentId}', '${item.userEmail}', '${encodeURIComponent(rawUrl)}', 'Виконано')" style="background: #27ae60; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 500;">✅ Прийняти та оцінити</button>
+                    <button onclick="submitManagerReview('${item.assignmentId}', '${item.userEmail}', '${encodeURIComponent(rawUrl)}', 'Доопрацювати')" style="background: #e74c3c; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 500;">🔄 На доопрацювання</button>
+                  </div>
                 </div>
               `;
             } else if (item.status === "Доопрацювати") {
               managerActionsHTML = `
                 <div style="margin-top: 8px;">
-                  <button onclick="changeStatusAction('${item.userEmail}', '${encodeURIComponent(rawUrl)}', 'Призначено')" style="background: #f39c12; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 500;">🔓 Дозволити повторне тестування</button>
+                  <button onclick="submitManagerReview('${item.assignmentId}', '${item.userEmail}', '${encodeURIComponent(rawUrl)}', 'Призначено')" style="background: #f39c12; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 500;">🔓 Дозволити повторне тестування</button>
                 </div>
               `;
             }
@@ -530,17 +374,23 @@ let href = "";
           const taskLinks = li.querySelectorAll(".task-click-link");
           taskLinks.forEach(link => {
             link.addEventListener("click", async () => {
+              
+              // НОВЕ: Зберігаємо ID завдання у пам'ять браузера при переході
+              if (item.assignmentId) {
+                localStorage.setItem("currentAssignmentId", item.assignmentId);
+              }
+
               let currentStatus = item.status;
               let titleLower = parsed.titlePart.toLowerCase();
               let targetLower = (parsed.linkTarget || "").toLowerCase();
 
               if (titleLower.includes("стандарт") || titleLower.includes("запрошення") || targetLower.includes("portfolio standart.html")) {
                 if (currentStatus !== "Виконано") {
-                  await updateTaskStatusOnServer(item.userEmail, rawUrl, "Виконано");
+                  await updateTaskStatusOnServer(item.assignmentId, item.userEmail, rawUrl, "Виконано");
                 }
               } else {
                 if (currentStatus === "Призначено") {
-                  await updateTaskStatusOnServer(item.userEmail, rawUrl, "Переглянуто");
+                  await updateTaskStatusOnServer(item.assignmentId, item.userEmail, rawUrl, "Переглянуто");
                 }
               }
             });
@@ -551,19 +401,15 @@ let href = "";
       }
 
       let originalCourses = [];
-
       try {
         const response = await fetch(`${SCRIPT_URL}?email=${encodeURIComponent(allowedEmail)}`);
         const result = await response.json();
-
         if (result.status === "success") {
-          completedModules = result.completedModules || 0;
           originalCourses = result.courses || [];
           renderCoursesList(originalCourses);
         }
       } catch (error) {
-        console.error("Помилка завантаження даних кабінету:", error);
-        document.getElementById("assignedCoursesList").innerHTML = `<p style="color: #e74c3c; font-size: 13px;">Помилка завантаження даних з сервера.</p>`;
+        document.getElementById("assignedCoursesList").innerHTML = `<p style="color: #e74c3c; font-size: 13px;">Помилка завантаження даних.</p>`;
       }
 
       const sortSelect = document.getElementById("sortTasksSelect");
@@ -571,80 +417,28 @@ let href = "";
         sortSelect.addEventListener("change", (e) => {
           const sortVal = e.target.value;
           let sorted = [...originalCourses];
-
-          const statusPriority = {
-            "Протерміновано": 1,
-            "Доопрацювати": 2,
-            "Потребує перевірки": 3,
-            "Розпочато навчання": 4,
-            "Переглянуто": 5,
-            "Призначено": 6,
-            "Виконано": 7
-          };
-
+          const statusPriority = { "Протерміновано": 1, "Доопрацювати": 2, "Потребує перевірки": 3, "Розпочато навчання": 4, "Переглянуто": 5, "Призначено": 6, "Виконано": 7 };
           sorted.sort((a, b) => {
             let parsedA = parseCourseItem(a.courseUrl || "");
             let parsedB = parseCourseItem(b.courseUrl || "");
-
-            if (sortVal === "date-asc") {
-              return (parsedA.deadlineDate || "").localeCompare(parsedB.deadlineDate || "");
-            } else if (sortVal === "date-desc") {
-              return (parsedB.deadlineDate || "").localeCompare(parsedA.deadlineDate || "");
-            } else if (sortVal === "status") {
-              let statA = getDisplayStatus(a, parsedA);
-              let statB = getDisplayStatus(b, parsedB);
-              return (statusPriority[statA] || 99) - (statusPriority[statB] || 99);
-            } else if (sortVal === "employee") {
-              return (a.userEmail || "").localeCompare(b.userEmail || "");
-            } else if (sortVal === "activity") {
-              return parsedA.titlePart.localeCompare(parsedB.titlePart);
-            }
+            if (sortVal === "date-asc") return (parsedA.deadlineDate || "").localeCompare(parsedB.deadlineDate || "");
+            else if (sortVal === "date-desc") return (parsedB.deadlineDate || "").localeCompare(parsedA.deadlineDate || "");
+            else if (sortVal === "status") return (statusPriority[getDisplayStatus(a, parsedA)] || 99) - (statusPriority[getDisplayStatus(b, parsedB)] || 99);
+            else if (sortVal === "employee") return (a.userEmail || "").localeCompare(b.userEmail || "");
+            else if (sortVal === "activity") return parsedA.titlePart.localeCompare(parsedB.titlePart);
             return 0;
           });
-
           renderCoursesList(sorted);
         });
       }
 
-      updateProgressUI(completedModules, totalModules);
-
       const logoutBtn = document.getElementById("logoutBtn");
       if (logoutBtn) {
         logoutBtn.addEventListener("click", () => {
-          localStorage.removeItem("allowedEmail");
-          localStorage.removeItem("userRole");
-          localStorage.removeItem("userFullName");
+          localStorage.clear();
           window.location.href = "./index.html";
         });
       }
-    });
-
-    function updateProgressUI(current, total) {
-      const visitedCountSpan = document.getElementById("visitedCount");
-      const testStatusSpan = document.getElementById("testStatus");
-      if (visitedCountSpan) visitedCountSpan.textContent = current;
-      if (testStatusSpan) {
-        testStatusSpan.textContent = current > 0 ? "У процесі навчання" : "Очікує на проходження";
-        testStatusSpan.style.color = current > 0 ? "#2196F3" : "#757575";
-      }
-    }
-  </script>
-
-  <!-- Автоматичне спрямування всіх кнопок "Назад" на кабінет -->
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const backLinks = document.querySelectorAll("a, button");
-      backLinks.forEach(el => {
-        if (el.textContent.trim() === "Назад" || el.innerText.trim() === "Назад") {
-          if (el.tagName === "A") el.href = "./cabinet.html";
-          else if (el.tagName === "BUTTON") el.onclick = () => { window.location.href = "./cabinet.html"; };
-        }
-        const textSpan = el.querySelector(".text__work");
-        if (textSpan && textSpan.textContent.trim() === "Назад") {
-          let parentLink = textSpan.closest("a");
-          if (parentLink) parentLink.href = "./cabinet.html";
-        }
-      });
     });
   </script>
 

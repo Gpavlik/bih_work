@@ -10,7 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@700&family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/modern-normalize/1.1.0/modern-normalize.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <link rel="stylesheet" href="./css/main.css" />
-  <style>
+ <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
     /* Стилі для модального вікна тестування */
     .quiz-modal-overlay {
@@ -176,29 +176,6 @@
       pointer-events: none;
       cursor: default;
     }
-    .has-dropdown {
-      position: relative;
-    }
-    .dropdown-menu {
-      display: none;
-      position: absolute;
-      top: 100%;
-      left: 0;
-      background: #fff;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-      border-radius: 4px;
-      min-width: 160px;
-      z-index: 10;
-    }
-    .dropdown-menu a {
-      display: block;
-      padding: 8px 12px;
-      text-decoration: none;
-      color: #333;
-    }
-    .has-dropdown:hover .dropdown-menu {
-      display: block;
-    }
 
     .quiz-container-box {
       font-family: 'Inter', sans-serif;
@@ -240,29 +217,27 @@
       <div class="container">
         <h2 class="title" style="color: black; text-align: center; font-size: 24px; margin-bottom: 25px;"></h2>
         <h3 class="product-subtitle" style="text-align: center;"></h3>
+        
+        <!-- Чиста мінімалістична навігація: тільки Слухати, До переліку та Мій кабінет, решту робить Біхелсик -->
         <nav class="navigation">
           <ul class="nav-list">
-            <li class="nav-item"><a id="campaign" href="#" class="btn-link product-action-btn" target="_blank" rel="noopener noreferrer">Кампейн</a></li>
-            <li class="nav-item has-dropdown">
-              <button class="btn-link product-action-btn" type="button">Відео</button>
-              <div class="dropdown-menu">
-                <a id="video" class="product-action-btn" href="#" target="_blank" rel="noopener noreferrer">Вебінар</a>
-              </div>
-            </li>
-            <li class="nav-item has-dropdown">
-              <button class="btn-link product-action-btn" type="button">Презентації</button>
-              <div class="dropdown-menu">
-                <a href="#" class="product-action-btn" target="_blank" rel="noopener noreferrer">Навчальна Презентація</a>
-                <a id="presentation" class="product-action-btn" href="#" target="_blank" rel="noopener noreferrer">На візит</a>
-              </div>
-            </li>
-            <li class="nav-item"><a id="instruction" href="#" class="btn-link product-action-btn" target="_blank" rel="noopener noreferrer">Інструкція</a></li>
-            <li class="nav-item"><a id="competitor" href="#" class="btn-link product-action-btn" target="_blank" rel="noopener noreferrer">Конкурентне оточення</a></li>
-            <li class="nav-item"><a id="test" href="javascript:void(0);" class="btn-link product-action-btn">Тестування</a></li>
-            <li class="nav-item"><a href="./portfolio products.html" class="btn-link">До переліку</a></li>
-            <li class="nav-item"><a href="./cabinet.html" class="btn-link">Мій кабінет</a></li>
+           
+           
           </ul>
         </nav>
+
+        <!-- Приховані посилання, які програмно викликає Біхелсик -->
+        <div style="display:none;">
+           <li class="nav-item"><button id="speechToggleBtn" onclick="startSpeech()" class="btn-link" type="button" style="background-color: #e2f0d9; color: #27ae60;">🔊 Слухати</button></li>
+          <a id="campaign" href="#" target="_blank" rel="noopener noreferrer">Кампейн</a>
+          <a id="video" href="#" target="_blank" rel="noopener noreferrer">Вебінар</a>
+          <a id="presentation" href="#" target="_blank" rel="noopener noreferrer">На візит</a>
+          <a id="instruction" href="#" target="_blank" rel="noopener noreferrer">Інструкція</a>
+          <a id="competitor" href="#" target="_blank" rel="noopener noreferrer">Конкурентне оточення</a>
+          <a id="test" href="javascript:void(0);">Тестування</a>
+          <a href="./portfolio products.html" class="btn-link">До переліку</a></li>
+          <a href="./cabinet.html" class="btn-link">Мій кабінет</a></li>
+        </div>
 
         <div class="product-details">
           <div class="product-layout">
@@ -309,7 +284,6 @@
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby87iUOv2tul_QrIBiuJ8JgcfCOl4WQ3igIuIDNWpZS4CN2y27RRtD752dyePFZRvGf8A/exec";
     const allowedEmail = localStorage.getItem("allowedEmail");
     
-    // Отримуємо справжній ідентифікатор продукту з URL (наприклад, argisDuo.html)
     const urlParams = new URLSearchParams(window.location.search);
     const productId = urlParams.get('id');
 
@@ -332,17 +306,6 @@
       }
     }
 
-    // При кліку на будь-яку кнопку матеріалу — статус "Розпочато навчання"
-    document.addEventListener("DOMContentLoaded", () => {
-      const actionButtons = document.querySelectorAll(".product-action-btn");
-      actionButtons.forEach(btn => {
-        btn.addEventListener("click", () => {
-          updateProductTaskStatus("Розпочато навчання");
-        });
-      });
-    });
-
-    // Оцінка результату тесту
     window.handleTestCompletion = async function(scorePercentage) {
       let wrapper = document.getElementById("quiz-main-wrapper");
       if (scorePercentage >= 90) {
@@ -385,5 +348,280 @@
   <script src="scrbtn.js"></script>
   <script src="zoom.js"></script>
   <script src="page.js"></script>
+  <script src="speech.js"></script>
+
+<!-- Красивий, дружній та інтерактивний маскот Біхелсик -->
+<div id="pharmaMascot" class="mascot-widget">
+  <!-- Виринаюче інтерактивне меню -->
+  <div id="mascotMenu" class="mascot-menu">
+    <div class="mascot-menu-header">
+      <div class="mascot-title-wrap">
+        <span class="mascot-badge-dot"></span>
+        <span class="mascot-name">Біхелсик — твій помічник</span>
+      </div>
+      <button class="mascot-close-btn" onclick="toggleMascotMenu(event)">×</button>
+    </div>
+    <p class="mascot-question">Оберіть матеріали або дію по препарату:</p>
+    <div class="mascot-actions">
+      <button class="mascot-action-btn" onclick="mascotAction('speech')">🔊 Слухати про продукт</button>
+      <button class="mascot-action-btn" onclick="mascotAction('campaign')">📖 Читати кампейн</button>
+      <button class="mascot-action-btn" onclick="mascotAction('video')">🎬 Подивитись відео</button>
+      <button class="mascot-action-btn" onclick="mascotAction('presentation')">📊 Навчальна Презентація</button>
+      <button class="mascot-action-btn" onclick="mascotAction('visit')">📑 Презентація для візиту</button>
+      <button class="mascot-action-btn" onclick="mascotAction('instruction')">📝 Прочитати інструкцію</button>
+      <button class="mascot-action-btn" onclick="mascotAction('competitor')">⚖️ Конкурентне оточення</button>
+      <button class="mascot-action-btn" onclick="mascotAction('test')">✅ Пройти тестування</button>
+      <button class="mascot-action-btn" onclick="mascotAction('portfolio')">📑 До переліку</button>
+      <button class="mascot-action-btn" onclick="mascotAction('cabinet')">📊 Мій кабінет</button>
+    </div>
+  </div>
+
+  <!-- Клікабельна аватарка Біхелсика -->
+  <div class="mascot-avatar" onclick="toggleMascotMenu(event)" title="Привіт! Я Біхелсик">
+    <div class="mascot-pulse"></div>
+    <svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor">
+      <path d="M12 2a10 10 0 0 0-7.74 16.33L5 19.5v1.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-1.5l.74-1.17A10 10 0 0 0 12 2zm0 2a8 8 0 0 1 6.55 12.56L18 17.5V19H6v-1.5l-.55-.94A8 8 0 0 1 12 4zm-3 5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm6 0a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM8.5 14h7a4.5 4.5 0 0 1-7 0z"/>
+    </svg>
+  </div>
+  
+  <!-- Дружня хмарка повідомлення (розміщена праворуч від кнопок або у зручній зоні екрана) -->
+  <div class="mascot-bubble" onclick="toggleMascotMenu(event)">
+    <span class="mascot-greeting">Привіт, я Біхелсик! 👋</span>
+    <span class="mascot-status">Натисни на мене для вибору матеріалів</span>
+    <div class="sound-waves">
+      <span></span><span></span><span></span><span></span>
+    </div>
+  </div>
+</div>
+
+<style>
+/* Покращені та стильні стилі для маскота Біхелсика */
+.mascot-widget {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  display: flex;
+  align-items: center;
+  background: linear-gradient(135deg, #ffffff 0%, #f4fbf1 100%);
+  padding: 10px 18px 10px 10px;
+  
+  box-shadow: 0 10px 30px rgba(39, 174, 96, 0.18);
+  border: 2px solid #a3d99f;
+  z-index: 9999;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.mascot-widget:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 35px rgba(39, 174, 96, 0.28);
+}
+
+.mascot-avatar {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #27ae60 0%, #219653 100%);
+  color: #ffffff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 4px 10px rgba(39, 174, 96, 0.3);
+}
+
+.mascot-bubble {
+  margin-left: 14px;
+  display: flex;
+  flex-direction: column;
+}
+
+.mascot-greeting {
+  font-size: 13px;
+  font-weight: 700;
+  color: #27ae60;
+}
+
+.mascot-status {
+  font-size: 12px;
+  color: #475569;
+  font-weight: 500;
+  max-width: 210px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Анімація звукових хвиль */
+.sound-waves {
+  display: none;
+  align-items: center;
+  gap: 3px;
+  height: 12px;
+  margin-top: 4px;
+}
+
+.sound-waves span {
+  display: block;
+  width: 3px;
+  height: 100%;
+  background: #27ae60;
+  border-radius: 3px;
+  animation: waveAnim 0.6s infinite ease-in-out alternate;
+}
+
+.sound-waves span:nth-child(2) { animation-delay: 0.15s; }
+.sound-waves span:nth-child(3) { animation-delay: 0.3s; }
+.sound-waves span:nth-child(4) { animation-delay: 0.45s; }
+
+@keyframes waveAnim {
+  0% { height: 4px; }
+  100% { height: 12px; }
+}
+
+/* Стан активного говоріння */
+.mascot-widget.speaking {
+  border-color: #27ae60;
+  background: #f0fdf4;
+  box-shadow: 0 10px 35px rgba(39, 174, 96, 0.3);
+}
+
+.mascot-widget.speaking .mascot-pulse {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 2px solid #27ae60;
+  animation: pulseAnim 1.5s infinite;
+}
+
+@keyframes pulseAnim {
+  0% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+
+.mascot-widget.speaking .sound-waves {
+  display: flex;
+}
+
+.mascot-widget.speaking .mascot-status {
+  color: #27ae60;
+  font-weight: 600;
+}
+
+/* Преміальне виринаюче меню */
+.mascot-menu {
+  position: absolute;
+  bottom: 75px;
+  right: 0;
+  width: 300px;
+  background: #ffffff;
+  height: auto;  
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+  border: 1px solid #e2f0d9;
+  padding: 18px;
+  display: none;
+  flex-direction: column;
+  z-index: 10000;
+  animation: menuAppear 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  cursor: default;
+}
+
+.mascot-menu.active {
+  display: flex;
+}
+
+@keyframes menuAppear {
+  from { opacity: 0; transform: translateY(15px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.mascot-menu-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #f1f5f9;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+}
+
+.mascot-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mascot-badge-dot {
+  width: 8px;
+  height: 8px;
+  background-color: #27ae60;
+  border-radius: 50%;
+  box-shadow: 0 0 6px #27ae60;
+}
+
+.mascot-name {
+  font-weight: 700;
+  font-size: 14px;
+  color: #1e293b;
+}
+
+.mascot-close-btn {
+  background: #f1f5f9;
+  border: none;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  font-size: 16px;
+  cursor: pointer;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.mascot-close-btn:hover {
+  background: #fee2e2;
+  color: #ef4444;
+}
+
+.mascot-question {
+  font-size: 12px;
+  color: #64748b;
+  margin-bottom: 12px;
+  font-weight: 500;
+}
+
+.mascot-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  height: 408px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.mascot-action-btn {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  padding: 9px 12px;
+  text-align: left;
+  font-size: 13px;
+  font-weight: 500;
+  color: #334155;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.mascot-action-btn:hover {
+  background: #f0fdf4;
+  border-color: #27ae60;
+  color: #27ae60;
+  transform: translateX(3px);
+}
+</style>
 </body>
 </html>

@@ -1,9 +1,34 @@
-window.currentAudio = null;
 window.audioQueue = [];
-window.audioCache = {};      // Кеш готових аудіо URL
-window.fetchingStatus = {};  // Статус запитів
 window.currentQueueIndex = 0;
 window.isSpeaking = false;
+window.availableVoices = [];
+
+// Примусово ініціалізуємо голоси при завантаженні сторінки (Chrome іноді тупить з цим)
+window.speechSynthesis.onvoiceschanged = () => {
+  window.availableVoices = window.speechSynthesis.getVoices();
+};
+// Пробуємо отримати відразу, якщо вони вже завантажені
+setTimeout(() => {
+  if (window.availableVoices.length === 0) {
+    window.availableVoices = window.speechSynthesis.getVoices();
+  }
+}, 500);
+
+// ФУНКЦІЯ ТРАНСЛІТЕРАЦІЇ (Ідея Павла для обходу відсутності кирилиці)
+function transliterate(text) {
+  const cyrillicToLatin = {
+    'А':'A', 'а':'a', 'Б':'B', 'б':'b', 'В':'V', 'в':'v', 'Г':'H', 'г':'h',
+    'Ґ':'G', 'ґ':'g', 'Д':'D', 'д':'d', 'Е':'E', 'е':'e', 'Є':'Ye', 'є':'ye',
+    'Ж':'Zh', 'ж':'zh', 'З':'Z', 'з':'z', 'И':'Y', 'и':'y', 'І':'I', 'і':'i',
+    'Ї':'Yi', 'ї':'yi', 'Й':'Y', 'й':'y', 'К':'K', 'к':'k', 'Л':'L', 'л':'l',
+    'М':'M', 'м':'m', 'Н':'N', 'н':'n', 'О':'O', 'о':'o', 'П':'P', 'п':'p',
+    'Р':'R', 'р':'r', 'С':'S', 'с':'s', 'Т':'T', 'т':'t', 'У':'U', 'у':'u',
+    'Ф':'F', 'ф':'f', 'Х':'Kh', 'х':'kh', 'Ц':'Ts', 'ц':'ts', 'Ч':'Ch', 'ч':'ch',
+    'Ш':'Sh', 'ш':'sh', 'Щ':'Shch', 'щ':'shch', 'Ь':'', 'ь':'', 'Ю':'Yu', 'ю':'yu',
+    'Я':'Ya', 'я':'ya', "'":""
+  };
+  return text.split('').map(char => cyrillicToLatin[char] || char).join('');
+}
 
 window.startSpeech = async function() {
   const speechBtn = document.getElementById("speechToggleBtn");
@@ -15,6 +40,11 @@ window.startSpeech = async function() {
   if (window.isSpeaking) {
     stopSpeech();
     return;
+  }
+
+  // На всякий випадок оновлюємо список голосів перед стартом
+  if (window.availableVoices.length === 0) {
+    window.availableVoices = window.speechSynthesis.getVoices();
   }
 
   const urlParams = new URLSearchParams(window.location.search);
@@ -43,7 +73,7 @@ window.startSpeech = async function() {
     }
   }
 
-  // 2. Запасний збір із DOM (якщо кеш порожній)
+  // 2. Запасний збір із DOM
   if (textParts.length === 0) {
     const titleEl = document.querySelector(".works .title");
     const descEl = document.querySelector(".product-description-text");
@@ -70,10 +100,8 @@ window.startSpeech = async function() {
 
   window.isSpeaking = true;
   window.currentQueueIndex = 0;
-  window.audioCache = {};
-  window.fetchingStatus = {};
 
-  // Оновлюємо стан кнопки та маскота під час генерації
+  // Оновлюємо стан кнопки та маскота
   if (speechBtn) {
     speechBtn.textContent = "⏳ Зупинити";
     speechBtn.style.backgroundColor = "#fde8e8";
@@ -81,99 +109,74 @@ window.startSpeech = async function() {
   }
   if (mascot) mascot.classList.add("speaking");
   if (mascotGreeting) mascotGreeting.textContent = "Біхелсик говорить:";
-  if (mascotStatus) mascotStatus.textContent = "Готуюсь до розповіді...";
+  if (mascotStatus) mascotStatus.textContent = "Починаю читати...";
 
-  // Одночасно відправляємо на генерацію перші два шматки (подвійний буфер для ідеального старту)
-  let promises = [preloadChunk(0)];
-  if (window.audioQueue.length > 1) {
-    promises.push(preloadChunk(1));
-  }
+  // Скасовуємо попередні потоки
+  window.speechSynthesis.cancel();
 
-  await Promise.all(promises);
-
-  // Якщо користувач натиснув зупинку під час очікування — виходимо
-  if (!window.isSpeaking) return;
-
-  // Запускаємо відтворення
+  // Запускаємо
   playCurrentChunk();
 };
 
-// Функція фонового завантаження шматка тексту через ваш бекенд
-async function preloadChunk(index) {
-  if (index >= window.audioQueue.length) return;
-  if (window.audioCache[index] || window.fetchingStatus[index]) return;
-
-  window.fetchingStatus[index] = true;
-  const currentText = window.audioQueue[index];
-
-  try {
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbx9a76QBHQqzhKsQut1Okjyil9vItyYd7nEtSWGHbr5alJqxWib0x_hS5tuK7uQYteaaA/exec";
-    const requestUrl = `${GAS_URL}?text=${encodeURIComponent(currentText)}`;
-
-    const response = await fetch(requestUrl);
-    const data = await response.json();
-
-    if (data.success && data.audio) {
-      const audioBytes = Uint8Array.from(atob(data.audio), c => c.charCodeAt(0));
-      const blob = new Blob([audioBytes], { type: 'audio/mp3' });
-      window.audioCache[index] = URL.createObjectURL(blob);
-    }
-  } catch (err) {
-    console.error(`Помилка прелоаду частини ${index}:`, err);
-  }
-}
-
-// Послідовне програвання з попереднім завантаженням наступних частин у фоні
-async function playCurrentChunk() {
+function playCurrentChunk() {
   if (!window.isSpeaking || window.currentQueueIndex >= window.audioQueue.length) {
     stopSpeech();
     return;
   }
 
+  let textToSpeak = window.audioQueue[window.currentQueueIndex];
+  
+  // Шукаємо правильний голос
+  let ukVoice = window.availableVoices.find(v => v.lang.includes('uk') || v.lang.includes('UK'));
+  let cyrillicVoice = window.availableVoices.find(v => v.lang.includes('ru') || v.lang.includes('bg'));
+
+  // Якщо немає жодного голосу для кирилиці — застосовуємо трансліт!
+  if (!ukVoice && !cyrillicVoice && window.availableVoices.length > 0) {
+    console.warn("Кириличний голос не знайдено. Застосовуємо транслітерацію!");
+    textToSpeak = transliterate(textToSpeak);
+  }
+
+  const utterance = new SpeechSynthesisUtterance(textToSpeak);
+  
+  // Призначаємо знайдений голос (пріоритет: Українська -> Будь-яка кирилиця -> Базовий голос ОС + трансліт)
+  if (ukVoice) {
+    utterance.voice = ukVoice;
+    utterance.lang = ukVoice.lang;
+  } else if (cyrillicVoice) {
+    utterance.voice = cyrillicVoice;
+    utterance.lang = cyrillicVoice.lang;
+  } else {
+    utterance.lang = 'en-US'; // Для трансліту підійде стандартний англійський
+  }
+
+  utterance.rate = 1.0; 
+  utterance.pitch = 1.0; 
+
   const mascotStatus = document.querySelector(".mascot-status");
-
-  if (!window.audioCache[window.currentQueueIndex]) {
-    await preloadChunk(window.currentQueueIndex);
-  }
-
-  if (!window.isSpeaking) return;
-
-  const audioUrl = window.audioCache[window.currentQueueIndex];
-  if (!audioUrl) {
-    window.currentQueueIndex++;
-    playCurrentChunk();
-    return;
-  }
-
-  window.currentAudio = new Audio(audioUrl);
-
   if (mascotStatus) {
     mascotStatus.textContent = `Читаю частину ${window.currentQueueIndex + 1} з ${window.audioQueue.length}...`;
   }
 
-  preloadChunk(window.currentQueueIndex + 1);
-  preloadChunk(window.currentQueueIndex + 2);
-
-  window.currentAudio.play().catch(err => {
-    console.error("Помилка відтворення:", err);
-    window.currentQueueIndex++;
-    playCurrentChunk();
-  });
-
-  window.currentAudio.onended = () => {
+  utterance.onend = () => {
     window.currentQueueIndex++;
     playCurrentChunk();
   };
+
+  utterance.onerror = (e) => {
+    console.warn("Помилка читання:", e);
+    window.currentQueueIndex++;
+    playCurrentChunk();
+  };
+
+  window.speechSynthesis.speak(utterance);
 }
 
 function stopSpeech() {
-  if (window.currentAudio) {
-    window.currentAudio.pause();
-    window.currentAudio = null;
-  }
   window.isSpeaking = false;
   window.audioQueue = [];
-  window.audioCache = {};
+  window.currentQueueIndex = 0;
+  
+  window.speechSynthesis.cancel();
   resetBtnState();
 }
 
@@ -196,7 +199,7 @@ function resetBtnState() {
     mascotStatus.textContent = "Дякую за увагу!";
     setTimeout(() => {
       if (mascotStatus && !window.isSpeaking) {
-        mascotStatus.textContent = "Натисни на мене для вибору матеріалів";
+        mascotStatus.textContent = "Натисни на мене для вибору дії";
       }
     }, 3000);
   }
@@ -211,7 +214,6 @@ window.toggleMascotMenu = function(event) {
   }
 };
 
-// Зв'язок опцій меню Біхелсика з функціями та прихованими посиланнями
 window.mascotAction = function(actionType) {
   const menu = document.getElementById("mascotMenu");
   if (menu) menu.classList.remove("active");
@@ -221,13 +223,12 @@ window.mascotAction = function(actionType) {
       window.startSpeech();
       break;
     case 'campaign':
-      document.getElementById("campaign").click();
+      document.getElementById("campaign")?.click();
       break;
     case 'video':
-      document.getElementById("video").click();
+      document.getElementById("video")?.click();
       break;
     case 'presentation':
-      // Знаходимо навчальну презентацію в документі або за сукупністю
       const links = document.querySelectorAll("a");
       let found = false;
       links.forEach(el => {
@@ -239,24 +240,21 @@ window.mascotAction = function(actionType) {
       if (!found) alert("Навчальна презентація для цього продукту відсутня.");
       break;
     case 'visit':
-      document.getElementById("presentation").click();
+      document.getElementById("presentation")?.click();
       break;
     case 'instruction':
-      document.getElementById("instruction").click();
+      document.getElementById("instruction")?.click();
       break;
     case 'competitor':
-      document.getElementById("competitor").click();
+      document.getElementById("competitor")?.click();
       break;
     case 'test':
-      document.getElementById("test").click();
+      document.getElementById("test")?.click();
       break;
-      case 'portfolio':
-      window.location.href = "./portfolio products.html";
+    case 'portfolio':
+      window.location.href = "./index.html";
       break;
-      case 'profile':
-      window.location.href = "./cabinet.html";
-      break;
-     }
+  }
 };
 
 document.addEventListener("click", (e) => {

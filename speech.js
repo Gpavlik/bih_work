@@ -251,7 +251,10 @@ window.mascotAction = function(actionType) {
       document.getElementById("test").click();
       break;
       case 'portfolio':
-      window.location.href = "./index.html";
+      window.location.href = "./portfolio products.html";
+      break;
+      case 'profile':
+      window.location.href = "./cabinet.html";
       break;
      }
 };

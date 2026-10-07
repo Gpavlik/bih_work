@@ -108,7 +108,7 @@ window.startSpeech = async function() {
     speechBtn.style.color = "#e74c3c";
   }
   if (mascot) mascot.classList.add("speaking");
-  if (mascotGreeting) mascotGreeting.textContent = "Біхелсик говорить:";
+  if (mascotGreeting) mascotGreeting.textContent = "Бі-хелсі говорить:";
   if (mascotStatus) mascotStatus.textContent = "Починаю читати...";
 
   // Скасовуємо попередні потоки
@@ -194,12 +194,12 @@ function resetBtnState() {
   if (mascot) {
     mascot.classList.remove("speaking");
   }
-  if (mascotGreeting) mascotGreeting.textContent = "Привіт, я Біхелсик! 👋";
+  if (mascotGreeting) mascotGreeting.textContent = "Привіт, я Бі-хелсі! 👋";
   if (mascotStatus) {
     mascotStatus.textContent = "Дякую за увагу!";
     setTimeout(() => {
       if (mascotStatus && !window.isSpeaking) {
-        mascotStatus.textContent = "Натисни на мене для вибору дії";
+        mascotStatus.textContent = "Натисни тут для вибору дії";
       }
     }, 3000);
   }

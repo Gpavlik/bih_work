@@ -1,35 +1,36 @@
 document.addEventListener("DOMContentLoaded", () => {
   const audio = document.getElementById("bg-audio");
 
-  // 1. Плавний старт (фейдін) при першій взаємодії (1 раз за сесію)
-  if (audio && !sessionStorage.getItem("audioPlayed")) {
+  if (audio) {
+    // Вмикаємо циклічне відтворення (зациклення)
+    audio.loop = true;
     audio.volume = 0;
     
-    const playWithFadeIn = () => {
-      if (audio.paused) {
-        audio.play().then(() => {
-          sessionStorage.setItem("audioPlayed", "true");
-          
-          let volume = 0;
-          const fadeInInterval = setInterval(() => {
-            if (volume < 1.0) {
-              volume += 0.04;
-              audio.volume = Math.min(volume, 1.0);
-            } else {
-              clearInterval(fadeInInterval);
-            }
-          }, 150);
+    const tryPlayAudio = () => {
+      audio.play().then(() => {
+        let volume = 0;
+        const fadeInInterval = setInterval(() => {
+          if (volume < 1.0) {
+            volume += 0.04;
+            audio.volume = Math.min(volume, 1.0);
+          } else {
+            clearInterval(fadeInInterval);
+          }
+        }, 150);
 
-        }).catch(error => {
-          console.log("Автозапуск заблоковано браузером, чекаємо взаємодії...", error);
-        });
-      }
+        cleanupListeners();
+      }).catch(error => {
+        console.log("Очікування дозволу браузера на аудіо...", error);
+      });
     };
 
-    const triggerEvents = ["click", "scroll", "wheel", "touchstart", "keydown"];
+    const triggerEvents = ["click", "touchstart", "keydown", "mousedown", "pointerdown", "touchend", "pointerup", "mouseup", "focus", "focusin", "mousemove"];
 
     const handleFirstInteraction = () => {
-      playWithFadeIn();
+      tryPlayAudio();
+    };
+
+    const cleanupListeners = () => {
       triggerEvents.forEach(evt => {
         window.removeEventListener(evt, handleFirstInteraction);
         document.body.removeEventListener(evt, handleFirstInteraction);
@@ -37,12 +38,12 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     triggerEvents.forEach(evt => {
-      window.addEventListener(evt, handleFirstInteraction, { once: true, passive: true });
-      document.body.addEventListener(evt, handleFirstInteraction, { once: true, passive: true });
+      window.addEventListener(evt, handleFirstInteraction, { passive: true });
+      document.body.addEventListener(evt, handleFirstInteraction, { passive: true });
     });
   }
 
-  // 2. Обробка форми входу: перевірка логіна та пароля через бекенд
+  // 2. Обробка форми входу з плавним затуханням звуку (фейдером)
   const loginForm = document.getElementById("loginForm");
   
   if (loginForm) {
@@ -60,7 +61,6 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      // URL вашого нового веб-додатка Google Apps Script
       const SCRIPT_LOGIN_URL = "https://script.google.com/macros/s/AKfycby87iUOv2tul_QrIBiuJ8JgcfCOl4WQ3igIuIDNWpZS4CN2y27RRtD752dyePFZRvGf8A/exec";
 
       try {
@@ -68,25 +68,20 @@ document.addEventListener("DOMContentLoaded", () => {
         const result = await response.json();
 
         if (result.status === "success") {
-          // Зберігаємо дані сесії
           localStorage.setItem("allowedEmail", login);
-          localStorage.setItem("userRole", result.role); // admin, rm, mp
+          localStorage.setItem("userRole", result.role);
           localStorage.setItem("userFullName", result.fullName);
 
-          // Визначаємо сторінку призначення залежно від ролі
           let targetPage = "./cabinet.html";
           if (result.role === "admin" || result.role === "rm") {
             targetPage = "./admin.html";
           }
 
-          // Візуальний ефект занурення
-          document.body.classList.add("abyss-effect");
-
-          // Плавне затухання звуку перед переходом (якщо аудіо елемент існує)
+          // Фейдер: плавне затухання звуку перед переходом
           if (audio && !audio.paused && audio.volume > 0) {
             let currentVolume = audio.volume;
-            const fadeDuration = 1500; 
-            const steps = 30;
+            const fadeDuration = 1200; 
+            const steps = 20;
             const stepTime = fadeDuration / steps;
             const volumeStep = currentVolume / steps;
 
@@ -100,7 +95,9 @@ document.addEventListener("DOMContentLoaded", () => {
             }, stepTime);
           }
 
-          // Перехід на відповідну сторінку через 1.2 секунди
+          document.body.style.transition = "opacity 1.2s ease";
+          document.body.style.opacity = "0";
+
           setTimeout(() => {
             window.location.href = targetPage;
           }, 1200);
@@ -115,13 +112,33 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // 3. Ефект безодні для звичайних посилань
+  // 3. Плавний ефект переходу та фейдер для звичайних посилань
   document.querySelectorAll("a.atext").forEach(element => {
     element.addEventListener("click", function(e) {
       const href = this.getAttribute("href");
       if (href && href !== "#") {
         e.preventDefault();
-        document.body.classList.add("abyss-effect");
+
+        // Фейдер звуку при кліку на посилання
+        if (audio && !audio.paused && audio.volume > 0) {
+          let currentVolume = audio.volume;
+          const fadeDuration = 1200; 
+          const steps = 20;
+          const stepTime = fadeDuration / steps;
+          const volumeStep = currentVolume / steps;
+
+          const fadeOutInterval = setInterval(() => {
+            if (audio.volume > volumeStep) {
+              audio.volume -= volumeStep;
+            } else {
+              audio.volume = 0;
+              clearInterval(fadeOutInterval);
+            }
+          }, stepTime);
+        }
+
+        document.body.style.transition = "opacity 1.2s ease";
+        document.body.style.opacity = "0";
         setTimeout(() => {
           window.location.href = href;
         }, 1200);

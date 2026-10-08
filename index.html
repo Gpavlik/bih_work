@@ -49,10 +49,44 @@
   
   <main>
     <section class="hero">
+      <!-- Верхнє райдужне сяйво з вертикальним розмиттям меж -->
+      <div class="hero-top-glow-container">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 160" preserveAspectRatio="none">
+          <defs>
+            <!-- Вертикальний градієнт: зверху прозоро, всередині туман повністю видимий -->
+            <linearGradient id="topVerticalFade" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#fff" stop-opacity="0" />
+              <stop offset="70%" stop-color="#fff" stop-opacity="1" />
+              <stop offset="100%" stop-color="#fff" stop-opacity="0" />
+            </linearGradient>
+            <mask id="topEdgeMask">
+              <rect width="1200" height="160" fill="url(#topVerticalFade)" />
+            </mask>
+          </defs>
+
+          <!-- Шаг 1: Кольоровий шлейф із вертикальною маскою -->
+          <path class="rainbow-top-trail blurred-top-fog animated-fog" mask="url(#topEdgeMask)" d="M0,50 C200,140 400,-10 600,70 C800,150 1000,10 1200,80 L1200,160 L0,160 Z"></path>
+
+          <!-- Шаг 2: Основна туманна маса -->
+         <!-- <path class="shape-fill-fog animated-fog blurred-top-fog" mask="url(#topEdgeMask)" fill="#ffffff" d="M0,50 C200,140 400,-10 600,70 C800,150 1000,10 1200,80 L1200,160 L0,160 Z" opacity="0.7"></path>-->
+        </svg>
+      </div>
       <div class="container">
         <h1 class="hero-title">Навчаючись розвиваємось і стаємо кращими!</h1>
         <br><br><br>
         <button class="hero__btn hero__btn--select" type="button" data-modal-open>Розпочати навчання</button>
+       <!-- Контейнер для виразної хвилі та райдужного бльору, що спадає на наступну секцію -->
+      <div class="hero-wave-container">
+        <!-- Широкий розмитий шлейф, який виходить за межі секції -->
+        <svg class="hero-wave-glow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 140" preserveAspectRatio="none">
+          <path class="rainbow-trail" d="M0,40 C200,120 400,-20 600,60 C800,140 1000,0 1200,70 L1200,140 L0,140 Z"></path>
+        </svg>
+
+        <!-- Помітна, висока та жива крива лінія -->
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 140" preserveAspectRatio="none">
+          <path class="shape-fill animated-wave" d="M0,40 C200,120 400,-20 600,60 C800,140 1000,0 1200,70 L1200,140 L0,140 Z"></path>
+        </svg>
+      </div>
  </section>
 
     <section class="properties">

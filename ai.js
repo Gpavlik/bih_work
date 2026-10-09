@@ -198,13 +198,12 @@ function startRoleplaySession() {
   document.getElementById("roleplaySetupView").style.display = "none";
   document.getElementById("roleplayChatView").style.display = "flex";
 
-  // Створюємо індикатор лояльності в шапці, якщо його ще немає
-  ensureMoodWidgetExists();
-  updateMoodWidget(mood, mood === "Лояльний" ? "green" : (mood === "Негативний" ? "red" : "yellow"));
-
   const historyEl = document.getElementById("roleplayChatHistory");
-  let welcomeText = `[Візит розпочато]. Ви зайшли в кабінет до лікаря (${specialty}). Клієнт налаштований: ${mood}. Тема: "${pathology}". Ваша перша репліка?`;
-  historyEl.innerHTML = `<div class="b-msg bot" style="border-left: 4px solid #4f46e5;">🎭 <b>Лікар:</b> ${welcomeText}</div>`;
+  let welcomeText = `[Візит розпочато]. Ви зайшли в кабінет до лікаря (${specialty}). Початковий настрій: ${mood}. Тема: "${pathology}". Ваша перша репліка?`;
+  
+  // Додаємо стартове повідомлення з початковою емоцією (дружелюбна або нейтральна)
+  let initialCode = mood === "Лояльний" ? "friendly" : (mood === "Негативний" ? "angry" : "skeptical");
+  appendDoctorMessage(welcomeText, mood, initialCode, historyEl);
 }
 
 async function sendRoleplayMessage() {
@@ -247,7 +246,7 @@ async function sendRoleplayMessage() {
     if (data.success && data.reply) {
       let replyText = data.reply;
       let currentMood = "Нейтральний";
-      let moodColor = "yellow";
+      let emotionCode = "skeptical";
 
       try {
         let cleanJsonStr = data.reply.trim();
@@ -259,17 +258,15 @@ async function sendRoleplayMessage() {
 
         const parsedReply = JSON.parse(cleanJsonStr);
         replyText = parsedReply.reply || data.reply;
-        currentMood = parsedReply.currentMood || "Нейтральний";
-        moodColor = parsedReply.moodColor || "yellow";
+        // Беремо реальний настрій із бекенда, а якщо немає — ставимо за замовчуванням
+        currentMood = parsedReply.currentMood || "Нейтральний"; 
+        emotionCode = parsedReply.emotionCode || "skeptical";
       } catch (e) {
         replyText = data.reply;
       }
 
-      // Оновлюємо візуальний індикатор лояльності
-      updateMoodWidget(currentMood, moodColor);
-
-      historyEl.innerHTML += `<div class="b-msg bot">${replyText}</div>`;
-      historyEl.scrollTop = historyEl.scrollHeight;
+      // Додаємо репліку лікаря разом з актуальною емоцією прямо в переписку
+      appendDoctorMessage(replyText, currentMood, emotionCode, historyEl);
       speakRoleplayReply(replyText);
     } else {
       historyEl.innerHTML += `<div class="b-msg bot">Помилка: ${data.error}</div>`;
@@ -279,6 +276,38 @@ async function sendRoleplayMessage() {
     console.error(err);
     alert("Помилка зв'язку з бекендом.");
   }
+}
+
+// Допоміжна функція для мапінгу коду емоції на файл зображення
+function getEmotionImage(emotionCode) {
+  switch (emotionCode) {
+    case "friendly": return "doctor_friendly.png";
+    case "interested": return "doctor_interested.png";
+    case "skeptical": return "doctor_skeptical.png";
+    case "funny": return "doctor_funny.png";
+    case "angry": return "doctor_angry.png";
+    default: return "doctor_skeptical.png";
+  }
+}
+
+// Виведення повідомлення лікаря з великою аватаркою (збільшено ще на 20%) прямо в чат
+function appendDoctorMessage(text, moodText, emotionCode, historyEl) {
+  const fileName = getEmotionImage(emotionCode);
+  
+  const msgHtml = `
+    <div style="display: flex; align-items: flex-start; gap: 14px; margin-bottom: 16px; max-width: 95%;">
+      <div style="text-align: center; flex-shrink: 0;">
+        <img src="./images2/emoji/${fileName}" alt="${moodText}" width="90" height="90" style="border-radius: 50%; object-fit: cover; border: 3px solid #22c55e; box-shadow: 0 4px 10px rgba(0,0,0,0.15);" />
+        <div style="font-size: 11px; color: #1e293b; margin-top: 4px; font-weight: 700; background: #f1f5f9; padding: 2px 6px; border-radius: 6px;">${moodText}</div>
+      </div>
+      <div class="b-msg bot" style="margin: 0; flex: 1; font-size: 15px; padding: 14px 18px;">
+        🎭 <b>Лікар:</b> ${text}
+      </div>
+    </div>
+  `;
+  
+  historyEl.innerHTML += msgHtml;
+  historyEl.scrollTop = historyEl.scrollHeight;
 }
 
 // Кнопка "Вийти" запускає Аудит за Чек-листом успішної угоди
@@ -412,43 +441,4 @@ function parseCSV(text) {
     p = l;
   }
   return ret;
-}
-
-function ensureMoodWidgetExists() {
-  let indicator = document.getElementById("doctorMoodIndicator");
-  if (!indicator) {
-    const headerTitleWrap = document.querySelector("#roleplayModal .bihelsi-title-wrap div");
-    if (headerTitleWrap) {
-      indicator = document.createElement("div");
-      indicator.id = "doctorMoodIndicator";
-      indicator.style.cssText = "display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; padding: 3px 8px; border-radius: 12px; margin-top: 4px;";
-      indicator.innerHTML = `<span id="moodEmoji">😐</span> <span id="moodText">Нейтральний</span>`;
-      headerTitleWrap.appendChild(indicator);
-    }
-  }
-}
-
-function updateMoodWidget(mood, color) {
-  ensureMoodWidgetExists();
-  const emojiSpan = document.getElementById("moodEmoji");
-  const textSpan = document.getElementById("moodText");
-  const indicator = document.getElementById("doctorMoodIndicator");
-
-  if (!emojiSpan || !textSpan || !indicator) return;
-
-  textSpan.textContent = mood;
-
-  if (color === "green" || mood === "Лояльний") {
-    emojiSpan.textContent = "😊";
-    indicator.style.background = "#dcfce7";
-    indicator.style.color = "#166534";
-  } else if (color === "red" || mood === "Скептичний" || mood === "Негативний") {
-    emojiSpan.textContent = "😠";
-    indicator.style.background = "#fee2e2";
-    indicator.style.color = "#991b1b";
-  } else {
-    emojiSpan.textContent = "😐";
-    indicator.style.background = "#fef9c3";
-    indicator.style.color = "#854d0e";
-  }
 }

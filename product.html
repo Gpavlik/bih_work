@@ -5,6 +5,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Продукт</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@700&family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/modern-normalize/1.1.0/modern-normalize.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <link rel="stylesheet" href="./css/main.css" />
@@ -281,8 +283,8 @@
     /* --- СТИЛІ МАСКОТА --- */
     .mascot-widget {
       position: fixed;
-      bottom: 30px;
-      right: 30px;
+      bottom: 5%;
+      right: 10%;
       display: flex;
       align-items: center;
       background: linear-gradient(135deg, #ffffff 0%, #f4fbf1 100%);
@@ -290,7 +292,7 @@
       border-radius: 50px;
       box-shadow: 0 10px 30px rgba(39, 174, 96, 0.18);
       border: 2px solid #a3d99f;
-      z-index: 9999;
+      z-index: 99;
       font-family: 'Inter', sans-serif;
       cursor: pointer;
       user-select: none;
@@ -569,8 +571,8 @@
       <button class="mascot-action-btn" onclick="mascotAction('instruction')">📝 Прочитати інструкцію</button>
       <button class="mascot-action-btn" onclick="mascotAction('competitor')">⚖️ Конкурентне оточення</button>
       <button class="mascot-action-btn" onclick="mascotAction('test')">✅ Пройти тестування</button>
-      <button class="mascot-action-btn" onclick="mascotAction('portfolio')">📜 До переліку продуктів</button>
-      <button class="mascot-action-btn" onclick="mascotAction('profile')"> 💼 Мій кабінет</button>
+      <button class="mascot-action-btn" onclick="mascotAction('portfolio')">🗂️ До переліку продуктів</button>
+    <button class="mascot-action-btn" onclick="mascotAction('profile')">💼 Мій кабінет</button>
     </div>
   </div>
 
@@ -636,7 +638,7 @@
         <div class="bihelsi-avatar-mini" style="width: 45px; height: 45px; background: #dcfce7; color: #166534; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px;">🎭</div>
         <div>
           <h3 id="roleplayModalTitle">Тренажер візитів до лікаря</h3>
-          <p id="roleplayModalSub">Оберіть параметри та відпрацюйте SPIN-техніку голосом або текстом</p>
+          <p id="roleplayModalSub">Сьогодні з вами на рольовій сцені лікар Марина Петрівна</p>
         </div>
       </div>
     </div>
@@ -660,7 +662,7 @@
       </div>
 
       <div>
-        <label style="font-size: 12px; color: #64748b; display: block; margin-bottom: 4px;">Настрій / тип клієнта:</label>
+        <label style="font-size: 12px; color: #64748b; display: block; margin-bottom: 4px;">Настрій / тип клієнта (початковий тон):</label>
         <select id="doctorMood" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #cbd5e1; background: #fff;">
           <option value="Лояльний">😊 Лояльний (відкритий до діалогу)</option>
           <option value="Нейтральний" selected>😐 Нейтральний (зайнятий, сумнівається)</option>
@@ -676,10 +678,7 @@
       <div id="roleplayChatHistory" class="bihelsi-chat-history" style="flex: 1; max-height: none;">
         <!-- Історія діалогу з лікарем -->
       </div>
-      <div id="doctorMoodIndicator" style="display: flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 600; background: #e2e8f0; padding: 4px 10px; border-radius: 20px;">
-  <span id="moodEmoji">😐</span> 
-  <span id="moodText">Нейтральний</span>
-</div>
+
       <div class="bihelsi-input-area">
         <textarea id="roleplayUserInput" rows="2" placeholder="Напишіть репліку або натисніть мікрофон..." style="user-select: auto; pointer-events: auto;"></textarea>
         

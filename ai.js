@@ -201,8 +201,12 @@ function startRoleplaySession() {
   const historyEl = document.getElementById("roleplayChatHistory");
   let welcomeText = `[Візит розпочато]. Ви зайшли в кабінет до лікаря (${specialty}). Початковий настрій: ${mood}. Тема: "${pathology}". Ваша перша репліка?`;
   
-  // Додаємо стартове повідомлення з початковою емоцією (дружелюбна або нейтральна)
-  let initialCode = mood === "Лояльний" ? "friendly" : (mood === "Негативний" ? "angry" : "skeptical");
+  // Мапінг стартового настрою на код емоції
+  let initialCode = "friendly";
+  if (mood === "Лояльний") initialCode = "interested";
+  else if (mood === "Негативний" || mood === "Розлючений") initialCode = "angry";
+  else if (mood === "Скептичний") initialCode = "skeptical";
+
   appendDoctorMessage(welcomeText, mood, initialCode, historyEl);
 }
 
@@ -243,33 +247,63 @@ async function sendRoleplayMessage() {
     const data = await response.json();
     document.getElementById(loadingId)?.remove();
 
-    if (data.success && data.reply) {
-      let replyText = data.reply;
-      let currentMood = "Нейтральний";
-      let emotionCode = "skeptical";
+    // 🔍 ДЕБАГ У КОНСОЛІ
+    console.log("RAW BACKEND RESPONSE:", data);
 
-      try {
-        let cleanJsonStr = data.reply.trim();
-        if (cleanJsonStr.startsWith("```json")) {
-          cleanJsonStr = cleanJsonStr.replace(/^```json/, "").replace(/```$/, "").trim();
-        } else if (cleanJsonStr.startsWith("```")) {
-          cleanJsonStr = cleanJsonStr.replace(/^```/, "").replace(/```$/, "").trim();
+    if (data.success && (data.reply || data.currentMood)) {
+      let replyText = data.reply || "";
+      let currentMood = data.currentMood || "Дружній";
+      let emotionCode = data.emotionCode || "friendly";
+
+      // Захисний шар на випадок додаткового JSON-форматування
+      if (typeof replyText === "string" && replyText.trim().startsWith("{")) {
+        try {
+          let cleanJsonStr = replyText.trim();
+          if (cleanJsonStr.startsWith("```json")) {
+            cleanJsonStr = cleanJsonStr.replace(/^```json/, "").replace(/```$/, "").trim();
+          } else if (cleanJsonStr.startsWith("```")) {
+            cleanJsonStr = cleanJsonStr.replace(/^```/, "").replace(/```$/, "").trim();
+          }
+          const parsedJson = JSON.parse(cleanJsonStr);
+          replyText = parsedJson.reply || replyText;
+          currentMood = parsedJson.currentMood || currentMood;
+          emotionCode = parsedJson.emotionCode || emotionCode;
+        } catch (e) {
+          console.warn("Помилка додаткового парсингу JSON у фронті:", e);
         }
-
-        const parsedReply = JSON.parse(cleanJsonStr);
-        replyText = parsedReply.reply || data.reply;
-        // Беремо реальний настрій із бекенда, а якщо немає — ставимо за замовчуванням
-        currentMood = parsedReply.currentMood || "Нейтральний"; 
-        emotionCode = parsedReply.emotionCode || "skeptical";
-      } catch (e) {
-        replyText = data.reply;
       }
 
-      // Додаємо репліку лікаря разом з актуальною емоцією прямо в переписку
+      console.log("Processed -> Mood:", currentMood, "| Code:", emotionCode);
+
+      // Виводимо репліку лікаря
       appendDoctorMessage(replyText, currentMood, emotionCode, historyEl);
       speakRoleplayReply(replyText);
+
+      // 🔥 АВТОМАТИЧНЕ ЗАВЕРШЕННЯ ВІЗИТУ, ЯКЩО ЛІКАР ВИГНАВ (angry)
+      if (emotionCode === "angry") {
+        historyEl.innerHTML += `
+          <div style="background: #fee2e2; border: 2px solid #ef4444; color: #991b1b; padding: 12px 16px; border-radius: 8px; margin: 16px 0; text-align: center; font-weight: 600;">
+            🚪❌ Візит завершено клієнтом: Вас вигнали з кабінету через порушення етики та тиск!
+          </div>
+        `;
+        historyEl.scrollTop = historyEl.scrollHeight;
+
+        // Блокуємо поле введення
+        const inputArea = document.querySelector("#roleplayChatView .bihelsi-input-area") || document.getElementById("roleplayUserInput")?.parentElement;
+        if (inputArea) {
+          inputArea.style.display = "none";
+        }
+
+        // Автоматично запускаємо аудит через 1.5 секунди
+        setTimeout(() => {
+          endRoleplaySession();
+        }, 1500);
+
+        return;
+      }
+
     } else {
-      historyEl.innerHTML += `<div class="b-msg bot">Помилка: ${data.error}</div>`;
+      historyEl.innerHTML += `<div class="b-msg bot">Помилка: ${data.error || "Невідома помилка"}</div>`;
     }
   } catch (err) {
     document.getElementById(loadingId)?.remove();
@@ -290,7 +324,7 @@ function getEmotionImage(emotionCode) {
   }
 }
 
-// Виведення повідомлення лікаря з великою аватаркою (збільшено ще на 20%) прямо в чат
+// Виведення повідомлення лікаря з великою аватаркою
 function appendDoctorMessage(text, moodText, emotionCode, historyEl) {
   const fileName = getEmotionImage(emotionCode);
   
@@ -347,6 +381,7 @@ async function endRoleplaySession() {
         
         const inputArea = document.querySelector("#roleplayChatView .bihelsi-input-area");
         if (inputArea) {
+          inputArea.style.display = "flex";
           inputArea.innerHTML = `<button onclick="closeRoleplayModalFinal()" class="b-ctrl-btn send" style="width:100%; justify-content:center;">✅ Ознайом(-лась) із порадами, закрити візит</button>`;
         }
         return;

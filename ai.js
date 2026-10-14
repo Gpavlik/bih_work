@@ -57,10 +57,11 @@ async function sendToBihelsiModal() {
     const response = await fetch(GAS_BACKEND_URL, {
       method: "POST",
       headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify({ 
+     body: JSON.stringify({ 
         message: text,
         productFilename: currentFilename,
-        mode: "mentor"
+        mode: "mentor",
+        email: localStorage.getItem("allowedEmail") || "unknown" // 👈 ДОДАНО
       })
     });
     
@@ -240,7 +241,8 @@ async function sendRoleplayMessage() {
         mode: "doctor_roleplay",
         specialty: specialty,
         pathology: pathology,
-        mood: mood
+        mood: mood,
+        email: localStorage.getItem("allowedEmail") || "unknown" // 👈 ДОДАНО
       })
     });
     
@@ -368,7 +370,8 @@ async function endRoleplaySession() {
         body: JSON.stringify({ 
           message: "Ось історія мого візиту з лікарем, зроби повний аудит за чек-листом успішної угоди:\n" + fullDialogue,
           productFilename: currentFilename,
-          mode: "audit"
+          mode: "audit",
+          email: localStorage.getItem("allowedEmail") || "unknown" // 👈 ДОДАНО
         })
       });
       
@@ -414,34 +417,59 @@ function toggleRoleplayAudio() {
   if (!isRoleplayAudioEnabled && window.speechSynthesis) window.speechSynthesis.cancel();
 }
 
+let roleplayRecognition = null;
+let isRoleplayRecording = false;
+
 function toggleRoleplayVoice() {
+  const micBtn = document.getElementById("roleplayMicBtn");
+  const input = document.getElementById("roleplayUserInput");
+
+  // Якщо мікрофон вже увімкнений - вимикаємо його
+  if (isRoleplayRecording && roleplayRecognition) {
+    roleplayRecognition.stop();
+    isRoleplayRecording = false;
+    micBtn.textContent = "🎙️ Голос";
+    micBtn.style.backgroundColor = "";
+    return;
+  }
+
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SpeechRecognition) {
     alert("Ваш браузер не підтримує голосове введення.");
     return;
   }
 
-  const recognition = new SpeechRecognition();
-  recognition.lang = 'uk-UA';
-  recognition.interimResults = false;
+  roleplayRecognition = new SpeechRecognition();
+  roleplayRecognition.lang = 'uk-UA';
+  roleplayRecognition.continuous = true; // СЛУХАТИ БЕЗПЕРЕРВНО (навіть якщо є паузи)
+  roleplayRecognition.interimResults = true; // Показувати слова в процесі говоріння
 
-  const micBtn = document.getElementById("roleplayMicBtn");
-  micBtn.textContent = "🔴 Слухаю...";
+  micBtn.textContent = "🛑 Зупинити запис";
   micBtn.style.backgroundColor = "#fee2e2";
+  isRoleplayRecording = true;
 
-  recognition.onresult = (event) => {
-    document.getElementById("roleplayUserInput").value = event.results[0][0].transcript;
-    micBtn.textContent = "🎙️ Голос";
-    micBtn.style.backgroundColor = "";
-    sendRoleplayMessage();
+  // Зберігаємо текст, який вже міг бути в полі, щоб не затерти його
+  let finalTranscript = input.value ? input.value + " " : "";
+
+  roleplayRecognition.onresult = (event) => {
+    let interimTranscript = '';
+    for (let i = event.resultIndex; i < event.results.length; ++i) {
+      if (event.results[i].isFinal) {
+        finalTranscript += event.results[i][0].transcript + ' ';
+      } else {
+        interimTranscript += event.results[i][0].transcript;
+      }
+    }
+    input.value = finalTranscript + interimTranscript;
   };
 
-  recognition.onerror = recognition.onend = () => {
+  roleplayRecognition.onerror = roleplayRecognition.onend = () => {
+    isRoleplayRecording = false;
     micBtn.textContent = "🎙️ Голос";
     micBtn.style.backgroundColor = "";
   };
 
-  recognition.start();
+  roleplayRecognition.start();
 }
 
 function speakRoleplayReply(text) {
@@ -477,3 +505,20 @@ function parseCSV(text) {
   }
   return ret;
 }
+// Глобальний обробник клавіші Enter для всіх чатів
+document.addEventListener('keydown', function(event) {
+  // Якщо натиснуто Enter (і не затиснуто Shift для нового рядка)
+  if (event.key === "Enter" && !event.shiftKey) {
+    
+    // Перевіряємо, чи ми зараз знаходимося в полі Тренажера
+    if (document.activeElement.id === "roleplayUserInput") {
+      event.preventDefault(); // Забороняємо стандартний перенос рядка
+      sendRoleplayMessage();  // Відправляємо лікарю
+    } 
+    // Або якщо ми в полі Ментора Бі-хелсі
+    else if (document.activeElement.id === "bihelsiUserInput") {
+      event.preventDefault();
+      sendToBihelsiModal();   // Відправляємо коучу
+    }
+  }
+});

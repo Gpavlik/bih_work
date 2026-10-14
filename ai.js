@@ -1,6 +1,11 @@
 let isAudioEnabled = false; // Звук вимкнено за замовчуванням
 const GAS_BACKEND_URL = "https://script.google.com/macros/s/AKfycbzprTkjIf_pvCqs4iiaMehYVdFlFfuS0e60gK0QXh7v8DOKpI9WByyDo3A3VoBXzKxWxw/exec";
 
+let roleplayRecognition = null;
+let isRoleplayRecording = false;
+let isBotSpeaking = false;          // Прапорець: чи говорить зараз лікар (захист від еха)
+let shouldAutoRestartMic = false;   // Прапорець для автоперезапуску після відповіді
+
 function setBihelsiThinking(isThinking) {
   const mascot = document.getElementById("pharmaMascot");
   const mascotStatus = document.querySelector(".mascot-status");
@@ -57,11 +62,11 @@ async function sendToBihelsiModal() {
     const response = await fetch(GAS_BACKEND_URL, {
       method: "POST",
       headers: { "Content-Type": "text/plain;charset=utf-8" },
-     body: JSON.stringify({ 
+      body: JSON.stringify({ 
         message: text,
         productFilename: currentFilename,
         mode: "mentor",
-        email: localStorage.getItem("allowedEmail") || "unknown" // 👈 ДОДАНО
+        email: localStorage.getItem("allowedEmail") || "unknown"
       })
     });
     
@@ -202,7 +207,6 @@ function startRoleplaySession() {
   const historyEl = document.getElementById("roleplayChatHistory");
   let welcomeText = `[Візит розпочато]. Ви зайшли в кабінет до лікаря (${specialty}). Початковий настрій: ${mood}. Тема: "${pathology}". Ваша перша репліка?`;
   
-  // Мапінг стартового настрою на код емоції
   let initialCode = "friendly";
   if (mood === "Лояльний") initialCode = "interested";
   else if (mood === "Негативний" || mood === "Розлючений") initialCode = "angry";
@@ -216,6 +220,21 @@ async function sendRoleplayMessage() {
   const historyEl = document.getElementById("roleplayChatHistory");
   const text = textarea.value.trim();
   if (!text) return;
+
+  // Якщо мікрофон працював під час відправки — зупиняємо його та ставимо прапорець автоперезапуску
+  if (isRoleplayRecording && roleplayRecognition) {
+    roleplayRecognition.stop();
+    isRoleplayRecording = false;
+    shouldAutoRestartMic = true;
+    
+    const micBtn = document.getElementById("roleplayMicBtn");
+    if (micBtn) {
+      micBtn.textContent = "⏳ Лікар думає...";
+      micBtn.style.backgroundColor = "#fef08a";
+    }
+  } else {
+    shouldAutoRestartMic = false;
+  }
 
   historyEl.innerHTML += `<div class="b-msg user">${text}</div>`;
   textarea.value = "";
@@ -242,79 +261,68 @@ async function sendRoleplayMessage() {
         specialty: specialty,
         pathology: pathology,
         mood: mood,
-        email: localStorage.getItem("allowedEmail") || "unknown" // 👈 ДОДАНО
+        email: localStorage.getItem("allowedEmail") || "unknown"
       })
     });
     
     const data = await response.json();
     document.getElementById(loadingId)?.remove();
 
-    // 🔍 ДЕБАГ У КОНСОЛІ
-    console.log("RAW BACKEND RESPONSE:", data);
-
     if (data.success && (data.reply || data.currentMood)) {
       let replyText = data.reply || "";
       let currentMood = data.currentMood || "Дружній";
       let emotionCode = data.emotionCode || "friendly";
 
-      // Захисний шар на випадок додаткового JSON-форматування
       if (typeof replyText === "string" && replyText.trim().startsWith("{")) {
         try {
-          let cleanJsonStr = replyText.trim();
-          if (cleanJsonStr.startsWith("```json")) {
-            cleanJsonStr = cleanJsonStr.replace(/^```json/, "").replace(/```$/, "").trim();
-          } else if (cleanJsonStr.startsWith("```")) {
-            cleanJsonStr = cleanJsonStr.replace(/^```/, "").replace(/```$/, "").trim();
-          }
+          let cleanJsonStr = replyText.trim().replace(/^```json/, "").replace(/```$/, "").trim();
           const parsedJson = JSON.parse(cleanJsonStr);
           replyText = parsedJson.reply || replyText;
           currentMood = parsedJson.currentMood || currentMood;
           emotionCode = parsedJson.emotionCode || emotionCode;
         } catch (e) {
-          console.warn("Помилка додаткового парсингу JSON у фронті:", e);
+          console.warn("Помилка парсингу JSON:", e);
         }
       }
 
-      console.log("Processed -> Mood:", currentMood, "| Code:", emotionCode);
-
-      // Виводимо репліку лікаря
       appendDoctorMessage(replyText, currentMood, emotionCode, historyEl);
+      
+      // Озвучка автоматично заблокує мікрофон від еха на час розмови лікаря
       speakRoleplayReply(replyText);
 
-      // 🔥 АВТОМАТИЧНЕ ЗАВЕРШЕННЯ ВІЗИТУ, ЯКЩО ЛІКАР ВИГНАВ (angry)
       if (emotionCode === "angry") {
         historyEl.innerHTML += `
           <div style="background: #fee2e2; border: 2px solid #ef4444; color: #991b1b; padding: 12px 16px; border-radius: 8px; margin: 16px 0; text-align: center; font-weight: 600;">
-            🚪❌ Візит завершено клієнтом: Вас вигнали з кабінету через порушення етики та тиск!
+            🚪❌ Візит завершено: Вас вигнали з кабінету!
           </div>
         `;
         historyEl.scrollTop = historyEl.scrollHeight;
-
-        // Блокуємо поле введення
-        const inputArea = document.querySelector("#roleplayChatView .bihelsi-input-area") || document.getElementById("roleplayUserInput")?.parentElement;
-        if (inputArea) {
-          inputArea.style.display = "none";
-        }
-
-        // Автоматично запускаємо аудит через 1.5 секунди
-        setTimeout(() => {
-          endRoleplaySession();
-        }, 1500);
-
+        document.querySelector("#roleplayChatView .bihelsi-input-area").style.display = "none";
+        setTimeout(() => { endRoleplaySession(); }, 1500);
         return;
       }
 
     } else {
       historyEl.innerHTML += `<div class="b-msg bot">Помилка: ${data.error || "Невідома помилка"}</div>`;
+      resetMicBtnState();
     }
   } catch (err) {
     document.getElementById(loadingId)?.remove();
     console.error(err);
     alert("Помилка зв'язку з бекендом.");
+    resetMicBtnState();
   }
 }
 
-// Допоміжна функція для мапінгу коду емоції на файл зображення
+function resetMicBtnState() {
+  shouldAutoRestartMic = false;
+  const micBtn = document.getElementById("roleplayMicBtn");
+  if (micBtn) {
+    micBtn.textContent = "🎙️ Голос";
+    micBtn.style.backgroundColor = "";
+  }
+}
+
 function getEmotionImage(emotionCode) {
   switch (emotionCode) {
     case "friendly": return "doctor_friendly.png";
@@ -326,7 +334,6 @@ function getEmotionImage(emotionCode) {
   }
 }
 
-// Виведення повідомлення лікаря з великою аватаркою
 function appendDoctorMessage(text, moodText, emotionCode, historyEl) {
   const fileName = getEmotionImage(emotionCode);
   
@@ -346,7 +353,6 @@ function appendDoctorMessage(text, moodText, emotionCode, historyEl) {
   historyEl.scrollTop = historyEl.scrollHeight;
 }
 
-// Кнопка "Вийти" запускає Аудит за Чек-листом успішної угоди
 async function endRoleplaySession() {
   const historyEl = document.getElementById("roleplayChatHistory");
   const messages = historyEl.querySelectorAll(".b-msg");
@@ -371,7 +377,7 @@ async function endRoleplaySession() {
           message: "Ось історія мого візиту з лікарем, зроби повний аудит за чек-листом успішної угоди:\n" + fullDialogue,
           productFilename: currentFilename,
           mode: "audit",
-          email: localStorage.getItem("allowedEmail") || "unknown" // 👈 ДОДАНО
+          email: localStorage.getItem("allowedEmail") || "unknown"
         })
       });
       
@@ -398,6 +404,7 @@ async function endRoleplaySession() {
 }
 
 function closeRoleplayModalFinal() {
+  stopRoleplayVoice();
   document.getElementById("roleplayChatView").style.display = "none";
   document.getElementById("roleplaySetupView").style.display = "flex";
   document.getElementById("roleplayModal").classList.remove("active");
@@ -417,21 +424,23 @@ function toggleRoleplayAudio() {
   if (!isRoleplayAudioEnabled && window.speechSynthesis) window.speechSynthesis.cancel();
 }
 
-let roleplayRecognition = null;
-let isRoleplayRecording = false;
-
+// --- ГОЛОСОВЕ КЕРУВАННЯ ТА ЗАХИСТ ВІД ЕХА ---
 function toggleRoleplayVoice() {
   const micBtn = document.getElementById("roleplayMicBtn");
-  const input = document.getElementById("roleplayUserInput");
-
-  // Якщо мікрофон вже увімкнений - вимикаємо його
-  if (isRoleplayRecording && roleplayRecognition) {
-    roleplayRecognition.stop();
-    isRoleplayRecording = false;
+  
+  if (isRoleplayRecording) {
+    stopRoleplayVoice();
+    shouldAutoRestartMic = false;
     micBtn.textContent = "🎙️ Голос";
     micBtn.style.backgroundColor = "";
-    return;
+  } else {
+    shouldAutoRestartMic = true; // Користувач свідомо увімкнув режим hands-free
+    startRoleplayVoice();
   }
+}
+
+function startRoleplayVoice() {
+  if (isBotSpeaking) return; // Не слухаємо ефір, поки говорить лікар
 
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SpeechRecognition) {
@@ -441,14 +450,17 @@ function toggleRoleplayVoice() {
 
   roleplayRecognition = new SpeechRecognition();
   roleplayRecognition.lang = 'uk-UA';
-  roleplayRecognition.continuous = true; // СЛУХАТИ БЕЗПЕРЕРВНО (навіть якщо є паузи)
-  roleplayRecognition.interimResults = true; // Показувати слова в процесі говоріння
+  roleplayRecognition.continuous = true;
+  roleplayRecognition.interimResults = true;
 
-  micBtn.textContent = "🛑 Зупинити запис";
-  micBtn.style.backgroundColor = "#fee2e2";
+  const micBtn = document.getElementById("roleplayMicBtn");
+  if (micBtn) {
+    micBtn.textContent = "🔴 Слухаю вас...";
+    micBtn.style.backgroundColor = "#fee2e2";
+  }
   isRoleplayRecording = true;
 
-  // Зберігаємо текст, який вже міг бути в полі, щоб не затерти його
+  const input = document.getElementById("roleplayUserInput");
   let finalTranscript = input.value ? input.value + " " : "";
 
   roleplayRecognition.onresult = (event) => {
@@ -465,24 +477,70 @@ function toggleRoleplayVoice() {
 
   roleplayRecognition.onerror = roleplayRecognition.onend = () => {
     isRoleplayRecording = false;
-    micBtn.textContent = "🎙️ Голос";
-    micBtn.style.backgroundColor = "";
+    // Якщо мікрофон зупинився сам, але бот не говорить і автоперезапуск активний — дамо кнопку у вихідний стан
+    const btn = document.getElementById("roleplayMicBtn");
+    if (btn && !shouldAutoRestartMic) {
+      btn.textContent = "🎙️ Голос";
+      btn.style.backgroundColor = "";
+    }
   };
 
-  roleplayRecognition.start();
+  try {
+    roleplayRecognition.start();
+  } catch(e) {
+    console.error("Помилка старту розпізнавання:", e);
+  }
 }
 
+function stopRoleplayVoice() {
+  if (roleplayRecognition) {
+    try { roleplayRecognition.stop(); } catch(e){}
+  }
+  isRoleplayRecording = false;
+}
+
+// Озвучка відповіді лікаря із заблокованим мікрофоном (захист від еха в авто)
 function speakRoleplayReply(text) {
-  if (!window.speechSynthesis || !isRoleplayAudioEnabled) return;
+  if (!window.speechSynthesis || !isRoleplayAudioEnabled) {
+    checkAndResumeMicAfterBot();
+    return;
+  }
+
   window.speechSynthesis.cancel();
+  isBotSpeaking = true;   // БЛОКУЄМО МІКРОФОН — говорить лікар!
+  stopRoleplayVoice();    // Примусово зупиняємо слухання
+
   const cleanText = text.replace(/[*#_]/g, '');
   const utterance = new SpeechSynthesisUtterance(cleanText);
   utterance.lang = 'uk-UA';
   utterance.rate = 1.0;
+  
   const voices = window.speechSynthesis.getVoices();
   const ukVoice = voices.find(v => v.lang.includes('uk') || v.lang.includes('UA'));
   if (ukVoice) utterance.voice = ukVoice;
+
+  utterance.onend = () => {
+    isBotSpeaking = false; // Бот закінчив говорити
+    checkAndResumeMicAfterBot();
+  };
+
+  utterance.onerror = () => {
+    isBotSpeaking = false;
+    checkAndResumeMicAfterBot();
+  };
+
   window.speechSynthesis.speak(utterance);
+}
+
+// Автоматичне увімкнення мікрофона після того, як лікар замовк (якщо режим голосу був увімкнений)
+function checkAndResumeMicAfterBot() {
+  if (shouldAutoRestartMic) {
+    setTimeout(() => {
+      if (!isBotSpeaking && !isRoleplayRecording) {
+        startRoleplayVoice();
+      }
+    }, 600); // Коротка пауза 0.6с після репліки лікаря
+  }
 }
 
 function parseCSV(text) {
@@ -505,20 +563,16 @@ function parseCSV(text) {
   }
   return ret;
 }
-// Глобальний обробник клавіші Enter для всіх чатів
+
+// Глобальний обробник клавіші Enter для чатів
 document.addEventListener('keydown', function(event) {
-  // Якщо натиснуто Enter (і не затиснуто Shift для нового рядка)
   if (event.key === "Enter" && !event.shiftKey) {
-    
-    // Перевіряємо, чи ми зараз знаходимося в полі Тренажера
     if (document.activeElement.id === "roleplayUserInput") {
-      event.preventDefault(); // Забороняємо стандартний перенос рядка
-      sendRoleplayMessage();  // Відправляємо лікарю
-    } 
-    // Або якщо ми в полі Ментора Бі-хелсі
-    else if (document.activeElement.id === "bihelsiUserInput") {
       event.preventDefault();
-      sendToBihelsiModal();   // Відправляємо коучу
+      sendRoleplayMessage();
+    } else if (document.activeElement.id === "bihelsiUserInput") {
+      event.preventDefault();
+      sendToBihelsiModal();
     }
   }
 });

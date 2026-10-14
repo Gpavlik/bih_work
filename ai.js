@@ -391,7 +391,7 @@ async function endRoleplaySession() {
         const inputArea = document.querySelector("#roleplayChatView .bihelsi-input-area");
         if (inputArea) {
           inputArea.style.display = "flex";
-          inputArea.innerHTML = `<button onclick="closeRoleplayModalFinal()" class="b-ctrl-btn send" style="width:100%; justify-content:center;">✅ Ознайом(-лась) із порадами, закрити візит</button>`;
+          inputArea.innerHTML = `<button onclick="closeRoleplayModalFinal()" class="b-ctrl-btn send" style="width:100%; justify-content:center;">✅ Ознайоми(вся/лась) із порадами, закінчити візит</button>`;
         }
         return;
       }
@@ -403,7 +403,27 @@ async function endRoleplaySession() {
   closeRoleplayModalFinal();
 }
 
-function closeRoleplayModalFinal() {
+async function closeRoleplayModalFinal() {
+  // Автоматично скидаємо кеш на бекенді для цього користувача і продукту, 
+  // щоб наступний вхід був із чистим аркушем (без ручного введення "reset")
+  const urlParams = new URLSearchParams(window.location.search);
+  const currentFilename = urlParams.get('id') || "argisDuo.html";
+  
+  try {
+    await fetch(GAS_BACKEND_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({ 
+        message: "reset",
+        productFilename: currentFilename,
+        mode: "doctor_roleplay",
+        email: localStorage.getItem("allowedEmail") || "unknown"
+      })
+    });
+  } catch (err) {
+    console.error("Помилка авто-скидання сесії:", err);
+  }
+
   stopRoleplayVoice();
   document.getElementById("roleplayChatView").style.display = "none";
   document.getElementById("roleplaySetupView").style.display = "flex";

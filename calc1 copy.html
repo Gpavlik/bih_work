@@ -347,22 +347,28 @@
 
       const focusSkill = document.getElementById("focusSkillSelect").value;
       lastEvaluationData.focusSkill = focusSkill ? focusSkill : "Не обрано";
+      lastEvaluationData.mode = "dual_visit_rm"; // <--- Вказуємо режим для бекенду
 
       const btn = document.getElementById("saveBtn");
       btn.textContent = "⏳ Зберігається...";
       btn.disabled = true;
 
-      const scriptURL = "  https://script.google.com/macros/s/AKfycby87iUOv2tul_QrIBiuJ8JgcfCOl4WQ3igIuIDNWpZS4CN2y27RRtD752dyePFZRvGf8A/exec";
+      // URL вашого єдиного Apps Script бекенду
+      const scriptURL = "https://script.google.com/macros/s/AKfycbzprTkjIf_pvCqs4iiaMehYVdFlFfuS0e60gK0QXh7v8DOKpI9WByyDo3A3VoBXzKxWxw/exec";
 
       fetch(scriptURL, {
         method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
         body: JSON.stringify(lastEvaluationData)
       })
-      .then(() => {
-        alert("✅ Дані успішно збережено до аркуша «Оцінка РМ» у вашій Google Таблиці!");
-        btn.textContent = "💾 Збережено у базі";
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          alert("✅ Дані успішно збережено до аркуша «Оцінка РМ (Подвійні візити)» у вашій Google Таблиці!");
+          btn.textContent = "💾 Збережено у базі";
+        } else {
+          throw new Error(data.error || "Помилка збереження");
+        }
       })
       .catch((error) => {
         console.error("Помилка:", error);

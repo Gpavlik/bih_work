@@ -368,6 +368,10 @@ async function endRoleplaySession() {
 
     const urlParams = new URLSearchParams(window.location.search);
     const currentFilename = urlParams.get('id') || "argisDuo.html";
+    
+    // Беремо спеціальність та тему з полів форма
+    const specialty = document.getElementById("doctorSpecialty")?.value || "Не вказано";
+    const pathology = document.getElementById("doctorPathology")?.value || "Не вказано";
 
     try {
       const response = await fetch(GAS_BACKEND_URL, {
@@ -377,6 +381,8 @@ async function endRoleplaySession() {
           message: "Ось історія мого візиту з лікарем, зроби повний аудит за чек-листом успішної угоди:\n" + fullDialogue,
           productFilename: currentFilename,
           mode: "audit",
+          specialty: specialty,
+          pathology: pathology,
           email: localStorage.getItem("allowedEmail") || "unknown"
         })
       });
@@ -425,6 +431,7 @@ async function closeRoleplayModalFinal() {
   }
 
   stopRoleplayVoice();
+  releaseWakeLock();
   document.getElementById("roleplayChatView").style.display = "none";
   document.getElementById("roleplaySetupView").style.display = "flex";
   document.getElementById("roleplayModal").classList.remove("active");
@@ -460,7 +467,9 @@ function toggleRoleplayVoice() {
 }
 
 function startRoleplayVoice() {
-  if (isBotSpeaking) return; // Не слухаємо ефір, поки говорить лікар
+  if (isBotSpeaking) return;
+
+  requestWakeLock(); // Захист від гасіння екрана в авто
 
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SpeechRecognition) {
@@ -485,23 +494,73 @@ function startRoleplayVoice() {
 
   roleplayRecognition.onresult = (event) => {
     let interimTranscript = '';
+
     for (let i = event.resultIndex; i < event.results.length; ++i) {
+      let chunk = event.results[i][0].transcript;
+      let lowerChunk = chunk.toLowerCase().trim().replace(/[.,!?]/g, '');
+      let words = lowerChunk.split(/\s+/);
+      let lastWord = words[words.length - 1]; // Беремо тільки ОСТАННЄ слово
+
       if (event.results[i].isFinal) {
-        finalTranscript += event.results[i][0].transcript + ' ';
+        
+        // 1. КОМАНДА "CLEAR" (Очистити поле)
+        if (['clear', 'клір', 'кліар', 'кліа'].includes(lastWord)) {
+          finalTranscript = ""; 
+          input.value = "";
+          return;
+        }
+
+        // 2. КОМАНДА "SENT" / "SEND" (Відправити)
+        if (['sent', 'send', 'сент', 'сенд'].includes(lastWord)) {
+          // Вирізаємо команду з кінця фрази
+          let cleanText = chunk.replace(/(sent|send|сент|сенд)$/gi, '').trim();
+          
+          if (cleanText) finalTranscript += cleanText + ' ';
+          input.value = finalTranscript.trim();
+          
+          if (input.value) {
+            sendRoleplayMessage(); // Відправляємо лікарю
+          }
+          return;
+        }
+
+        // Звичайний текст без команд
+        finalTranscript += chunk + ' ';
       } else {
-        interimTranscript += event.results[i][0].transcript;
+        interimTranscript += chunk;
       }
     }
-    input.value = finalTranscript + interimTranscript;
+
+    // Візуальна підказка під час розпізнавання
+    let lowerInterim = interimTranscript.toLowerCase();
+    if (/(clear|клір|кліар)/i.test(lowerInterim)) {
+      input.value = "🗑️ [Clear...]";
+    } else if (/(sent|send|сент|сенд)/i.test(lowerInterim)) {
+      input.value = finalTranscript + "🚀 [Sent...]";
+    } else {
+      input.value = finalTranscript + interimTranscript;
+    }
   };
 
-  roleplayRecognition.onerror = roleplayRecognition.onend = () => {
+  roleplayRecognition.onend = () => {
     isRoleplayRecording = false;
-    // Якщо мікрофон зупинився сам, але бот не говорить і автоперезапуск активний — дамо кнопку у вихідний стан
-    const btn = document.getElementById("roleplayMicBtn");
-    if (btn && !shouldAutoRestartMic) {
-      btn.textContent = "🎙️ Голос";
-      btn.style.backgroundColor = "";
+    
+    // Автоперезапуск, якщо браузер "заснув" через тишу
+    if (shouldAutoRestartMic && !isBotSpeaking) {
+      try { 
+        roleplayRecognition.start(); 
+      } catch(e) {}
+    } else if (!shouldAutoRestartMic) {
+      if (micBtn) {
+        micBtn.textContent = "🎙️ Голос";
+        micBtn.style.backgroundColor = "";
+      }
+    }
+  };
+
+  roleplayRecognition.onerror = (event) => {
+    if (event.error !== 'no-speech') {
+      console.warn("Мікрофон: ", event.error);
     }
   };
 
@@ -517,6 +576,8 @@ function stopRoleplayVoice() {
     try { roleplayRecognition.stop(); } catch(e){}
   }
   isRoleplayRecording = false;
+  // ДОЗВОЛЯЄМО ЕКРАНУ ЗАСИНАТИ
+  releaseWakeLock();
 }
 
 // Озвучка відповіді лікаря із заблокованим мікрофоном (захист від еха в авто)
@@ -596,3 +657,35 @@ document.addEventListener('keydown', function(event) {
     }
   }
 });
+// --- ЗАХИСТ ВІД ЗАСИНАННЯ ЕКРАНА (Wake Lock API) ---
+let wakeLock = null;
+
+async function requestWakeLock() {
+  if ('wakeLock' in navigator) {
+    try {
+      wakeLock = await navigator.wakeLock.request('screen');
+      console.log('Екран заблоковано від засинання (Wake Lock активний)');
+      
+      // Якщо користувач згорнув браузер, а потім повернувся - треба перевідновити захист
+      document.addEventListener('visibilitychange', handleVisibilityChange);
+    } catch (err) {
+      console.error(`Помилка Wake Lock: ${err.name}, ${err.message}`);
+    }
+  }
+}
+
+function releaseWakeLock() {
+  if (wakeLock !== null) {
+    wakeLock.release().then(() => {
+      wakeLock = null;
+      console.log('Екран знову може засинати');
+    });
+    document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }
+}
+
+async function handleVisibilityChange() {
+  if (wakeLock !== null && document.visibilityState === 'visible') {
+    await requestWakeLock();
+  }
+}

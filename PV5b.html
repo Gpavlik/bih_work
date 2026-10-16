@@ -39,8 +39,8 @@
           👤 Менеджер (РМ): <span id="displayRmName">—</span> | 🎯 Співробітник (МП): <span id="displayMpName">—</span>
         </div>
 
-        <h3 style="margin-bottom: 20px ; line-height: 1.5; color: #949494;">Для відпрацювання навику виявлення потреби:<br>🟢1. Перевірте знання співробітника що таке уточнюючі і закриті запитання і як їх можна створювати<br>🟢2. Пропишіть 4-5 уточнюючих і закритих запитань для виявленя розкриття груп потреб на наступний візит РАЗОМ зі співробітником.<br>🟢3. Перевірте чи вдалося розкрити групи потреб партнера на візиті.<br>🟢4. Запропонуйте співробітнику обрати уточнюючі і закриті запитання для розкриття груп потреб по кожному продукту на наступний візит САМОСТІЙНО. <br>🟢5. Перевірте розкриття груп потреб після візиту.<br>🟢6. Дайте зворотній зв'язок про успіхи співробітника в розкритті груп потреб і обраних запитаннях.<br>🟢7. Повторюйте пункти 4-6 до кінця дня.</h3>
-        <h3 style="margin-bottom: 20px ; line-height: 1.5; color: #949494;">При наданні ДЗ по навику виявлення потреби:<br>🟢 Попросіть співробітника розширити перелік уточнюючих запитань для розкриття груп потреб зі списку.</h3>
+        <h3 style="margin-bottom: 20px ; line-height: 1.5; color: #949494;">Для відпрацювання навику виявлення загальної потреби:<br>🟢1. Перевірте знання співробітника що таке відкриті запитання і як їх можна створювати<br>🟢2. Пропишіть 4-5 відкритих запитань для виявленя загальних потреб на наступний візит РАЗОМ зі співробітником.<br>🟢3. Перевірте чи вдалося виявити загальні потреби партнера на візиті.<br>🟢4. Запропонуйте співробітнику обрати відкриті запитання для виявлення загальних потреб по кожному продукту на наступний візит САМОСТІЙНО. <br>🟢5. Перевірте виявлення загальних потреб після візиту.<br>🟢6. Дайте зворотній зв'язок про успіхи співробітника в виявленні загальних потреб і обраних запитаннях.<br>🟢7. Повторюйте пункти 4-6 до кінця дня.</h3>
+        <h3 style="margin-bottom: 20px ; line-height: 1.5; color: #949494;">При наданні ДЗ по навику виявлення загальної потреби:<br>🟢 Попросіть співробітника розширити перелік відкритих запитань для виявлення загальних потреб по продуктах промоції. Оберіть 3 продукти з переліку.</h3>
         
         <form id="trainingForm">
           <div class="custom-dropdown">
@@ -65,128 +65,13 @@
       </div>
     </section>
   </main>
-  
-  <div id="footer-container"></div>
-  
+ <div id="footer-container"></div>
   <script src="./js/menu.js"></script>
   <script src="theme-toggle.js"></script>
   <script src="tracking.js"></script>
-
-  <script src="user.js"></script>
-  
-  <script>
-    const productList = [
-      { code: "obj1", name: "Ефективність" },
-      { code: "obj2", name: "Точність" },
-      { code: "obj3", name: "Якість" },
-      { code: "obj4", name: "Ціна" },
-      { code: "obj5", name: "Швидкість" },
-      { code: "obj6", name: "Легкість опанування" },
-      { code: "Test16", name: "Економічність" }
-    ];
-
-    window.addEventListener('DOMContentLoaded', () => {
-      const rmName = localStorage.getItem("currentRmName") || "Олександр Волянюк";
-      const mpName = localStorage.getItem("currentMpName") || "Не вказано";
-
-      document.getElementById('displayRmName').textContent = rmName;
-      document.getElementById('displayMpName').textContent = mpName;
-
-      const dropdown = document.getElementById('productDropdown');
-      const toggle = document.getElementById('dropdownToggle');
-      const hiddenInput = document.getElementById('selectedProducts');
-
-      productList.forEach(product => {
-        const label = document.createElement('label');
-        const checkbox = document.createElement('input');
-        checkbox.type = 'checkbox';
-        checkbox.value = product.code;
-        checkbox.dataset.name = product.name;
-        label.appendChild(checkbox);
-        label.append(' ' + product.name);
-        dropdown.appendChild(label);
-      });
-
-      toggle.addEventListener('click', () => {
-        dropdown.classList.toggle('hidden');
-      });
-
-      document.addEventListener('click', (e) => {
-        if (!dropdown.contains(e.target) && e.target !== toggle) {
-          dropdown.classList.add('hidden');
-        }
-      });
-
-      dropdown.addEventListener('change', () => {
-        const selected = Array.from(dropdown.querySelectorAll('input[type="checkbox"]:checked'));
-        hiddenInput.value = selected.map(cb => cb.value).join(',');
-        toggle.textContent = selected.length
-          ? `Обрано: ${selected.map(cb => cb.dataset.name).join(', ')}`
-          : 'Оберіть групи потреб ▼';
-      });
-    });
-
-    document.getElementById('trainingForm').addEventListener('submit', (event) => {
-      event.preventDefault();
-
-      const rmName = localStorage.getItem("currentRmName") || "Олександр Волянюк";
-      const mpName = localStorage.getItem("currentMpName") || "Не вказано";
-      const skillName = "Виявлення потреби - уточнюючі і закриті запитання";
-
-      const codes = document.getElementById('selectedProducts').value.split(',').filter(Boolean);
-      const names = codes.map(code => {
-        const p = productList.find(p => p.code === code);
-        return p ? p.name : code;
-      });
-
-      if (codes.length === 0) {
-        alert("Будь ласка, оберіть хоча б одну групу потреб.");
-        return;
-      }
-
-      if (codes.length > 5) {
-        alert(`Забагато груп потреб (${codes.length}). Максимум 5.`);
-        return;
-      }
-
-      const taskData = {
-        type: "taskAssignment",
-        rmName: rmName,
-        mpName: mpName,
-        skill: skillName,
-        products: names.join(', '),
-        productCodes: codes,
-        date: new Date().toLocaleDateString('uk-UA')
-      };
-
-      const submitBtn = document.getElementById('submitBtn');
-      submitBtn.textContent = "⏳ Надсилається...";
-      submitBtn.disabled = true;
-
-      const scriptURL = "  https://script.google.com/macros/s/AKfycby87iUOv2tul_QrIBiuJ8JgcfCOl4WQ3igIuIDNWpZS4CN2y27RRtD752dyePFZRvGf8A/exec";
-
-      fetch(scriptURL, {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(taskData)
-      })
-      .then(() => {
-        alert(`✅ Завдання успішно надіслано в кабінет співробітника (${mpName})!`);
-        window.location.href = "portfolio PV.html";
-      })
-      .catch((error) => {
-        console.error("Помилка:", error);
-        alert("❌ Сталася помилка при надсиланні. Спробуйте ще раз.");
-        submitBtn.textContent = "Надіслати завдання в кабінет";
-        submitBtn.disabled = false;
-      });
-    });
-  </script>
-
+  <script src="pvtask.js"></script>
   <script src="headfoot.js"></script>
   <script src="scroll.js"></script>
   <script src="scrbtn.js"></script>
-
 </body>
 </html>

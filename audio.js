@@ -1,49 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const audio = document.getElementById("bg-audio");
+  const DECANAT_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby87iUOv2tul_QrIBiuJ8JgcfCOl4WQ3igIuIDNWpZS4CN2y27RRtD752dyePFZRvGf8A/exec";
 
-  if (audio) {
-    // Вмикаємо циклічне відтворення (зациклення)
-    audio.loop = true;
-    audio.volume = 0;
-    
-    const tryPlayAudio = () => {
-      audio.play().then(() => {
-        let volume = 0;
-        const fadeInInterval = setInterval(() => {
-          if (volume < 1.0) {
-            volume += 0.04;
-            audio.volume = Math.min(volume, 1.0);
-          } else {
-            clearInterval(fadeInInterval);
-          }
-        }, 150);
-
-        cleanupListeners();
-      }).catch(error => {
-        console.log("Очікування дозволу браузера на аудіо...", error);
-      });
-    };
-
-    const triggerEvents = ["click", "touchstart", "keydown", "mousedown", "pointerdown", "touchend", "pointerup", "mouseup", "focus", "focusin", "mousemove"];
-
-    const handleFirstInteraction = () => {
-      tryPlayAudio();
-    };
-
-    const cleanupListeners = () => {
-      triggerEvents.forEach(evt => {
-        window.removeEventListener(evt, handleFirstInteraction);
-        document.body.removeEventListener(evt, handleFirstInteraction);
-      });
-    };
-
-    triggerEvents.forEach(evt => {
-      window.addEventListener(evt, handleFirstInteraction, { passive: true });
-      document.body.addEventListener(evt, handleFirstInteraction, { passive: true });
-    });
-  }
-
-  // 2. Обробка форми входу з плавним затуханням звуку (фейдером)
   const loginForm = document.getElementById("loginForm");
   
   if (loginForm) {
@@ -61,10 +18,8 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      const SCRIPT_LOGIN_URL = "https://script.google.com/macros/s/AKfycby87iUOv2tul_QrIBiuJ8JgcfCOl4WQ3igIuIDNWpZS4CN2y27RRtD752dyePFZRvGf8A/exec";
-
       try {
-        const response = await fetch(`${SCRIPT_LOGIN_URL}?action=login&login=${encodeURIComponent(login)}&password=${encodeURIComponent(password)}`);
+        const response = await fetch(`${DECANAT_SCRIPT_URL}?action=login&login=${encodeURIComponent(login)}&password=${encodeURIComponent(password)}`);
         const result = await response.json();
 
         if (result.status === "success") {
@@ -75,24 +30,6 @@ document.addEventListener("DOMContentLoaded", () => {
           let targetPage = "./cabinet.html";
           if (result.role === "admin" || result.role === "rm") {
             targetPage = "./admin.html";
-          }
-
-          // Фейдер: плавне затухання звуку перед переходом
-          if (audio && !audio.paused && audio.volume > 0) {
-            let currentVolume = audio.volume;
-            const fadeDuration = 1200; 
-            const steps = 20;
-            const stepTime = fadeDuration / steps;
-            const volumeStep = currentVolume / steps;
-
-            const fadeOutInterval = setInterval(() => {
-              if (audio.volume > volumeStep) {
-                audio.volume -= volumeStep;
-              } else {
-                audio.volume = 0;
-                clearInterval(fadeOutInterval);
-              }
-            }, stepTime);
           }
 
           document.body.style.transition = "opacity 1.2s ease";
@@ -111,38 +48,4 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
-
-  // 3. Плавний ефект переходу та фейдер для звичайних посилань
-  document.querySelectorAll("a.atext").forEach(element => {
-    element.addEventListener("click", function(e) {
-      const href = this.getAttribute("href");
-      if (href && href !== "#") {
-        e.preventDefault();
-
-        // Фейдер звуку при кліку на посилання
-        if (audio && !audio.paused && audio.volume > 0) {
-          let currentVolume = audio.volume;
-          const fadeDuration = 1200; 
-          const steps = 20;
-          const stepTime = fadeDuration / steps;
-          const volumeStep = currentVolume / steps;
-
-          const fadeOutInterval = setInterval(() => {
-            if (audio.volume > volumeStep) {
-              audio.volume -= volumeStep;
-            } else {
-              audio.volume = 0;
-              clearInterval(fadeOutInterval);
-            }
-          }, stepTime);
-        }
-
-        document.body.style.transition = "opacity 1.2s ease";
-        document.body.style.opacity = "0";
-        setTimeout(() => {
-          window.location.href = href;
-        }, 1200);
-      }
-    });
-  });
 });

@@ -53,7 +53,6 @@
 
   <h1>🧾 Оцінка та діагностика стилю РМ</h1>
 
-  <!-- Шапка: Дата, Супервайзер, РМ -->
   <div class="meta-block">
     <div class="meta-row">
       <div class="meta-field">
@@ -61,22 +60,20 @@
         <input type="date" id="evalDate">
       </div>
       <div class="meta-field">
-        <label for="supervisorNameDisplay">Супервайзер:</label>
+        <label for="supervisorNameDisplay">Супервайзер / Тренер:</label>
         <input type="text" id="supervisorNameDisplay" readonly style="background-color: #e9ecef; font-weight: bold;">
         <input type="hidden" id="supervisorName">
       </div>
       <div class="meta-field">
         <label for="rmNameSelect">Регіональний менеджер (РМ):</label>
         <select id="rmNameSelect" required>
-          <option value="">-- Оберіть РМ --</option>
+          <option value="">⏳ Завантаження списку РМ...</option>
         </select>
       </div>
     </div>
   </div>
 
-  <div id="formContainer">
-    <!-- Сюди динамічно вставчаються критерії -->
-  </div>
+  <div id="formContainer"></div>
 
   <div class="action-container">
     <button onclick="calculateEvaluation()">🔍 Проаналізувати результати</button>
@@ -98,87 +95,105 @@
   <div id="styleBlock"></div>
   <div id="recommendationBlock"></div>
 
-  <!-- Підключаємо довідник користувачів та критерії -->
-  <script src="user.js"></script>
   <script src="criteria.js"></script>
   
   <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      // Автоматичне визначення супервайзера з localStorage
-      const currentUserEmail = localStorage.getItem("allowedEmail") || "p.hrytsenko@pharmasco.com";
-      const currentUserName = users[currentUserEmail] || "Павло Гриценко";
+    const DECANAT_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby87iUOv2tul_QrIBiuJ8JgcfCOl4WQ3igIuIDNWpZS4CN2y27RRtD752dyePFZRvGf8A/exec";
+    const HUB_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzprTkjIf_pvCqs4iiaMehYVdFlFfuS0e60gK0QXh7v8DOKpI9WByyDo3A3VoBXzKxWxw/exec";
 
-      document.getElementById("supervisorNameDisplay").value = currentUserName;
-      document.getElementById("supervisorName").value = currentUserName;
+    document.addEventListener("DOMContentLoaded", async () => {
+      const allowedEmail = (localStorage.getItem("allowedEmail") || "").toLowerCase();
+      const userRole = (localStorage.getItem("userRole") || "").toLowerCase();
+      const userFullName = localStorage.getItem("userFullName") || allowedEmail;
 
-      // Динамічне заповнення списку РМ для цього супервайзера
+      document.getElementById("supervisorNameDisplay").value = userFullName;
+      document.getElementById("supervisorName").value = userFullName;
+      document.getElementById("evalDate").value = new Date().toISOString().split('T')[0];
+
+      // Завантаження списку РМ з бекенду Деканату
       const rmSelect = document.getElementById("rmNameSelect");
-      const managedEmails = SupervisorToManager[currentUserEmail] || [];
+      try {
+        const response = await fetch(`${DECANAT_SCRIPT_URL}?action=getUsersHierarchy`);
+        const json = await response.json();
 
-      managedEmails.forEach(email => {
-        if (users[email]) {
-          const opt = document.createElement("option");
-          opt.value = users[email];
-          opt.textContent = users[email];
-          rmSelect.appendChild(opt);
-        }
-      });
-
-      // Заповнення критеріїв
-      const container = document.getElementById("formContainer");
-      const grouped = {};
-      evaluationCriteria.forEach(item => {
-        if (!grouped[item.group]) grouped[item.group] = [];
-        grouped[item.group].push(item);
-      });
-
-      for (const groupName in grouped) {
-        const groupBlock = document.createElement("div");
-        groupBlock.className = "group-block";
-        const title = document.createElement("h2");
-        title.textContent = "🔹 " + groupName;
-        groupBlock.appendChild(title);
-
-        grouped[groupName].forEach(crit => {
-          const div = document.createElement("div");
-          div.className = "criterion";
-
-          const label = document.createElement("label");
-          label.textContent = crit.title;
-
-          const desc = document.createElement("p");
-          desc.textContent = crit.description;
-
-          let critOptions = '<option value="">-- Не оцінено --</option>';
-          for (let k in crit.levels) {
-            critOptions += '<option value="' + k + '">Рівень ' + k + ' – ' + crit.levels[k] + '</option>';
+        if (json.status === "success" && json.users) {
+          rmSelect.innerHTML = '<option value="">-- Оберіть РМ --</option>';
+          
+          let targetRMs = json.users.filter(u => u.role === "rm");
+          
+          // Фільтрація за підпорядкованістю, якщо користувач не є адміном
+          if (userRole !== "admin" && allowedEmail !== "admin") {
+            const subordinates = json.users.filter(u => u.manager === allowedEmail && u.role === "rm");
+            if (subordinates.length > 0) {
+              targetRMs = subordinates;
+            }
           }
 
-          const grid = document.createElement("div");
-          grid.className = "rm-score-grid";
+          targetRMs.forEach(u => {
+            const opt = document.createElement("option");
+            opt.value = u.fullName || u.login;
+            opt.textContent = `${u.fullName} (${u.login})`;
+            rmSelect.appendChild(opt);
+          });
+        }
+      } catch (err) {
+        console.error("Помилка завантаження ієрархії:", err);
+        rmSelect.innerHTML = '<option value="">❌ Помилка завантаження даних</option>';
+      }
 
-          const box1 = document.createElement("div");
-          box1.className = "rm-score-col";
-          box1.innerHTML = 
-            '<label>Оцінка:</label>' +
-            '<select id="' + crit.id + '_score">' + critOptions + '</select>';
-
-          const box2 = document.createElement("div");
-          box2.className = "rm-score-col";
-          box2.innerHTML = 
-            '<label>Коментар / Спостереження:</label>' +
-            '<input type="text" id="' + crit.id + '_comment" placeholder="Введіть коментар...">';
-
-          grid.appendChild(box1);
-          grid.appendChild(box2);
-
-          div.appendChild(label);
-          div.appendChild(desc);
-          div.appendChild(grid);
-          groupBlock.appendChild(div);
+      // Генерація критеріїв оцінювання
+      if (typeof evaluationCriteria !== 'undefined') {
+        const container = document.getElementById("formContainer");
+        const grouped = {};
+        evaluationCriteria.forEach(item => {
+          if (!grouped[item.group]) grouped[item.group] = [];
+          grouped[item.group].push(item);
         });
 
-        container.appendChild(groupBlock);
+        for (const groupName in grouped) {
+          const groupBlock = document.createElement("div");
+          groupBlock.className = "group-block";
+          const title = document.createElement("h2");
+          title.textContent = "🔹 " + groupName;
+          groupBlock.appendChild(title);
+
+          grouped[groupName].forEach(crit => {
+            const div = document.createElement("div");
+            div.className = "criterion";
+
+            const label = document.createElement("label");
+            label.textContent = crit.title;
+
+            const desc = document.createElement("p");
+            desc.textContent = crit.description;
+
+            let critOptions = '<option value="">-- Не оцінено --</option>';
+            for (let k in crit.levels) {
+              critOptions += '<option value="' + k + '">Рівень ' + k + ' – ' + crit.levels[k] + '</option>';
+            }
+
+            const grid = document.createElement("div");
+            grid.className = "rm-score-grid";
+
+            const box1 = document.createElement("div");
+            box1.className = "rm-score-col";
+            box1.innerHTML = '<label>Оцінка:</label><select id="' + crit.id + '_score">' + critOptions + '</select>';
+
+            const box2 = document.createElement("div");
+            box2.className = "rm-score-col";
+            box2.innerHTML = '<label>Коментар / Спостереження:</label><input type="text" id="' + crit.id + '_comment" placeholder="Введіть коментар...">';
+
+            grid.appendChild(box1);
+            grid.appendChild(box2);
+
+            div.appendChild(label);
+            div.appendChild(desc);
+            div.appendChild(grid);
+            groupBlock.appendChild(div);
+          });
+
+          container.appendChild(groupBlock);
+        }
       }
     });
 
@@ -232,37 +247,34 @@
       const focusSelect = document.getElementById("focusSkillSelect");
       focusSelect.innerHTML = '<option value="">-- Оберіть навик із зони розвитку --</option>';
 
-      evaluationCriteria.forEach(crit => {
-        const scoreEl = document.getElementById(crit.id + "_score");
-        const commentEl = document.getElementById(crit.id + "_comment");
-        const commentText = commentEl ? commentEl.value.trim() : "";
-        
-        let score = scoreEl && scoreEl.value !== "" ? parseInt(scoreEl.value) : null;
+      if (typeof evaluationCriteria !== 'undefined') {
+        evaluationCriteria.forEach(crit => {
+          const scoreEl = document.getElementById(crit.id + "_score");
+          const commentEl = document.getElementById(crit.id + "_comment");
+          const commentText = commentEl ? commentEl.value.trim() : "";
+          
+          let score = scoreEl && scoreEl.value !== "" ? parseInt(scoreEl.value) : null;
 
-        if (score !== null) {
-          total += score;
-          count++;
+          if (score !== null) {
+            total += score;
+            count++;
 
-          if (score < 3) {
-            lowCriteria.push({ 
-              title: crit.title, 
-              score: score, 
-              comment: commentText 
-            });
-            
-            const opt = document.createElement("option");
-            opt.value = crit.title;
-            opt.textContent = crit.title + " (Бал: " + score + ")";
-            focusSelect.appendChild(opt);
+            if (score < 3) {
+              lowCriteria.push({ title: crit.title, score: score, comment: commentText });
+              const opt = document.createElement("option");
+              opt.value = crit.title;
+              opt.textContent = crit.title + " (Бал: " + score + ")";
+              focusSelect.appendChild(opt);
+            }
           }
-        }
 
-        criteriaDetails.push({
-          title: crit.title,
-          score: score !== null ? score : "—",
-          comment: commentText
+          criteriaDetails.push({
+            title: crit.title,
+            score: score !== null ? score : "—",
+            comment: commentText
+          });
         });
-      });
+      }
 
       if (count === 0) {
         alert("Будь ласка, оцініть хоча б кілька критеріїв перед аналізом!");
@@ -279,7 +291,8 @@
         overallAvg: overallAvg,
         levelDesc: style,
         focusSkill: "",
-        detailsJSON: JSON.stringify(criteriaDetails, null, 2)
+        detailsJSON: JSON.stringify(criteriaDetails, null, 2),
+        type: "RM"
       };
 
       document.getElementById("results").innerHTML = 
@@ -303,9 +316,7 @@
         output += "<br><strong>🔧 Критерії з низькою оцінкою (менше 3):</strong><ul>";
         lowCriteria.forEach(item => {
           output += "<li><strong>" + item.title + "</strong> — Бал: " + item.score;
-          if (item.comment) {
-            output += "<br><em>Коментар: " + item.comment + "</em>";
-          }
+          if (item.comment) output += "<br><em>Коментар: " + item.comment + "</em>";
           output += "</li><br>";
         });
         output += "</ul>";
@@ -328,9 +339,7 @@
       const focusSkill = document.getElementById("focusSkillSelect").value;
       
       let fullText = resultsText + "\n" + styleText + "\n\n" + recText;
-      if (focusSkill) {
-        fullText += "\n🎯 Обраний фокус для відпрацювання: " + focusSkill;
-      }
+      if (focusSkill) fullText += "\n🎯 Обраний фокус для відпрацювання: " + focusSkill;
       
       navigator.clipboard.writeText(fullText).then(() => {
         alert("Рекомендації та результати скопійовано до буфера 📝");
@@ -347,27 +356,23 @@
 
       const focusSkill = document.getElementById("focusSkillSelect").value;
       lastEvaluationData.focusSkill = focusSkill ? focusSkill : "Не обрано";
-      lastEvaluationData.mode = "dual_visit_rm"; // <--- Вказуємо режим для бекенду
 
       const btn = document.getElementById("saveBtn");
       btn.textContent = "⏳ Зберігається...";
       btn.disabled = true;
 
-      // URL вашого єдиного Apps Script бекенду
-      const scriptURL = "https://script.google.com/macros/s/AKfycbzprTkjIf_pvCqs4iiaMehYVdFlFfuS0e60gK0QXh7v8DOKpI9WByyDo3A3VoBXzKxWxw/exec";
-
-      fetch(scriptURL, {
+      fetch(HUB_SCRIPT_URL, {
         method: "POST",
         headers: { "Content-Type": "text/plain;charset=utf-8" },
         body: JSON.stringify(lastEvaluationData)
       })
       .then(res => res.json())
       .then(data => {
-        if (data.success) {
-          alert("✅ Дані успішно збережено до аркуша «Оцінка РМ (Подвійні візити)» у вашій Google Таблиці!");
+        if (data.status === "success" || data.success) {
+          alert("✅ Дані успішно збережено до бази результатів!");
           btn.textContent = "💾 Збережено у базі";
         } else {
-          throw new Error(data.error || "Помилка збереження");
+          throw new Error(data.message || "Помилка збереження");
         }
       })
       .catch((error) => {
@@ -378,7 +383,6 @@
       });
     }
   </script>
-<script src="scrbtn.js"></script>
-
+  <script src="scrbtn.js"></script>
 </body>
 </html>

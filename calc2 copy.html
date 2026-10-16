@@ -13,9 +13,10 @@
     .meta-field label { font-weight: bold; display: block; margin-bottom: 5px; font-size: 0.95em; color: #444; }
     .meta-field input, .meta-field select { width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #ccc; box-sizing: border-box; font-size: 0.95em; }
 
-    .visits-meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; border-top: 1px dashed #ccc; padding-top: 15px; }
-    .visit-meta-column h3 { margin: 0 0 10px 0; color: #007acc; font-size: 1.05em; border-bottom: 1px solid #eef; padding-bottom: 5px; }
-    .visit-meta-field { margin-bottom: 10px; }
+    .visits-meta-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; border-top: 1px dashed #ccc; padding-top: 15px; }
+    .visit-meta-column { background: #fafafa; padding: 12px; border-radius: 6px; border: 1px solid #eee; }
+    .visit-meta-column h3 { margin: 0 0 10px 0; color: #007acc; font-size: 1em; border-bottom: 1px solid #eef; padding-bottom: 5px; }
+    .visit-meta-field { margin-bottom: 8px; }
     .visit-meta-field label { font-size: 0.85em; color: #555; font-weight: normal; margin-bottom: 2px; display: block; }
     .visit-meta-field input { width: 100%; padding: 6px; border-radius: 4px; border: 1px solid #ccc; font-size: 0.9em; box-sizing: border-box; }
 
@@ -27,9 +28,15 @@
     .criterion label { font-weight: bold; display: block; margin-bottom: 5px; font-size: 1.05em; }
     .criterion p { margin: 5px 0; font-size: 0.9em; color: #666; }
     
-    .visits-scores-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-top: 10px; background: #fcfcfc; padding: 12px; border: 1px solid #eaeaea; border-radius: 6px; }
-    .visit-score-col label { font-size: 0.85em; color: #555; font-weight: normal; margin-bottom: 2px; display: block; }
-    .visit-score-col select, .visit-score-col input { width: 100%; padding: 6px; border-radius: 4px; border: 1px solid #ccc; font-size: 0.9em; box-sizing: border-box; }
+    .visits-scores-grid { display: grid; grid-template-columns: repeat(4, 1fr) 1.5fr; gap: 8px; margin-top: 10px; background: #fcfcfc; padding: 12px; border: 1px solid #eaeaea; border-radius: 6px; }
+    .visit-score-col label { font-size: 0.8em; color: #555; font-weight: normal; margin-bottom: 2px; display: block; }
+    .visit-score-col select, .visit-score-col input { width: 100%; padding: 6px; border-radius: 4px; border: 1px solid #ccc; font-size: 0.85em; box-sizing: border-box; }
+
+    /* Стилі тогл-світча */
+    .switch-field { display: inline-flex; background: #e2e8f0; padding: 4px; border-radius: 30px; margin-top: 10px; }
+    .switch-field input { display: none; }
+    .switch-field label { padding: 10px 22px; font-weight: bold; cursor: pointer; border-radius: 25px; transition: all 0.3s ease; color: #475569; font-size: 0.95em; }
+    .switch-field input:checked + label { background: #007acc; color: #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.15); }
 
     #results, #styleBlock, #recommendationBlock {
       margin-top: 20px;
@@ -40,8 +47,18 @@
     #styleBlock { background-color: #eef; border: 1px solid #77c; }
     #recommendationBlock { background-color: #fff8e1; border: 1px solid #ffc107; }
 
+    .auto-focus-card {
+      background: #fff3cd;
+      border: 2px solid #ffeba2;
+      border-left: 6px solid #d35400;
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 20px;
+      font-size: 1em;
+    }
+    .auto-focus-card h4 { margin: 0 0 8px 0; color: #d35400; font-size: 1.1em; }
+
     .action-container { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 5px rgba(0,0,0,0.1); margin-top: 30px; text-align: center; }
-    .action-container select { width: 100%; max-width: 500px; padding: 10px; margin-top: 8px; border-radius: 4px; border: 1px solid #ccc; font-size: 1em; }
     
     button { padding: 12px 25px; font-size: 16px; background-color: #007acc; color: white; border: none; border-radius: 5px; cursor: pointer; display: inline-block; margin-top: 15px; }
     button:hover { background-color: #005fa3; }
@@ -50,9 +67,11 @@
     .save-btn { background-color: #e67e22; margin-left: 10px; }
     .save-btn:hover { background-color: #d35400; }
 
-    @media (max-width: 900px) {
+    @media (max-width: 1100px) {
+      .visits-scores-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 600px) {
       .visits-scores-grid { grid-template-columns: 1fr; }
-      .visits-meta-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -60,7 +79,6 @@
 
   <h1>🧾 Діагностика навичок та оцінка візитів (ПВ ТПРК)</h1>
 
-  <!-- Шапка: Дані дня та Дані візитів -->
   <div class="meta-block">
     <div class="meta-row">
       <div class="meta-field">
@@ -69,8 +87,8 @@
       </div>
       <div class="meta-field">
         <label for="mpNameSelect">Співробітник (МП):</label>
-        <select id="mpNameSelect" required>
-          <option value="">-- Оберіть МП --</option>
+        <select id="mpNameSelect" onchange="loadPreviousPvSkill()" required>
+          <option value="">⏳ Завантаження списку МП...</option>
         </select>
       </div>
       <div class="meta-field">
@@ -80,58 +98,61 @@
       </div>
     </div>
 
+    <!-- Відображення навику з минулого ПВ -->
+    <div id="prevSkillInfo" style="font-size: 0.9em; color: #555; background: #f8fafc; padding: 8px 12px; border-radius: 5px; margin-bottom: 15px; display: none;">
+      🔄 <strong>Навик з минулого ПВ:</strong> <span id="prevSkillName" style="color: #25a72b; font-weight: bold;">—</span>
+    </div>
+
     <div class="visits-meta-grid">
       <div class="visit-meta-column">
-        <h3>🔹 Візит 1</h3>
-        <div class="visit-meta-field">
-          <label>Місто:</label>
-          <input type="text" id="meta_city1" placeholder="Місто візиту 1">
-        </div>
-        <div class="visit-meta-field">
-          <label>ЛПЗ / Аптека:</label>
-          <input type="text" id="meta_lpu1" placeholder="ЛПЗ або аптека візиту 1">
-        </div>
-        <div class="visit-meta-field">
-          <label>Прізвище лікаря:</label>
-          <input type="text" id="meta_doc1" placeholder="ПІБ лікаря візиту 1">
-        </div>
+        <h3>🩺 Візит 1 (Лікар)</h3>
+        <div class="visit-meta-field"><label>Місто:</label><input type="text" id="meta_city1" placeholder="Місто візиту 1"></div>
+        <div class="visit-meta-field"><label>ЛПЗ:</label><input type="text" id="meta_lpu1" placeholder="ЛПЗ"></div>
+        <div class="visit-meta-field"><label>Лікар:</label><input type="text" id="meta_doc1" placeholder="ПІБ лікаря"></div>
       </div>
 
       <div class="visit-meta-column">
-        <h3>🔹 Візит 2</h3>
-        <div class="visit-meta-field">
-          <label>Місто:</label>
-          <input type="text" id="meta_city2" placeholder="Місто візиту 2">
-        </div>
-        <div class="visit-meta-field">
-          <label>ЛПЗ / Аптека:</label>
-          <input type="text" id="meta_lpu2" placeholder="ЛПЗ або аптека візиту 2">
-        </div>
-        <div class="visit-meta-field">
-          <label>Прізвище лікаря:</label>
-          <input type="text" id="meta_doc2" placeholder="ПІБ лікаря візиту 2">
-        </div>
+        <h3>🩺 Візит 2 (Лікар)</h3>
+        <div class="visit-meta-field"><label>Місто:</label><input type="text" id="meta_city2" placeholder="Місто візиту 2"></div>
+        <div class="visit-meta-field"><label>ЛПЗ:</label><input type="text" id="meta_lpu2" placeholder="ЛПЗ"></div>
+        <div class="visit-meta-field"><label>Лікар:</label><input type="text" id="meta_doc2" placeholder="ПІБ лікаря"></div>
+      </div>
+
+      <div class="visit-meta-column">
+        <h3>💊 Візит 3 (Аптека 1)</h3>
+        <div class="visit-meta-field"><label>Місто:</label><input type="text" id="meta_city3" placeholder="Місто візиту 3"></div>
+        <div class="visit-meta-field"><label>Аптека/Мережа:</label><input type="text" id="meta_lpu3" placeholder="Аптека"></div>
+        <div class="visit-meta-field"><label>Завідуюча / Фармацевт:</label><input type="text" id="meta_doc3" placeholder="ПІБ завідуючої"></div>
+      </div>
+
+      <div class="visit-meta-column">
+        <h3>💊 Візит 4 (Аптека 2)</h3>
+        <div class="visit-meta-field"><label>Місто:</label><input type="text" id="meta_city4" placeholder="Місто візиту 4"></div>
+        <div class="visit-meta-field"><label>Аптека/Мережа:</label><input type="text" id="meta_lpu4" placeholder="Аптека"></div>
+        <div class="visit-meta-field"><label>Завідуюча / Фармацевт:</label><input type="text" id="meta_doc4" placeholder="ПІБ завідуючої"></div>
       </div>
     </div>
   </div>
 
-  <div id="formContainer">
-    <!-- Сюди динамічно завантажуються критерії оцінки -->
-  </div>
+  <div id="formContainer"></div>
 
   <div class="action-container">
-    <button onclick="calculateEvaluation()">🔍 Проаналізувати результати</button>
-    
-    <div id="actionFocusContainer" style="display:none; margin-top: 20px; text-align: left; max-width: 600px; margin-left: auto; margin-right: auto;">
-      <label for="focusSkillSelect" style="font-weight: bold; color: #d35400; display: block; margin-bottom: 5px;">🎯 Оберіть навик для відпрацювання (фокус розвитку):</label>
-      <select id="focusSkillSelect">
-        <option value="">-- Оберіть навик із зони розвитку --</option>
-      </select>
+    <div style="margin-bottom: 15px;">
+      <label style="font-weight: bold; display: block; margin-bottom: 5px; color: #2c3e50;">🎯 Оберіть напрямок візитів для розрахунку ДЗ (фокусу розвитку):</label>
+      <div class="switch-field">
+        <input type="radio" id="evalDoctor" name="evalType" value="doctor" checked>
+        <label for="evalDoctor">🩺 По ВІЗИТАХ ДО ЛІКАРІВ (1 та 2)</label>
+        
+        <input type="radio" id="evalPharmacy" name="evalType" value="pharmacy">
+        <label for="evalPharmacy">💊 По ВІЗИТАХ В АПТЕКИ (3 та 4)</label>
+      </div>
     </div>
+
+    <button onclick="calculateEvaluation()">🔍 Автоматично розрахувати результати</button>
     
     <div>
       <button class="copy-btn" id="copyBtn" style="display:none;" onclick="copyRecommendations()">📋 Скопіювати рекомендації</button>
-      <button class="save-btn" id="saveBtn" style="display:none;" onclick="saveToDatabase()">💾 Зберегти в базу даних</button>
+      <button class="save-btn" id="saveBtn" style="display:none;" onclick="saveToDatabase()">💾 Зберегти та автоперейти до призначення ДЗ</button>
     </div>
   </div>
 
@@ -140,351 +161,101 @@
   <div id="recommendationBlock"></div>
 
   <script>
-   const evaluationCriteria = [
-  // --- Підготовка до візиту ---
-  {
-    "id": "crit_1",
-    "group": "Підготовка до візиту",
-    "title": "Розуміння поточного стану продажів на території",
-    "description": "Маркер ефективності: Має інформацію про рух промопрепаратів на території, прилеглій до ЛПЗ.",
-    "levels": {
-      "1": "Не володіє інформацією.",
-      "2": "Актуальність інформації понад 1 місяць.",
-      "3": "Актуальність інформації менше 1 місяця."
-    }
-  },
-  {
-    "id": "crit_2",
-    "group": "Підготовка до візиту",
-    "title": "Розуміння поточного стану клієнта",
-    "description": "Маркер ефективності: Може оцінити потенціал та лояльність, терапевтичні уподобання, положення клієнта на сходах залучення до продуктів візиту.",
-    "levels": {
-      "1": "Не володіє інформацією.",
-      "2": "Дані збігаються не менш ніж по одному з препаратів.",
-      "3": "Співпадають дані за всіма критеріями."
-    }
-  },
-  {
-    "id": "crit_3",
-    "group": "Підготовка до візиту",
-    "title": "Постановка мети візиту",
-    "description": "Маркер ефективності: Ставить мету на візит по SMART, з урахуванням положення клієнта на сходах залучення (використовує БРТ).",
-    "levels": {
-      "1": "Не поставив мету на візит.",
-      "2": "Випадає понад 1 критерій, при постановці не використовує БРТ.",
-      "3": "Поставив мету на візит по SMART."
-    }
-  },
-  {
-    "id": "crit_4",
-    "group": "Підготовка до візиту",
-    "title": "Вибір стратегії, тактики та матеріалів для візиту",
-    "description": "Маркер ефективності: Озвучує ресурс, завдяки якому досягне мети, готує промоматеріали згідно ресурсу.",
-    "levels": {
-      "1": "Не озвучує за рахунок чого досягне мети.",
-      "2": "Використовує стандартні ресурси і промо, без урахування особистості клієнта.",
-      "3": "Озвучує ресурс, завдяки якому досягне мети, готує промоматеріали згідно ресурсу з урахуванням особистості клієнта."
-    }
-  },
+    const DECANAT_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby87iUOv2tul_QrIBiuJ8JgcfCOl4WQ3igIuIDNWpZS4CN2y27RRtD752dyePFZRvGf8A/exec";
+    const HUB_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzprTkjIf_pvCqs4iiaMehYVdFlFfuS0e60gK0QXh7v8DOKpI9WByyDo3A3VoBXzKxWxw/exec";
 
-  // --- Встановлення довірчих стосунків ---
-  {
-    "id": "crit_5",
-    "group": "Встановлення довірчих стосунків",
-    "title": "Привітання та представлення себе та компанії",
-    "description": "Маркер ефективності: Озвучує на візиті своє ім'я та назву компанії.",
-    "levels": {
-      "1": "Не представився.",
-      "2": "Немає представлення компанії.",
-      "3": "Представив себе та компанію."
-    }
-  },
-  {
-    "id": "crit_6",
-    "group": "Встановлення довірчих стосунків",
-    "title": "Small talk + візуальний контакт",
-    "description": "Маркер ефективності: Розмовляє з клієнтом на особисті теми. Клієнт охоче відповідає на запитання, каже більше за МП, позитивно налаштований, підтримує візуальний контакт з МП.",
-    "levels": {
-      "1": "Немає смол-току.",
-      "2": "Клієнт неохоче відповідає на запитання МП.",
-      "3": "Розмовляє з клієнтом на особисті теми. Клієнт охоче відповідає на запитання, каже більше за МП, позитивно налаштований, підтримує візуальний контакт з МП."
-    }
-  },
-  {
-    "id": "crit_7",
-    "group": "Встановлення довірчих стосунків",
-    "title": "Перехід до бізнес-теми",
-    "description": "Маркер ефективності: Плавно переходить від загальних тем до бізнесу та між бізнес-темами.",
-    "levels": {
-      "1": "Переходів нема, клієнт обурюється.",
-      "2": "Переходить не між усіма бізнес та небізнес темами.",
-      "3": "Плавно переходить від загальних тем до бізнесу та між бізнес-темами."
-    }
-  },
+    // Строгий матричний порядок відпрацювання навичок відповідно до portfolio PV.html
+    const SKILL_PRIORITY_MATRIX = [
+      { id: "PV1", rank: 1, name: "Знання продуктів", page: "PV1.html" },
+      { id: "PV2", rank: 2, name: "Постановка мети по SMART", page: "PV2.html" },
+      { id: "PV4", rank: 3, name: "Укладання угоди", page: "PV4.html" },
+      { id: "PV3", rank: 4, name: "ХПВ (сам ланцюжок)", page: "PV3.html" },
+      { id: "PV5", rank: 5, name: "З'ясування потреби", page: "PV5.html" },
+      { id: "PV6", rank: 6, name: "ХПВ під потребу", page: "PV6.html" },
+      { id: "PV7", rank: 7, name: "Робота із запереченнями", page: "PV7.html" },
+      { id: "PV8", rank: 8, name: "Робота з конкурентами", page: "PV8.html" },
+      { id: "PV9", rank: 9, name: "Small talk", page: "PV9.html" },
+      { id: "PV10", rank: 10, name: "Декларація мети візиту", page: "PV10.html" }
+    ];
 
-  // --- Актуалізація та донесення цінності брендів ---
-  {
-    "id": "crit_8",
-    "group": "Актуалізація та донесення цінності брендів",
-    "title": "Контроль домовленостей, оцінка поточної лояльності",
-    "description": "Маркер ефективності: Перевіряє попередні домовленості, обговорює з клієнтом портрет пацієнта, згідно з попередніми домовленостями, кількість призначень.",
-    "levels": {
-      "1": "Не контролює попередніх домовленостей.",
-      "2": "Перевіряє попередні домовленості, обговорює з клієнтом портрет пацієнта.",
-      "3": "Перевіряє попередні домовленості, обговорює з клієнтом портрет пацієнта та кількість призначень."
-    }
-  },
-  {
-    "id": "crit_9",
-    "group": "Актуалізація та донесення цінності брендів",
-    "title": "Виявлення потреби",
-    "description": "Маркер ефективності: Може озвучити клінічні потреби у продукті.",
-    "levels": {
-      "1": "Не може назвати загальні чи конкретні потреби клієнта, виявлені на візиті.",
-      "2": "Може назвати лише загальну потребу, виявлену на візиті.",
-      "3": "Може назвати конкретні потреби клієнта, виявлені на візиті."
-    }
-  },
-  {
-    "id": "crit_10",
-    "group": "Актуалізація та донесення цінності брендів",
-    "title": "Презентація продукту: зв'язок з потребою",
-    "description": "Маркер ефективності: Підтримує вибір клієнта, пов'язує презентацію продукту із виявленими на візиті потребами клієнта.",
-    "levels": {
-      "1": "Презентація не пов'язана з критеріями вибору.",
-      "2": "Презентація пов'язана з загальною потребою.",
-      "3": "Презентація пов'язана з чіткими критеріями вибору."
-    }
-  },
-  {
-    "id": "crit_11",
-    "group": "Актуалізація та донесення цінності брендів",
-    "title": "Презентація продукту: техніка СПВ",
-    "description": "Маркер ефективності: Підтримує вибір клієнта, пов'язує презентацію продукту із виявленими на візиті потребами клієнта.",
-    "levels": {
-      "1": "Нема ані СПВ, ані Вигод.",
-      "2": "Презентує препарат, використовуючи мінімум 1 повноцінну СПВ, озвучено тільки клінічні вигоди пацієнта.",
-      "3": "Презентує препарат, використовуючи мінімум 1 повноцінну СПВ, озвучено як клінічні, так і емоційні вигоди клієнта."
-    }
-  },
-  {
-    "id": "crit_12",
-    "group": "Актуалізація та донесення цінності брендів",
-    "title": "Ключове повідомлення",
-    "description": "Маркер ефективності: Вибирає щонайменше 2 ключових повідомлення з кампейну, що відповідає актуальній темі візиту. Озвучує клієнту ключові повідомлення під час візиту.",
-    "levels": {
-      "1": "Не промовляє ключове повідомлення.",
-      "2": "Є 1 ключове повідомлення.",
-      "3": "Дослівно промовляє обов'язкові ключові повідомлення."
-    }
-  },
-  {
-    "id": "crit_13",
-    "group": "Актуалізація та донесення цінності брендів",
-    "title": "Візуалізація",
-    "description": "Маркер ефективності: Підтверджує сказане клінічними даними із промоматеріалів.",
-    "levels": {
-      "1": "Не користується візуальними матеріалами.",
-      "2": "Віддає клієнтові листівку, не працює з промо.",
-      "3": "Підтверджує СПВ візуально клінічними даними."
-    }
-  },
+    const evaluationCriteria = [
+      { "id": "crit_1", "group": "Підготовка до візиту", "title": "Розуміння поточного стану продажів на території", "skillId": "PV1", "description": "Має інформацію про рух промопрепаратів на території.", "levels": { "1": "Не володіє", "2": "Актуальність понад 1 міс.", "3": "Актуальність менше 1 міс." } },
+      { "id": "crit_2", "group": "Підготовка до візиту", "title": "Розуміння поточного стану клієнта", "skillId": "PV1", "description": "Оцінка потенціалу та лояльності клієнта.", "levels": { "1": "Не володіє", "2": "Дані по 1 препарату", "3": "Співпадають всі дані" } },
+      { "id": "crit_3", "group": "Підготовка до візиту", "title": "Постановка мети візиту", "skillId": "PV2", "description": "Мета по SMART з урахуванням сходів залучення.", "levels": { "1": "Не поставив", "2": "Випадає 1+ критерій", "3": "Поставив по SMART" } },
+      { "id": "crit_4", "group": "Підготовка до візиту", "title": "Вибір стратегії, тактики та матеріалів", "skillId": "PV2", "description": "Готує промоматеріали згідно з ресурсом.", "levels": { "1": "Не озвучує", "2": "Стандартні матеріали", "3": "З урахуванням особистості клієнта" } },
+      { "id": "crit_5", "group": "Встановлення довірчих стосунків", "title": "Привітання та представлення", "skillId": "PV9", "description": "Ім'я та назва компанії.", "levels": { "1": "Не представився", "2": "Без компанії", "3": "Повне представлення" } },
+      { "id": "crit_6", "group": "Встановлення довірчих стосунків", "title": "Small talk + візуальний контакт", "skillId": "PV9", "description": "Розмова на особисті теми.", "levels": { "1": "Немає", "2": "Клієнт неохоче відповідає", "3": "Позитивний контакт" } },
+      { "id": "crit_7", "group": "Встановлення довірчих стосунків", "title": "Перехід до бізнес-теми", "skillId": "PV10", "description": "Плавний перехід між темами.", "levels": { "1": "Немає переходів", "2": "Частковий перехід", "3": "Плавний перехід" } },
+      { "id": "crit_8", "group": "Актуалізація та донесення цінності брендів", "title": "Контроль домовленостей", "skillId": "PV4", "description": "Перевірка попередніх домовленостей.", "levels": { "1": "Не контролює", "2": "Обговорює портрет", "3": "Портрет + кількість призначень" } },
+      { "id": "crit_9", "group": "Актуалізація та донесення цінності брендів", "title": "Виявлення потреби", "skillId": "PV5", "description": "Клінічні потреби у продукті.", "levels": { "1": "Не назвав", "2": "Загальна потребa", "3": "Конкретні потреби" } },
+      { "id": "crit_10", "group": "Актуалізація та донесення цінності брендів", "title": "Презентація продукту: зв'язок з потребою", "skillId": "PV6", "description": "Презентація під виявлені потреби.", "levels": { "1": "Без зв'язку", "2": "Загальна потреба", "3": "Чіткі критерії вибору" } },
+      { "id": "crit_11", "group": "Актуалізація та донесення цінності брендів", "title": "Презентація продукту: техніка СПВ", "skillId": "PV3", "description": "Використання СПВ та вигод.", "levels": { "1": "Немає СПВ", "2": "1 СПВ (клінічні вигоди)", "3": "Клінічні та емоційні вигоди" } },
+      { "id": "crit_12", "group": "Актуалізація та донесення цінності брендів", "title": "Ключове повідомлення", "skillId": "PV3", "description": "Ключові повідомлення з кампейну.", "levels": { "1": "Не промовляє", "2": "1 повідомлення", "3": "Обов'язкові повідомлення" } },
+      { "id": "crit_13", "group": "Актуалізація та донесення цінності брендів", "title": "Візуалізація", "skillId": "PV3", "description": "Підтвердження клінічними даними.", "levels": { "1": "Не користується", "2": "Просто віддає листівку", "3": "Візуальне підтвердження СПВ" } },
+      { "id": "crit_14", "group": "Робота з конкурентами", "title": "Перевірка профілю пацієнта", "skillId": "PV8", "description": "Кількість пацієнтів згідно з профілем.", "levels": { "1": "Не обговорює", "2": "Без кількості", "3": "Визначає кількість і змінює профіль" } },
+      { "id": "crit_15", "group": "Робота з конкурентами", "title": "Виявлення конкурента", "skillId": "PV8", "description": "Основний конкурент у профілі.", "levels": { "1": "Не назвав", "2": "Конкурент по діючій речовині", "3": "Торгова назва конкурента" } },
+      { "id": "crit_16", "group": "Робота з конкурентами", "title": "Заміщення конкурентів", "skillId": "PV8", "description": "Сегмент відйому пацієнтів.", "levels": { "1": "Не знаходить", "2": "Без кількості пацієнтів", "3": "Актуалізує заміщення" } },
+      { "id": "crit_17", "group": "Робота з конкурентами", "title": "Аргументація переваг (Кому, Чому, Як?)", "skillId": "PV8", "description": "Порівняння з конкурентами.", "levels": { "1": "Не аргументує", "2": "Без схеми призначення", "3": "Повноцінна модель кому, чому, як" } },
+      { "id": "crit_18", "group": "Завершення візиту", "title": "Угода (SMART)", "skillId": "PV4", "description": "Засмартована угода.", "levels": { "1": "Не укладає", "2": "Не збігається зі SMART", "3": "Збігається зі SMART або вище" } },
+      { "id": "crit_19", "group": "Завершення візиту", "title": "Підведення підсумків", "skillId": "PV4", "description": "Кількісні підсумки зустрічі.", "levels": { "1": "Не підводить", "2": "Без портрета пацієнта", "3": "З портретами по кожному продукту" } },
+      { "id": "crit_20", "group": "Завершення візиту", "title": "Наступна зустріч", "skillId": "PV4", "description": "Дата та тема наступної зустрічі.", "levels": { "1": "Не обговорює", "2": "Тільки дата", "3": "Дата та тема" } },
+      { "id": "crit_21", "group": "Робота із запереченнями", "title": "Оцінка роботи із запереченнями", "skillId": "PV7", "description": "Позитивний емоційний стан клієнта.", "levels": { "1": "Не впорався", "2": "Впорався з 50%", "3": "Впорався з усіма" } },
+      { "id": "crit_22", "group": "Робота із запереченнями", "title": "Схема 5П", "skillId": "PV7", "description": "Дотримання етапів техніки 5П.", "levels": { "1": "Сперечається", "2": "Випадає 1 етап", "3": "Повне дотримання 5П" } },
+      { "id": "crit_23", "group": "Аналіз візиту та самооцінка", "title": "Активне слухання", "skillId": "PV9", "description": "Техніки активного слухання.", "levels": { "1": "Не використовує", "2": "1-2 техніки", "3": "3-4 техніки" } },
+      { "id": "crit_24", "group": "Аналіз візиту та самооцінка", "title": "Техніка SPIN", "skillId": "PV5", "description": "Використання техніки SPIN.", "levels": { "1": "Не використовує", "2": "Час від часу", "3": "Регулярно" } },
+      { "id": "crit_25", "group": "Аналіз візиту та самооцінка", "title": "Досягнення мети візиту", "skillId": "PV2", "description": "Результат візиту по SMART.", "levels": { "1": "Не досягнута", "2": "Частково досягнута", "3": "Повністю досягнута" } },
+      { "id": "crit_26", "group": "Аналіз візиту та самооцінка", "title": "Аналіз візиту та самооцінка", "skillId": "PV2", "description": "Аналіз за фактами та реакціями.", "levels": { "1": "Уникає аналізу", "2": "Невірно аналізує", "3": "Об'єктивний аналіз" } },
+      { "id": "crit_27", "group": "Аналіз візиту та самооцінка", "title": "Декларація мети візиту", "skillId": "PV10", "description": "Створення короткої та ефективної декларованої мети.", "levels": { "1": "Не ставить", "2": "Без БРТ / SMART", "3": "Чітко та ефективно" } },
+      
+      // СПЕЦІАЛЬНІ АПТЕЧНІ КРИТЕРІЇ (Оцінюються у загальному балі, але НЕ ВХОДЯТЬ до пріоритетів PV1-PV10)
+      { "id": "crit_28", "group": "Робота в аптеці", "title": "Мерчендайзинг", "skillId": null, "pharmacyOnly": true, "description": "Оцінка викладки препаратів на полицях та вітринах аптеки.", "levels": { "1": "Не робив викладки", "2": "Викладка препаратів зроблена частково", "3": "Викладка препаратів зроблена повністю, або неможлива" } },
+      { "id": "crit_29", "group": "Робота в аптеці", "title": "Робота з завідуючою", "skillId": null, "pharmacyOnly": true, "description": "Формування та контроль дозамовлення товарного запасу.", "levels": { "1": "Не зробив дозамовлення", "2": "Дозамовлення зроблено не по всіх потрібних позиціях", "3": "Дозамовлення зроблено по всіх потрібних позиціях" } }
+    ];
 
-  // --- Робота з конкурентами ---
-  {
-    "id": "crit_14",
-    "group": "Робота з конкурентами",
-    "title": "Перевірка актуальності профілю пацієнта",
-    "description": "Маркер ефективності: Перевіряє наявність необхідної кількості пацієнтів, згідно з профілем на візиті.",
-    "levels": {
-      "1": "Не обговорює з клієнтом наявність пацієнтів згідно з профілем на візиті.",
-      "2": "Обговорює з клієнтом наявність пацієнтів згідно з профілем на візиті, не може назвати кількість.",
-      "3": "Обговорює з клієнтом кількість пацієнтів згідно з профілем на візиті, змінює профіль у разі необхідності."
-    }
-  },
-  {
-    "id": "crit_15",
-    "group": "Робота з конкурентами",
-    "title": "Виявлення конкурента в актуальному профілі пацієнта",
-    "description": "Маркер ефективності: Може назвати основного конкурента з препаратів промоції згідно з актуальним профілем.",
-    "levels": {
-      "1": "Не може назвати конкурента, не виявляє на візиті згідно з актуальним профілем.",
-      "2": "Може назвати основного конкурента згідно з актуальним профілем, виявленого на візиті по діючій речовині.",
-      "3": "Може озвучити торгову назву виявленого на візиті основного конкурента згідно з актуальним профілем."
-    }
-  },
-  {
-    "id": "crit_16",
-    "group": "Робота з конкурентами",
-    "title": "Заміщення конкурентів",
-    "description": "Маркер ефективності: Знаходить сегмент відйому, актуалізує потребу в заміщенні конкурента.",
-    "levels": {
-      "1": "Не знаходить сегменту відйому, не актуалізує потреби в заміщенні конкурента.",
-      "2": "Знаходить сегмент відйому, не визначає кількість пацієнтів у ньому.",
-      "3": "Знаходить сегмент відйому, визначає кількість пацієнтів у ньому, актуалізує потребу в заміщенні конкурента."
-    }
-  },
-  {
-    "id": "crit_17",
-    "group": "Робота з конкурентами",
-    "title": "Аргументація переваг перед конкурентом по моделі \"кому, чому, як?\"",
-    "description": "Маркер ефективності: Аргументує переваги перед конкурентом по моделі \"кому, чому, як?\".",
-    "levels": {
-      "1": "Не аргументує переваги перед конкурентом.",
-      "2": "Обговорює переваги нашого препарату порівняно з конкурентами, не обговорює схему призначення для нового портрету.",
-      "3": "Аргументує переваги перед конкурентом по моделі \"кому, чому, як?\"."
-    }
-  },
+    let previousPvSkill = null; 
+    let lastEvaluationData = null;
 
-  // --- Завершення візиту ---
-  {
-    "id": "crit_18",
-    "group": "Завершення візиту",
-    "title": "Угода (SMART)",
-    "description": "Маркер ефективності: Засмартовує угоду по кожному з препаратів.",
-    "levels": {
-      "1": "Не укладає угоди на візиті, кількість нижче ніж у SMART.",
-      "2": "Укладає угоду, але не співпав портрет з метою візиту по SMART.",
-      "3": "Укладає угоду, портрет і ресурс збігаються зі SMART, кількості такі ж, як у SMART, або вище."
-    }
-  },
-  {
-    "id": "crit_19",
-    "group": "Завершення візиту",
-    "title": "Підведення підсумків візиту",
-    "description": "Маркер ефективності: Наприкінці візиту підводить кількісні підсумки зустрічі.",
-    "levels": {
-      "1": "Не підводить підсумків візиту.",
-      "2": "Підводить кількісні підсумки без портретів пацієнта.",
-      "3": "Підводить кількісні підсумки з портретами пацієнтів по кожному продукту."
-    }
-  },
-  {
-    "id": "crit_20",
-    "group": "Завершення візиту",
-    "title": "Домовленість про наступну зустріч",
-    "description": "Маркер ефективності: Обговорює з клієнтом орієнтовну дату та тему наступної зустрічі.",
-    "levels": {
-      "1": "Не обговорює з клієнтом орієнтовну дату та тему наступної зустрічі.",
-      "2": "Обговорює з клієнтом орієнтовну дату наступної зустрічі, не обговорює теми.",
-      "3": "Обговорює з клієнтом орієнтовну дату та тему наступної зустрічі."
-    }
-  },
+    document.addEventListener("DOMContentLoaded", async () => {
+      const allowedEmail = (localStorage.getItem("allowedEmail") || "").toLowerCase();
+      const userRole = (localStorage.getItem("userRole") || "").toLowerCase();
+      const userFullName = localStorage.getItem("userFullName") || allowedEmail;
 
-  // --- Робота із запереченнями ---
-  {
-    "id": "crit_21",
-    "group": "Робота із запереченнями",
-    "title": "Оцінка результатів роботи з запереченнями",
-    "description": "Маркер ефективності: Впізнав і впорався з усіма запереченнями на візиті зі збереженням позитивного емоційного стану клієнта, знаходить взаємовигідні рішення.",
-    "levels": {
-      "1": "Не впорався із запереченнями клієнтів.",
-      "2": "Впорався приблизно з половиною заперечень клієнта.",
-      "3": "Впорався з усіма запереченнями клієнта або не зустрів заперечень."
-    }
-  },
-  {
-    "id": "crit_22",
-    "group": "Робота із запереченнями",
-    "title": "Працював із запереченнями схемою 5П",
-    "description": "Маркер ефективності: Дотримання всіх етапів техніки роботи з запереченнями.",
-    "levels": {
-      "1": "Не дотримується схеми роботи з запереченнями, сперечається або погоджується з запереченнями клієнта.",
-      "2": "Справляється з запереченнями, випадає один з етапів схеми.",
-      "3": "Справляється з запереченнями. Дотримується схеми роботи з запереченнями у всіх випадках."
-    }
-  },
+      document.getElementById("rmNameDisplay").value = userFullName;
+      document.getElementById("rmName").value = userFullName;
+      document.getElementById("evalDate").value = new Date().toISOString().split('T')[0];
 
-  // --- Аналіз візиту та самооцінка ---
-  {
-    "id": "crit_23",
-    "group": "Аналіз візиту та самооцінка",
-    "title": "Використання технік активного слухання",
-    "description": "Маркер ефективності: Використовує техніки активного слухання, дізнається необхідну інформацію.",
-    "levels": {
-      "1": "Не використовує технік активного слухання для отримання інформації від клієнта.",
-      "2": "Використовує 1-2 техніки активного слухання, дізнається необхідну інформацію.",
-      "3": "Використовує 3-4 техніки активного слухання, дізнається необхідну інформацію."
-    }
-  },
-  {
-    "id": "crit_24",
-    "group": "Аналіз візиту та самооцінка",
-    "title": "Використання техніки SPIN",
-    "description": "Маркер ефективності: Користується технікою SPIN регулярно.",
-    "levels": {
-      "1": "Не використовує техніки SPIN впродовж візиту.",
-      "2": "Використовує техніку SPIN час від часу.",
-      "3": "Користується технікою SPIN регулярно."
-    }
-  },
-  {
-    "id": "crit_25",
-    "group": "Аналіз візиту та самооцінка",
-    "title": "Досягнення мети візиту",
-    "description": "Маркер ефективності: Досягає мети візиту.",
-    "levels": {
-      "1": "Мета не досягнута.",
-      "2": "Мета досягнута для іншого портрета пацієнта не більш ніж по 1 продукту на візиті.",
-      "3": "Поставлена на візит мета по SMART досягнута в повній мірі."
-    }
-  },
-  {
-    "id": "crit_26",
-    "group": "Аналіз візиту та самооцінка",
-    "title": "Аналіз візиту та самооцінка",
-    "description": "Маркер ефективності: Аналізує результати візиту, ґрунтуючись на фактах, власних діях та реакціях клієнта.",
-    "levels": {
-      "1": "Не може (уникає) оцінити досягнення мети, не аналізує власну діяльність, не може сказати, що зробив погано, а що добре.",
-      "2": "Може оцінити досягнення мети, але невірно аналізує власну діяльність (розбіжності в оцінці з менеджером не більш ніж у третині пунктів).",
-      "3": "Може оцінити досягнення мети, може озвучити, що вдалося або не вийшло на візиті, при оцінці враховує поведінкові реакції клієнта в оцінці власних дій."
-    }
-  },
-  {
-    "id": "crit_27",
-    "group": "Аналіз візиту та самооцінка",
-    "title": "Постановка мети на наступний візит",
-    "description": "Маркер ефективності: Ставить мету на наступний візит по SMART виходячи з отриманого на візиті результату.",
-    "levels": {
-      "1": "Не може поставити мету на наступний візит.",
-      "2": "Випадає понад 1 критерій, при постановці мети на наступний візит не використовує БРТ.",
-      "3": "Ставить мету на наступний візит по SMART виходячи з отриманого на поточному візиті результату."
-    }
-  }
-];
-
-    document.addEventListener("DOMContentLoaded", () => {
-      // 1. Автоматичне визначення поточного РМ з localStorage
-      const currentUserEmail = localStorage.getItem("allowedEmail") || "a.volaniuk@pharmasco.com";
-      const currentUserName = users[currentUserEmail] || "Олександр Волянюк";
-
-      document.getElementById("rmNameDisplay").value = currentUserName;
-      document.getElementById("rmName").value = currentUserName;
-
-      // 2. Заповнення випадаючого списку підлеглих МП для цього РМ з managerToEmployees
+      // Динамічне заповнення підлеглих МП з Деканату
       const mpSelect = document.getElementById("mpNameSelect");
-      const subordinateEmails = managerToEmployees[currentUserEmail] || [];
+      try {
+        const response = await fetch(`${DECANAT_SCRIPT_URL}?action=getUsersHierarchy`);
+        const json = await response.json();
 
-      subordinateEmails.forEach(email => {
-        if (users[email]) {
-          const opt = document.createElement("option");
-          opt.value = users[email];
-          opt.textContent = users[email];
-          mpSelect.appendChild(opt);
-        }
-      });
+        if (json.status === "success" && json.users) {
+          mpSelect.innerHTML = '<option value="">-- Оберіть МП --</option>';
+          
+          let targetMPs = json.users.filter(u => (u.role || '').toLowerCase() === "mp");
+          
+          if (userRole === "rm") {
+            const subordinates = json.users.filter(u => (u.manager || '').toLowerCase() === allowedEmail && (u.role || '').toLowerCase() === "mp");
+            if (subordinates.length > 0) {
+              targetMPs = subordinates;
+            }
+          }
 
-      // Запасний варіант: якщо у списку нікого немає, показуємо всіх МП
-      if (subordinateEmails.length === 0) {
-        for (let email in users) {
-          const opt = document.createElement("option");
-          opt.value = users[email];
-          opt.textContent = users[email];
-          mpSelect.appendChild(opt);
+          targetMPs.forEach(u => {
+            const opt = document.createElement("option");
+            opt.value = u.login;
+            opt.dataset.fullname = u.fullName || u.login;
+            opt.textContent = `${u.fullName || u.login} (${u.login})`;
+            mpSelect.appendChild(opt);
+          });
         }
+      } catch (err) {
+        console.error("Помилка завантаження ієрархії:", err);
+        mpSelect.innerHTML = '<option value="">❌ Помилка завантаження даних</option>';
       }
 
-      // 3. Заповнення блоків критеріїв
+      // Генерація інтерфейсу критеріїв
       const container = document.getElementById("formContainer");
       const grouped = {};
       evaluationCriteria.forEach(item => {
@@ -517,27 +288,24 @@
           const grid = document.createElement("div");
           grid.className = "visits-scores-grid";
 
-          const box1 = document.createElement("div");
-          box1.className = "visit-score-col";
-          box1.innerHTML = 
-            '<label>Оцінка (Візит 1):</label>' +
-            '<select id="' + crit.id + '_v1">' + critOptions + '</select>';
-
-          const box2 = document.createElement("div");
-          box2.className = "visit-score-col";
-          box2.innerHTML = 
-            '<label>Оцінка (Візит 2):</label>' +
-            '<select id="' + crit.id + '_v2">' + critOptions + '</select>';
-
-          const box3 = document.createElement("div");
-          box3.className = "visit-score-col";
-          box3.innerHTML = 
-            '<label>Коментар / Спостереження:</label>' +
-            '<input type="text" id="' + crit.id + '_comment" placeholder="Введіть коментар...">';
-
-          grid.appendChild(box1);
-          grid.appendChild(box2);
-          grid.appendChild(box3);
+          if (crit.pharmacyOnly) {
+            // ДЛЯ АПТЕЧНИХ КРИТЕРІЇВ ВІЗИТИ 1 ТА 2 ВІДКЛЮЧЕНІ
+            grid.innerHTML = `
+              <div class="visit-score-col" style="opacity:0.4;"><label>Візит 1 (Лікар 1):</label><select disabled><option>⛔ Тільки аптека</option></select></div>
+              <div class="visit-score-col" style="opacity:0.4;"><label>Візит 2 (Лікар 2):</label><select disabled><option>⛔ Тільки аптека</option></select></div>
+              <div class="visit-score-col"><label>Візит 3 (Аптека 1):</label><select id="${crit.id}_v3">${critOptions}</select></div>
+              <div class="visit-score-col"><label>Візит 4 (Аптека 2):</label><select id="${crit.id}_v4">${critOptions}</select></div>
+              <div class="visit-score-col"><label>Коментар / Спостереження:</label><input type="text" id="${crit.id}_comment" placeholder="Введіть коментар..."></div>
+            `;
+          } else {
+            grid.innerHTML = `
+              <div class="visit-score-col"><label>Візит 1 (Лікар 1):</label><select id="${crit.id}_v1">${critOptions}</select></div>
+              <div class="visit-score-col"><label>Візит 2 (Лікар 2):</label><select id="${crit.id}_v2">${critOptions}</select></div>
+              <div class="visit-score-col"><label>Візит 3 (Аптека 1):</label><select id="${crit.id}_v3">${critOptions}</select></div>
+              <div class="visit-score-col"><label>Візит 4 (Аптека 2):</label><select id="${crit.id}_v4">${critOptions}</select></div>
+              <div class="visit-score-col"><label>Коментар / Спостереження:</label><input type="text" id="${crit.id}_comment" placeholder="Введіть коментар..."></div>
+            `;
+          }
 
           div.appendChild(label);
           div.appendChild(desc);
@@ -549,17 +317,50 @@
       }
     });
 
-    let lastEvaluationData = null;
+    async function loadPreviousPvSkill() {
+      const mpSelectEl = document.getElementById("mpNameSelect");
+      const mpEmail = mpSelectEl.value;
+      const prevInfoBlock = document.getElementById("prevSkillInfo");
+      const prevSkillText = document.getElementById("prevSkillName");
+
+      previousPvSkill = null;
+      if (!mpEmail) {
+        prevInfoBlock.style.display = "none";
+        return;
+      }
+
+      try {
+        const response = await fetch(`${HUB_SCRIPT_URL}?action=getLastEvaluation&email=${encodeURIComponent(mpEmail)}`);
+        const json = await response.json();
+        if (json.status === "success" && json.lastFocusSkill) {
+          previousPvSkill = json.lastFocusSkill;
+          prevSkillText.textContent = previousPvSkill;
+          prevInfoBlock.style.display = "block";
+        } else {
+          prevSkillText.textContent = "Немає попередніх даних";
+          prevInfoBlock.style.display = "block";
+        }
+      } catch (err) {
+        console.warn("Не вдалося завантажити попередній ПВ з бази:", err);
+        prevInfoBlock.style.display = "none";
+      }
+    }
 
     function calculateEvaluation() {
       const evalDate = document.getElementById("evalDate").value || "Не вказана";
-      const mpName = document.getElementById("mpNameSelect").value;
+      const mpSelectEl = document.getElementById("mpNameSelect");
+      const selectedOption = mpSelectEl.options[mpSelectEl.selectedIndex];
+      
+      const mpEmail = mpSelectEl.value;
+      const mpName = selectedOption ? (selectedOption.dataset.fullname || selectedOption.text) : "";
       const rmName = document.getElementById("rmName").value;
 
-      if (!mpName) {
+      if (!mpEmail) {
         alert("Будь ласка, оберіть співробітника (МП) з випадаючого списку!");
         return;
       }
+
+      const evalType = document.querySelector('input[name="evalType"]:checked').value; // "doctor" або "pharmacy"
 
       const city1 = document.getElementById("meta_city1").value.trim() || "—";
       const lpu1 = document.getElementById("meta_lpu1").value.trim() || "—";
@@ -569,42 +370,76 @@
       const lpu2 = document.getElementById("meta_lpu2").value.trim() || "—";
       const doc2 = document.getElementById("meta_doc2").value.trim() || "—";
 
-      let total = 0, count = 0;
-      const lowCriteria = [];
+      const city3 = document.getElementById("meta_city3").value.trim() || "—";
+      const lpu3 = document.getElementById("meta_lpu3").value.trim() || "—";
+      const doc3 = document.getElementById("meta_doc3").value.trim() || "—";
+
+      const city4 = document.getElementById("meta_city4").value.trim() || "—";
+      const lpu4 = document.getElementById("meta_lpu4").value.trim() || "—";
+      const doc4 = document.getElementById("meta_doc4").value.trim() || "—";
+
+      // 1. ЗАГАЛЬНИЙ РОЗРАХУНОК ДЛЯ БЕКЕНДУ І ГРЕЙДУ (по ВСІХ оцінених візитах 1, 2, 3, 4)
+      let totalOverallScore = 0;
+      let evaluatedCriteriaCount = 0;
+
+      // 2. СТРУКТУРА ДЛЯ ВИБОРУ НАВИКУ ЗА ТОГЛ-СВІТЧЕМ (doctor: v1,v2 / pharmacy: v3,v4)
+      const skillStats = {};
+      SKILL_PRIORITY_MATRIX.forEach(s => {
+        skillStats[s.id] = {
+          matrixItem: s,
+          scores: [],
+          hasLevelOne: false,
+          criteriaComments: []
+        };
+      });
+
       const criteriaDetails = [];
-      const focusSelect = document.getElementById("focusSkillSelect");
-      focusSelect.innerHTML = '<option value="">-- Оберіть навик із зони розвитку --</option>';
 
       evaluationCriteria.forEach(crit => {
         const el1 = document.getElementById(crit.id + "_v1");
         const el2 = document.getElementById(crit.id + "_v2");
+        const el3 = document.getElementById(crit.id + "_v3");
+        const el4 = document.getElementById(crit.id + "_v4");
         const commentEl = document.getElementById(crit.id + "_comment");
         const commentText = commentEl ? commentEl.value.trim() : "";
         
         let v1 = el1 && el1.value !== "" ? parseInt(el1.value) : null;
         let v2 = el2 && el2.value !== "" ? parseInt(el2.value) : null;
+        let v3 = el3 && el3.value !== "" ? parseInt(el3.value) : null;
+        let v4 = el4 && el4.value !== "" ? parseInt(el4.value) : null;
         
-        let vals = [];
-        if (v1 !== null) vals.push(v1);
-        if (v2 !== null) vals.push(v2);
+        // --- АГРЕГАЦІЯ БАЛІВ ПО ВСІХ ВІЗИТАХ (ДЛЯ ГРЕЙДУ ПВ) ---
+        let allVals = [];
+        if (v1 !== null) allVals.push(v1);
+        if (v2 !== null) allVals.push(v2);
+        if (v3 !== null) allVals.push(v3);
+        if (v4 !== null) allVals.push(v4);
 
-        let avgVal = null;
-        if (vals.length > 0) {
-          avgVal = vals.reduce((a, b) => a + b, 0) / vals.length;
-          total += avgVal;
-          count++;
+        let globalAvgVal = null;
+        if (allVals.length > 0) {
+          globalAvgVal = allVals.reduce((a, b) => a + b, 0) / allVals.length;
+          totalOverallScore += globalAvgVal;
+          evaluatedCriteriaCount++;
+        }
 
-          if (avgVal < 3) {
-            lowCriteria.push({ 
-              title: crit.title, 
-              avg: avgVal.toFixed(1), 
-              comment: commentText 
-            });
-            
-            const opt = document.createElement("option");
-            opt.value = crit.title;
-            opt.textContent = crit.title + " (Середній бал: " + avgVal.toFixed(1) + ")";
-            focusSelect.appendChild(opt);
+        // --- АГРЕГАЦІЯ ДЛЯ ФОКУСНОГО НАВИКУ (ЗА ТОГЛ-СВІТЧЕМ) ---
+        // Лише для критеріїв, що входять до пріоритетів PV1..PV10
+        if (crit.skillId && skillStats[crit.skillId]) {
+          let targetVals = [];
+          if (evalType === "doctor") {
+            if (v1 !== null) { targetVals.push(v1); if (v1 === 1) skillStats[crit.skillId].hasLevelOne = true; }
+            if (v2 !== null) { targetVals.push(v2); if (v2 === 1) skillStats[crit.skillId].hasLevelOne = true; }
+          } else {
+            if (v3 !== null) { targetVals.push(v3); if (v3 === 1) skillStats[crit.skillId].hasLevelOne = true; }
+            if (v4 !== null) { targetVals.push(v4); if (v4 === 1) skillStats[crit.skillId].hasLevelOne = true; }
+          }
+
+          if (targetVals.length > 0) {
+            let focusAvgVal = targetVals.reduce((a, b) => a + b, 0) / targetVals.length;
+            skillStats[crit.skillId].scores.push(focusAvgVal);
+            if (commentText) {
+              skillStats[crit.skillId].criteriaComments.push(`${crit.title}: ${commentText}`);
+            }
           }
         }
 
@@ -612,66 +447,119 @@
           title: crit.title,
           v1: v1 !== null ? v1 : "—",
           v2: v2 !== null ? v2 : "—",
-          avg: avgVal !== null ? avgVal.toFixed(1) : "—",
+          v3: v3 !== null ? v3 : "—",
+          v4: v4 !== null ? v4 : "—",
+          avg: globalAvgVal !== null ? globalAvgVal.toFixed(1) : "—",
           comment: commentText
         });
       });
 
-      if (count === 0) {
-        alert("Будь ласка, оцініть хоча б кілька критеріїв перед аналізом!");
+      if (evaluatedCriteriaCount === 0) {
+        alert("Будь ласка, заповніть оцінки хоча б для кількох критеріїв!");
         return;
       }
 
-      const overallAvg = (total / count).toFixed(2);
+      // --- АЛГОРИТМ ВИЗНАЧЕННЯ НАВИКУ ДЛЯ ВІДПРАЦЮВАННЯ ---
+      let calculatedFocusSkill = null;
+      let selectionReason = "";
+
+      const evaluatedSkillsList = [];
+      for (const skillId in skillStats) {
+        const stat = skillStats[skillId];
+        if (stat.scores.length > 0) {
+          const avgScore = stat.scores.reduce((a, b) => a + b, 0) / stat.scores.length;
+          evaluatedSkillsList.push({
+            id: skillId,
+            name: stat.matrixItem.name,
+            rank: stat.matrixItem.rank,
+            page: stat.matrixItem.page,
+            avgScore: avgScore,
+            hasLevelOne: stat.hasLevelOne,
+            comments: stat.criteriaComments
+          });
+        }
+      }
+
+      // Правило №1: Повторний навик з минулого ПВ має бал 1 у вибраному напрямку
+      if (previousPvSkill) {
+        const prevSkillLower = previousPvSkill.toLowerCase();
+        const repeatFailedSkill = evaluatedSkillsList.find(s => 
+          prevSkillLower.includes(s.name.toLowerCase()) && s.hasLevelOne
+        );
+
+        if (repeatFailedSkill) {
+          calculatedFocusSkill = repeatFailedSkill;
+          selectionReason = `🔴 **Правило №1 (Супер-пріоритет):** Навик "${repeatFailedSkill.name}" відпрацьовувався на минулому ПВ і отримав бал 1 на поточному візиті (${evalType === 'doctor' ? 'Лікар' : 'Аптека'}). Призначається повторно!`;
+        }
+      }
+
+      // Правило №2 та №3: Пошук найнижчого балу + відбір за матрицею пріоритетів
+      if (!calculatedFocusSkill && evaluatedSkillsList.length > 0) {
+        evaluatedSkillsList.sort((a, b) => {
+          if (Math.abs(a.avgScore - b.avgScore) > 0.05) {
+            return a.avgScore - b.avgScore;
+          }
+          return a.rank - b.rank;
+        });
+
+        const topWeakSkill = evaluatedSkillsList[0];
+        if (topWeakSkill.avgScore < 3.0) {
+          calculatedFocusSkill = topWeakSkill;
+          selectionReason = `🎯 **Правило №2 та №3 (Авто-вибір):** Обрано навик "${topWeakSkill.name}" (Середній бал: ${topWeakSkill.avgScore.toFixed(1)} / 3.0, Пріоритет №${topWeakSkill.rank} за стандартом)`;
+        } else {
+          calculatedFocusSkill = topWeakSkill;
+          selectionReason = `✅ Усі оцінені навички продемонстровано на найвищому рівні (3.0). Для профілактики обрано: "${topWeakSkill.name}"`;
+        }
+      }
+
+      // РОЗРАХУНОК ЗАГАЛЬНОГО СЕРЕДНЬОГО БАЛУ ДЛЯ ГРЕЙДУ БЕКЕНДУ
+      const overallAvg = (totalOverallScore / evaluatedCriteriaCount).toFixed(2);
       
       let levelDesc = "";
-      if (overallAvg >= 4.5) levelDesc = "Майстерний рівень виконання";
-      else if (overallAvg >= 3.5) levelDesc = "Високий / Сильний рівень";
-      else if (overallAvg >= 3.0) levelDesc = "Середній робочий рівень";
-      else levelDesc = "Потребує розвитку / Нижче середнього";
+      if (overallAvg >= 2.7) levelDesc = "Майстерний рівень виконання (90-100%)";
+      else if (overallAvg >= 2.3) levelDesc = "Високий / Сильний рівень (76-89%)";
+      else if (overallAvg >= 2.0) levelDesc = "Середній робочий рівень (66-75%)";
+      else levelDesc = "Потребує розвитку / Нижче середнього (< 66%)";
 
       lastEvaluationData = {
         evalDate: evalDate,
+        evalType: evalType,
         mpName: mpName,
+        mpEmail: mpEmail,
         rmName: rmName,
-        city1: city1,
-        lpu1: lpu1,
-        doc1: doc1,
-        city2: city2,
-        lpu2: lpu2,
-        doc2: doc2,
-        overallAvg: overallAvg,
+        city1, lpu1, doc1,
+        city2, lpu2, doc2,
+        city3, lpu3, doc3,
+        city4, lpu4, doc4,
+        overallAvg: overallAvg, // Загальний бал по сторінці для грейдів
         levelDesc: levelDesc,
-        focusSkill: "",
+        focusSkill: calculatedFocusSkill ? calculatedFocusSkill.name : "",
+        targetPage: calculatedFocusSkill ? calculatedFocusSkill.page : "portfolio PV.html",
         detailsJSON: JSON.stringify(criteriaDetails, null, 2)
       };
 
       document.getElementById("results").innerHTML = 
-        "📊 <strong>Загальна інформація:</strong><br>" +
-        "📅 Дата: " + evalDate + " | 👤 МП: " + mpName + " | 👨‍🏫 РМ: " + rmName + "<br>" +
-        "📍 <strong>Візит 1:</strong> Місто: " + city1 + " | ЛПЗ: " + lpu1 + " | Лікар: " + doc1 + "<br>" +
-        "📍 <strong>Візит 2:</strong> Місто: " + city2 + " | ЛПЗ: " + lpu2 + " | Лікар: " + doc2 + "<br><br>" +
-        "⭐ <strong>Загальний середній бал:</strong> " + overallAvg + " / 5 (оцінено критеріїв: " + count + " з " + evaluationCriteria.length + ")";
+        "📊 <strong>Загальна аналітика сесії ПВ (для бекенду та грейдів):</strong><br>" +
+        "📅 Дата: " + evalDate + " | 👤 МП: " + mpName + " (" + mpEmail + ") | 👨‍🏫 РМ: " + rmName + "<br>" +
+        "📍 <strong>Візити 1-2 (Лікарі):</strong> " + city1 + " (" + doc1 + "), " + city2 + " (" + doc2 + ")<br>" +
+        "📍 <strong>Візити 3-4 (Аптеки):</strong> " + city3 + " (" + lpu3 + "), " + city4 + " (" + lpu4 + ")<br><br>" +
+        "⭐ <strong>Загальний середній бал ПВ (всі візити):</strong> " + overallAvg + " / 3.0 (оцінено критеріїв: " + evaluatedCriteriaCount + ")";
 
-      document.getElementById("styleBlock").innerHTML = "🧭 <strong>Загальна оцінка рівня:</strong> " + levelDesc + (overallAvg >= 4.5 ? " 🏆" : overallAvg >= 3.5 ? " 🚀" : overallAvg >= 3.0 ? " 👍" : " ⚠️");
+      document.getElementById("styleBlock").innerHTML = "🧭 <strong>Загальна оцінка рівня / Грейд ПВ:</strong> " + levelDesc;
 
-      let output = "<p><strong>📌 Зони розвитку (критерії з балом нижче 3):</strong></p>";
+      let output = `<div class="auto-focus-card">
+        <h4>🎯 Обраний фокус розвитку (${evalType === 'doctor' ? 'по Лікарях' : 'по Аптеках'}):</h4>
+        <p style="font-size: 1.1em; font-weight: bold; margin: 5px 0;">👉 ${calculatedFocusSkill ? calculatedFocusSkill.name : '—'}</p>
+        <p style="margin: 5px 0; font-size: 0.95em;">${selectionReason}</p>
+      </div>`;
 
-      if (lowCriteria.length > 0) {
-        output += "<ul>";
-        lowCriteria.forEach(item => {
-          output += "<li><strong>" + item.title + "</strong> — Середній бал: " + item.avg;
-          if (item.comment) {
-            output += "<br><em>Коментар: " + item.comment + "</em>";
-          }
-          output += "</li><br>";
-        });
-        output += "</ul>";
-        document.getElementById("actionFocusContainer").style.display = "block";
-      } else {
-        output += "<p>✅ Чудово! Немає критеріїв із балом нижче 3.</p>";
-        document.getElementById("actionFocusContainer").style.display = "none";
-      }
+      output += `<p style='margin-top: 15px;'><strong>📌 Зони розвитку за напрямком "${evalType === 'doctor' ? 'Лікарі' : 'Аптеки'}":</strong></p><ul>`;
+      evaluatedSkillsList.filter(s => s.avgScore < 3.0).forEach(item => {
+        output += `<li><strong>${item.name}</strong> (Пріоритет №${item.rank}) — Середній бал: ${item.avgScore.toFixed(1)}`;
+        if (item.comments.length > 0) output += `<br><em>${item.comments.join('; ')}</em>`;
+        output += "</li><br>";
+      });
+      output += "</ul>";
 
       document.getElementById("recommendationBlock").innerHTML = output;
       document.getElementById("copyBtn").style.display = "inline-block";
@@ -683,12 +571,8 @@
       const resultsText = document.getElementById("results").innerText;
       const styleText = document.getElementById("styleBlock").innerText;
       const recText = document.getElementById("recommendationBlock").innerText;
-      const focusSkill = document.getElementById("focusSkillSelect").value;
       
       let fullText = resultsText + "\n" + styleText + "\n\n" + recText;
-      if (focusSkill) {
-        fullText += "\n🎯 Обраний фокус для відпрацювання: " + focusSkill;
-      }
       
       navigator.clipboard.writeText(fullText).then(() => {
         alert("Результати успішно скопійовано до буфера обміну! 📝");
@@ -697,88 +581,45 @@
       });
     }
 
-    // Словник відповідності фокусів та сторінок ДЗ
-    const skillToPageMap = {
-      "Знання продуктів": "PV1.html",
-      " SMART": "PV2.html",
-      "ХПВ": "PV3.html",
-      "Укладання кількісної угоди": "PV4_2.html",
-      "Виявлення потреби": "PV5.html",
-      "Відкриті запитання": "PV5a.html",
-      "Уточнюючі та закриті запитання": "PV5b.html",
-      "Презентація під потребу": "PV6.html",
-      "Робота із запереченнями": "PV7.html",
-      "Банк заперечень": "PV7a_2.html",
-      "Приєднання": "PV7b.html",
-      "Прояснення": "PV7c.html",
-      "Виявлення конкурентів": "PV8.html",
-      "Заміщення конкурента": "PV8b.html",
-      "Small talk": "PV9.html",
-      "Декларація мети візиту": "PV10.html"
-    };
-
-   function saveToDatabase() {
+    function saveToDatabase() {
       if (!lastEvaluationData) {
-        alert("Спочатку натисніть «Проаналізувати результати»!");
+        alert("Спочатку натисніть «Автоматично розрахувати результати»!");
         return;
       }
-
-      const focusSkillSelect = document.getElementById("focusSkillSelect");
-      const focusSkill = focusSkillSelect.value;
-      
-      if (!focusSkill) {
-        alert("Будь ласка, оберіть навик для відпрацювання (фокус розвитку)!");
-        focusSkillSelect.focus();
-        return;
-      }
-
-      lastEvaluationData.focusSkill = focusSkill;
-      lastEvaluationData.mode = "dual_visit_mp"; // <--- Вказуємо режим для бекенду
 
       localStorage.setItem("currentRmName", lastEvaluationData.rmName);
       localStorage.setItem("currentMpName", lastEvaluationData.mpName);
+      localStorage.setItem("currentMpEmail", lastEvaluationData.mpEmail);
 
       const btn = document.getElementById("saveBtn");
       btn.textContent = "⏳ Зберігається...";
       btn.disabled = true;
 
-      // URL вашого єдиного Apps Script бекенду
-      const scriptURL = "https://script.google.com/macros/s/AKfycbzprTkjIf_pvCqs4iiaMehYVdFlFfuS0e60gK0QXh7v8DOKpI9WByyDo3A3VoBXzKxWxw/exec";
-
-      fetch(scriptURL, {
+      fetch(HUB_SCRIPT_URL, {
         method: "POST",
         headers: { "Content-Type": "text/plain;charset=utf-8" },
         body: JSON.stringify(lastEvaluationData)
       })
       .then(res => res.json())
       .then(data => {
-        if (data.success) {
-          alert("✅ Дані успішно збережено до аркуша «Оцінка МП (Подвійні візити)»!");
-          
-          let targetPage = "portfolio PV.html";
-          for (const [key, page] of Object.entries(skillToPageMap)) {
-            if (focusSkill.includes(key)) {
-              targetPage = page;
-              break;
-            }
-          }
+        if (data.status === "success" || data.success) {
+          alert(`✅ Оцінку збережено! Автоматичний перехід на сторінку ДЗ: ${lastEvaluationData.focusSkill}`);
 
-          setTimeout(() => {
-            window.location.href = targetPage;
-          }, 1000);
+          setTimeout(() => { 
+            window.location.href = lastEvaluationData.targetPage || "portfolio PV.html"; 
+          }, 800);
         } else {
-          throw new Error(data.error || "Помилка збереження");
+          throw new Error(data.message || "Помилка збереження");
         }
       })
       .catch((error) => {
         console.error("Помилка:", error);
         alert("❌ Сталася помилка при збереженні.");
-        btn.textContent = "💾 Зберегти в базу даних";
+        btn.textContent = "💾 Зберегти та автоперейти до призначення ДЗ";
         btn.disabled = false;
       });
     }
   </script>
-<script src="scrbtn.js"></script>
-
+  <script src="scrbtn.js"></script>
 </body>
 </html>

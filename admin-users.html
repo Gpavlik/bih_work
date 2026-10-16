@@ -24,7 +24,6 @@
     th { background-color: #007acc; color: white; font-weight: 600; }
     tr:nth-child(even) { background-color: #f8fafc; }
     .btn-edit { background: #f39c12; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 13px; margin-right: 5px; }
-    .btn-delete { background: #e74c3c; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 13px; }
   </style>
 </head>
 <body>
@@ -34,12 +33,11 @@
     <h2>👥 Управління кадровим складом та ієрархією</h2>
     <p style="color: #64748b; margin-bottom: 20px;">Створюйте нових співробітників, призначайте паролі, ролі, напрямки, регіони та керуйте підпорядкуванням.</p>
 
-    <!-- ФОРМА СТВОРЕННЯ / РЕДАГУВАННЯ -->
     <form id="userForm">
       <div class="form-grid">
         <div class="form-group">
           <label for="userLogin">Логін (Email або унікальний ID):</label>
-          <input type="text" id="userLogin" placeholder="Наприклад: mp24 або ivan@lkj.com" required>
+          <input type="text" id="userLogin" placeholder="Наприклад: mp24 або ivan@company.com" required>
         </div>
         <div class="form-group">
           <label for="userPassword">Пароль:</label>
@@ -109,39 +107,13 @@
 
   <div id="footer-container"></div>
   <script>
-    // URL вашого розгорнутого Google Apps Script
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby87iUOv2tul_QrIBiuJ8JgcfCOl4WQ3igIuIDNWpZS4CN2y27RRtD752dyePFZRvGf8A/exec";
+    const DECANAT_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby87iUOv2tul_QrIBiuJ8JgcfCOl4WQ3igIuIDNWpZS4CN2y27RRtD752dyePFZRvGf8A/exec";
 
     let allUsers = [];
 
-    // Динамічне керування видимістю полів залежно від ролі
-    document.getElementById("userRole").addEventListener("change", (e) => {
-      updateRoleFieldsVisibility(e.target.value);
-    });
-
-    function updateRoleFieldsVisibility(role) {
-      const managerGroup = document.getElementById("managerGroup");
-      const directionGroup = document.getElementById("directionGroup");
-      const regionGroup = document.getElementById("regionGroup");
-
-      if (role === "admin" || role === "office") {
-        if (managerGroup) managerGroup.style.display = "none";
-        if (directionGroup) directionGroup.style.display = "none";
-        if (regionGroup) regionGroup.style.display = "none";
-        document.getElementById("userManager").value = "";
-        document.getElementById("userDirection").value = "";
-        document.getElementById("userRegion").value = "";
-      } else {
-        if (managerGroup) managerGroup.style.display = "block";
-        if (directionGroup) directionGroup.style.display = "block";
-        if (regionGroup) regionGroup.style.display = "block";
-      }
-    }
-
-    // Завантаження списку співробітників та заповнення селектів
     async function loadUsersData() {
       try {
-        const response = await fetch(`${SCRIPT_URL}?action=getUsersHierarchy`);
+        const response = await fetch(`${DECANAT_SCRIPT_URL}?action=getUsersHierarchy`);
         const result = await response.json();
 
         if (result.status === "success") {
@@ -170,16 +142,11 @@
           managerSelect.appendChild(opt);
         }
 
-        let roleBadge = "🟢 МП";
-        if (u.role === "admin") roleBadge = "🔴 Адмін";
-        else if (u.role === "rm") roleBadge = "🔵 РМ";
-        else if (u.role === "office") roleBadge = "🟠 Офіс";
-
         tbody.innerHTML += `
           <tr>
             <td><strong>${u.login}</strong></td>
             <td>${u.fullName}</td>
-            <td>${roleBadge}</td>
+            <td>${u.role.toUpperCase()}</td>
             <td>${u.manager || "—"}</td>
             <td>${u.direction || "—"}</td>
             <td>${u.region || "—"}</td>
@@ -189,50 +156,38 @@
           </tr>
         `;
       });
-
-      if (allUsers.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #888;">База порожня. Створіть першого співробітника вище.</td></tr>`;
-      }
     }
 
-    // Заповнення форми для редагування[cite: 14]
     window.editUser = function(login) {
       const user = allUsers.find(u => u.login === login);
       if (!user) return;
 
       document.getElementById("userLogin").value = user.login;
       document.getElementById("userLogin").readOnly = true; 
-      document.getElementById("userPassword").value = user.password || ""; 
       document.getElementById("userFullName").value = user.fullName;
       document.getElementById("userRole").value = user.role;
       document.getElementById("userManager").value = user.manager || "";
       document.getElementById("userDirection").value = user.direction || "";
       document.getElementById("userRegion").value = user.region || "";
-      
-      updateRoleFieldsVisibility(user.role);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
-    // Відправка форми на збереження[cite: 14]
     document.getElementById("userForm").addEventListener("submit", async (e) => {
       e.preventDefault();
 
-      const roleVal = document.getElementById("userRole").value;
       const payload = {
         action: "saveUser",
         login: document.getElementById("userLogin").value.trim(),
         password: document.getElementById("userPassword").value.trim(),
         fullName: document.getElementById("userFullName").value.trim(),
-        role: roleVal,
-        manager: (roleVal === "admin" || roleVal === "office") ? "" : document.getElementById("userManager").value,
-        direction: (roleVal === "admin" || roleVal === "office") ? "" : document.getElementById("userDirection").value,
-        region: (roleVal === "admin" || roleVal === "office") ? "" : document.getElementById("userRegion").value
+        role: document.getElementById("userRole").value,
+        manager: document.getElementById("userManager").value,
+        direction: document.getElementById("userDirection").value,
+        region: document.getElementById("userRegion").value
       };
 
       try {
-        await fetch(SCRIPT_URL, {
+        await fetch(DECANAT_SCRIPT_URL, {
           method: "POST",
-          mode: "no-cors",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload)
         });
@@ -240,7 +195,6 @@
         alert("✅ Співробітника успішно збережено в базі!");
         document.getElementById("userForm").reset();
         document.getElementById("userLogin").readOnly = false;
-        updateRoleFieldsVisibility("mp");
         loadUsersData(); 
       } catch (err) {
         alert("❌ Помилка при збереженні співробітника.");
@@ -249,10 +203,5 @@
 
     document.addEventListener("DOMContentLoaded", loadUsersData);
   </script>
-  <script src="./js/menu.js"></script>
-  <script src="headfoot.js"></script>
-  <script src="theme-toggle.js"></script>
-  <script src="tracking.js"></script>
-  <script src="scrbtn.js"></script>
 </body>
 </html>

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ua">
+<html lang="uk">
 
 <head>
   <link rel="shortcut icon" href="https://behealth.com.ua/assets/img/favicon.ico" type="img/png">
@@ -9,11 +9,8 @@
   <title>Особистий кабінет | Академія</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@700&family=Roboto:wght@400;500;700;900&display=swap"
-    rel="stylesheet" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/modern-normalize/1.1.0/modern-normalize.css"
-    integrity="sha512-Y0MM+V6ymRKN2zStTqzQ227DWhhp4Mzdo6gnlRnuaNCbc+YN/ZH0sBCLTM4M0oSy9c9VKiCvd4Jk44aCLrNS5Q=="
-    crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@700&family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/modern-normalize/1.1.0/modern-normalize.css" crossorigin="anonymous" />
   <link rel="stylesheet" href="./css/main.css" />
   <style>
     .cabinet-hero { padding-top: 40px; padding-bottom: 40px; }
@@ -30,7 +27,6 @@
     .logout-btn:hover { background-color: #d32f2f; color: white; }
     .admin-nav-btn { background-color: #f5f4fa; border: none; box-shadow: 0 2px 4px rgba(0,0,0,0.05); padding: 10px 20px; text-decoration: none; font-weight: 500; display: inline-block; transition: background 0.2s; }
     .admin-nav-btn:hover { background-color: #069606; color: white; text-decoration: none; }
-    .task-badge { display: inline-block; background: #e3f2fd; color: #069606; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 700; margin-bottom: 10px; }
     .user-avatar { width: 120px; height: 120px; border-radius: 10%; object-fit: cover; margin-bottom: 12px; border: 2px solid #069606; }
   </style>
 </head>
@@ -60,10 +56,11 @@
             <img id="userAvatarImg" class="user-avatar" src="" alt="Аватар користувача">
             <h3 style="justify-content: center;" id="userNameField">Користувач</h3>
             <p><strong>Email:</strong> <span id="userEmailField">завантаження...</span></p>
-            <div style="text-align: left;">
+            <div style="text-align: left; margin-top: 15px;">
               <p><strong>Статус доступу:</strong> <span style="color: green; font-weight: 500;">Активний (Партнер)</span></p>
-              <p><strong style="color: black; font-weight: 700;">Ваші досягнення в навчальному модулі:</strong></p>
-              <p style="margin-top: 10px;"><strong>Пройдено сценаріїв візитів:</strong> <span id="visitedCount">0</span></p>
+              <p id="userGradeBadge"><strong>Грейд / Роль:</strong> Визначення...</p>
+              <p style="margin-top: 10px;"><strong style="color: black; font-weight: 700;">Ваші досягнення в навчальному модулі:</strong></p>
+              <p style="margin-top: 5px;"><strong>Пройдено сценаріїв візитів:</strong> <span id="visitedCount">0</span></p>
               <p><strong>Статус тестування:</strong> <span id="testStatus" style="color: #757575;">Очікує на проходження</span></p>
             </div>
           </div>
@@ -72,8 +69,6 @@
           <div class="cabinet-card" style="border-left: 4px solid #2196F3;">
             <h3>📋 Призначені активності та ДЗ</h3>
             <div id="activeTaskContainer">
-              
-              <!-- Панель сортування -->
               <div style="margin: 10px 0 15px 0; display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
                 <label style="font-size: 12px; font-weight: 500; color: #64748b;">Сортування:</label>
                 <select id="sortTasksSelect" style="padding: 5px 8px; font-size: 12px; border: 1px solid #cbd5e1; border-radius: 4px; background: #fff; cursor: pointer;">
@@ -86,7 +81,7 @@
                 </select>
               </div>
 
-              <div id="assignedCoursesList" style="max-height: 250px; overflow-y: auto;">
+              <div id="assignedCoursesList" style="max-height: 300px; overflow-y: auto;">
                 <p style="color: #757575;">Завантаження призначень...</p>
               </div>
             </div>
@@ -105,12 +100,13 @@
           
           <!-- Останні новини -->
           <div class="cabinet-card" style="grid-column: 1 / -1; border-left: 4px solid #ff9800;">
-            <h3>📢 Останні оновлення на порталі (23.09.2026)</h3>
+            <h3>📢 Останні оновлення на порталі</h3>
             <div style="background-color: #f9f9f9; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; margin-top: 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);">
-              <h4 style="margin-top: 0; color: #2c3e50; font-size: 16px; margin-bottom: 12px; text-align: center;">23.09.2026 Додано оновлення</h4>
+              <h4 style="margin-top: 0; color: #2c3e50; font-size: 16px; margin-bottom: 12px; text-align: center;">Оновлення системи Behealth Academy</h4>
               <div style="color: #4a5568; line-height: 1.6; font-size: 14px;">
-                🟢 1. Cтворено розділ інтерактивних завдань та календаря.<br>
-                🟢 2. Створено навчальних модулів та звітів.
+                🟢 1. Запущено єдиний модуль збору оцінок ШІ-візитів та квізів.<br>
+                🟢 2. Додано калькулятори оцінювання польових подвійних візитів (МП/РМ).<br>
+                🟢 3. Впроваджено автоматичну систему 5-рівневого грейдингу МП.
               </div>
             </div>
           </div>
@@ -120,29 +116,70 @@
     </section>
   </main>
 
- <div id="footer-container"></div>
+  <div id="footer-container"></div>
 
   <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby87iUOv2tul_QrIBiuJ8JgcfCOl4WQ3igIuIDNWpZS4CN2y27RRtD752dyePFZRvGf8A/exec";
+    const DECANAT_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby87iUOv2tul_QrIBiuJ8JgcfCOl4WQ3igIuIDNWpZS4CN2y27RRtD752dyePFZRvGf8A/exec";
 
-    function getUserAvatarPath(role, userFullName, userScore = 0) {
+    // 1. Розрахунок грейду МП за матрицею вагових коефіцієнтів (FEX)
+    function calculateMPGrade(pvAvg = 0, aiScore = 0, quizPercent = 0, hwAvg = 0) {
+      const pvPct = (pvAvg / 3.0) * 100;
+      const aiPct = (aiScore / 15.0) * 100;
+      const qPct  = quizPercent || 0;
+      const hwPct = (hwAvg / 5.0) * 100;
+
+      const fex = Math.round((pvPct * 0.40) + (aiPct * 0.25) + (qPct * 0.20) + (hwPct * 0.15));
+
+      let gradeKey = "j";
+      let gradeTitle = "🌱 Новачок";
+
+      if (fex >= 90 && pvAvg >= 2.8) {
+        gradeKey = "p";
+        gradeTitle = "🏆 Профі";
+      } else if (fex >= 75 && pvAvg >= 2.5) {
+        gradeKey = "e";
+        gradeTitle = "🔥 Експерт";
+      } else if (fex >= 60) {
+        gradeKey = "m";
+        gradeTitle = "⚙️ Досвідчений";
+      } else if (fex >= 40) {
+        gradeKey = "s";
+        gradeTitle = "📘 Спеціаліст";
+      } else {
+        gradeKey = "j";
+        gradeTitle = "🌱 Новачок";
+      }
+
+      return { fex, gradeKey, gradeTitle };
+    }
+
+    // 2. Визначення шляху до аватарки з урахуванням ролі та статі
+    function getUserAvatarPath(role, userFullName, fexData) {
       if (role === "admin") return "./images2/avatar/ad.jpg";
+      if (role === "office") return "./images2/avatar/ad.jpg";
+
       let isFemale = false;
       if (userFullName) {
         const parts = userFullName.trim().split(" ");
-        if (parts.length >= 3 && parts[2].toLowerCase().endsWith("вна")) isFemale = true;
+        if (parts.length >= 3 && parts[2].toLowerCase().endsWith("вна")) {
+          isFemale = true;
+        }
       }
-      if (role === "rm") return isFemale ? "./images2/avatar/frm.jpg" : "./images2/avatar/mrm.jpg";
-      let gradeCode = userScore > 80 ? "p" : userScore > 60 ? "e" : userScore > 40 ? "s" : userScore > 20 ? "m" : "j";
+
+      if (role === "rm") {
+        return isFemale ? "./images2/avatar/frm.jpg" : "./images2/avatar/mrm.jpg";
+      }
+
+      const gradeCode = fexData ? fexData.gradeKey : "j";
       return `./images2/avatar/${isFemale ? "f" : "m"}${gradeCode}.jpg`;
     }
 
-    // Відправка статусу за чітким assignmentId
     async function updateTaskStatusOnServer(assignmentId, email, courseUrl, newStatus) {
       if (!assignmentId) return;
       try {
-        await fetch(SCRIPT_URL, {
+        await fetch(DECANAT_SCRIPT_URL, {
           method: "POST",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             action: "updateCourseStatus",
             assignmentId: assignmentId,
@@ -156,8 +193,6 @@
       }
     }
 
-    // Дія менеджера (кнопки ✅ Виконано / 🔄 Доопрацювати)
-    // Оновлена дія менеджера з передачею коментаря
     window.submitManagerReview = async function(assignmentId, email, encodedUrl, newStatus) {
       let rawUrl = decodeURIComponent(encodedUrl);
       let commentInput = document.getElementById(`comment_${assignmentId}`);
@@ -172,8 +207,9 @@
       }
 
       try {
-        const response = await fetch(SCRIPT_URL, {
+        const response = await fetch(DECANAT_SCRIPT_URL, {
           method: "POST",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             action: "updateCourseStatus",
             assignmentId: assignmentId,
@@ -181,7 +217,7 @@
             courseUrl: rawUrl,
             status: newStatus,
             managerComment: comment,
-            grade: grade // Передаємо оцінку для грейду
+            grade: grade
           })
         });
         const resJson = await response.json();
@@ -194,6 +230,7 @@
         alert("Помилка зв'язку з сервером.");
       }
     };
+
     function parseCourseItem(rawUrl) {
       let titlePart = rawUrl, deadlinePart = "", deadlineDate = "", linkTarget = "";
       if (rawUrl.includes("посилання:")) {
@@ -223,7 +260,7 @@
 
     document.addEventListener("DOMContentLoaded", async () => {
       const allowedEmail = localStorage.getItem("allowedEmail");
-      const userRole = localStorage.getItem("userRole");
+      const userRole = (localStorage.getItem("userRole") || "mp").toLowerCase();
       const userFullName = localStorage.getItem("userFullName") || "Співробітник";
 
       if (!allowedEmail) {
@@ -237,21 +274,40 @@
       document.getElementById("userEmailField").textContent = allowedEmail;
       document.getElementById("userNameField").textContent = userFullName;
 
-      let completedModules = 0;
+      // Оформлення профілю та грейду
       const avatarImg = document.getElementById("userAvatarImg");
-      if (avatarImg) {
-        avatarImg.src = getUserAvatarPath(userRole, userFullName, 0);
-        avatarImg.onerror = () => { avatarImg.src = "./images2/avatar/default.jpg"; };
+      const gradeBadgeEl = document.getElementById("userGradeBadge");
+
+      if (userRole === "mp") {
+        // За замовчуванням (або зчитані з сервера значення)
+        const pvAvg = 0;       
+        const aiScore = 0;     
+        const quizPercent = 0; 
+        const hwAvg = 0;       
+
+        const userGrade = calculateMPGrade(pvAvg, aiScore, quizPercent, hwAvg);
+
+        if (avatarImg) {
+          avatarImg.src = getUserAvatarPath(userRole, userFullName, userGrade);
+          avatarImg.onerror = () => { avatarImg.src = "./images2/avatar/default.jpg"; };
+        }
+        if (gradeBadgeEl) {
+          gradeBadgeEl.innerHTML = `<strong>Грейд:</strong> ${userGrade.gradeTitle} (${userGrade.fex}%)`;
+        }
+      } else {
+        if (avatarImg) {
+          avatarImg.src = getUserAvatarPath(userRole, userFullName, null);
+          avatarImg.onerror = () => { avatarImg.src = "./images2/avatar/default.jpg"; };
+        }
+        if (gradeBadgeEl) {
+          gradeBadgeEl.innerHTML = `<strong>Роль:</strong> ${userRole.toUpperCase()}`;
+        }
       }
 
       const trainingNamesMap = {
         "trening1.html": "Visit structure (Базовий тренінг МП)",
         "trening2.html": "Decision-maker (Тренінг по роботі з ЛПР)",
-        "trening3.html": "Presentation (Тренінг з презентації продукту)",
-        "argisDuo.html": "Аргіс ДУО свічки №10",
-        "bilord.html": "Білорд",
-        "veriksa.html": "Верікса",
-        // Додайте інші ваші продукти за потреби...
+        "trening3.html": "Presentation (Тренінг з презентації продукту)"
       };
 
       function renderCoursesList(coursesToRender) {
@@ -289,7 +345,6 @@
                 let name = trainingNamesMap[cl] || cl;
                 let lHref = (cl.startsWith("http") ? cl : (cl.toLowerCase().startsWith("trening") ? `./${cl}` : `./product.html?id=${cl}`));
                 
-                // ПРОКИДАЄМО ID В URL
                 if (item.assignmentId) {
                   let char = lHref.includes('?') ? '&' : '?';
                   lHref += `${char}assignmentId=${item.assignmentId}`;
@@ -302,7 +357,6 @@
               let target = parsed.linkTarget.trim();
               href = (target.startsWith("http") ? target : (target.toLowerCase().startsWith("trening") ? `./${target}` : `./product.html?id=${target}`));
               
-              // ПРОКИДАЄМО ID В URL
               if (item.assignmentId) {
                 let char = href.includes('?') ? '&' : '?';
                 href += `${char}assignmentId=${item.assignmentId}`;
@@ -327,17 +381,16 @@
                     <strong>📝 Звіт співробітника:</strong> <span style="color: #64748b; font-style: italic;">${item.reportText || "(Текст відсутній)"}</span>
                   </p>
                   
-                  <!-- Поле для оцінки керівником -->
                   <div style="margin-bottom: 8px;">
                     <label style="font-size: 11px; font-weight: 500; color: #334155;">Оцінка за завдання (бали):</label>
                     <select id="grade_${item.assignmentId}" style="padding: 4px 6px; font-size: 12px; border: 1px solid #cbd5e1; border-radius: 4px; background: #fff; margin-left: 6px;">
-                      <option value="5" selected>5 — Вище очикувань</option>
+                      <option value="5" selected>5 — Вище очікувань</option>
                       <option value="4">4 — Відмінно</option>
                       <option value="3">3 — Добре</option>
                       <option value="2">2 — Задовільно</option>
-                      <option value="1">1 — Нижче очикувань</option>
+                      <option value="1">1 — Нижче очікувань</option>
                       <option value="0">0 — Незадовільно</option>
-                      </select>
+                    </select>
                   </div>
 
                   <textarea id="comment_${item.assignmentId}" placeholder="Коментар керівника..." style="width: 100%; height: 50px; padding: 8px; font-size: 12px; border: 1px solid #cbd5e1; border-radius: 4px; margin-bottom: 8px; resize: vertical; box-sizing: border-box;"></textarea>
@@ -374,8 +427,6 @@
           const taskLinks = li.querySelectorAll(".task-click-link");
           taskLinks.forEach(link => {
             link.addEventListener("click", async () => {
-              
-              // НОВЕ: Зберігаємо ID завдання у пам'ять браузера при переході
               if (item.assignmentId) {
                 localStorage.setItem("currentAssignmentId", item.assignmentId);
               }
@@ -402,7 +453,7 @@
 
       let originalCourses = [];
       try {
-        const response = await fetch(`${SCRIPT_URL}?email=${encodeURIComponent(allowedEmail)}`);
+        const response = await fetch(`${DECANAT_SCRIPT_URL}?email=${encodeURIComponent(allowedEmail)}`);
         const result = await response.json();
         if (result.status === "success") {
           originalCourses = result.courses || [];
@@ -441,7 +492,6 @@
       }
     });
   </script>
-
   <script src="./js/menu.js"></script>
   <script src="headfoot.js"></script>
   <script src="theme-toggle.js"></script>

@@ -6,7 +6,7 @@
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Завдання: Виявлення потреб партнера</title>
+  <title>Завдання: Уточнюючі і закриті запитання</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@700&family=Roboto:wght@400;500;700;900&display=swap"
@@ -31,48 +31,47 @@
   <main>
     <section class="works">
       <div class="container">
-        <h2 style="margin-bottom: 20px; text-align: center;">Форма навчального завдання з виявлення потреб партнера</h2>
-        <h2 style="margin-bottom: 20px; text-align: center;">Перший навик другого пріоритету</h2>
+        <h2 style="margin-bottom: 20px; text-align: center;">Форма навчального завдання: "Виявлення потреби партнера - відкриті запитання"</h2>
+        <h2 style="margin-bottom: 20px; text-align: center;">Перший етап відпрацювання навику</h2>
         
         <!-- Блок інформації про учасників -->
         <div id="participantsInfo" style="background: #eef; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center; font-weight: bold;">
           👤 Менеджер (РМ): <span id="displayRmName">—</span> | 🎯 Співробітник (МП): <span id="displayMpName">—</span>
         </div>
 
-        <h3 style="margin-bottom: 20px ; line-height: 1.5; color: #949494;">Для відпрацювання навику виявлення потреби:<br>🟢1. Перевірте знання співробітника стосовно того що таке потреба і група потреб, як їх можна виявляти<br>🟢2. Після цього перейдіть до відпрацювання відкритих, чи уточнюючих і закритих запитань для виявлення потреб</h3>
+        <h3 style="margin-bottom: 20px ; line-height: 1.5; color: #949494;">Для відпрацювання навику виявлення загальної потреби:<br>🟢1. Перевірте знання співробітника що таке відкриті запитання і як їх можна створювати<br>🟢2. Пропишіть 4-5 відкритих запитань для виявленя загальних потреб на наступний візит РАЗОМ зі співробітником.<br>🟢3. Перевірте чи вдалося виявити загальні потреби партнера на візиті.<br>🟢4. Запропонуйте співробітнику обрати відкриті запитання для виявлення загальних потреб по кожному продукту на наступний візит САМОСТІЙНО. <br>🟢5. Перевірте виявлення загальних потреб після візиту.<br>🟢6. Дайте зворотній зв'язок про успіхи співробітника в виявленні загальних потреб і обраних запитаннях.<br>🟢7. Повторюйте пункти 4-6 до кінця дня.</h3>
+        <h3 style="margin-bottom: 20px ; line-height: 1.5; color: #949494;">При наданні ДЗ по навику виявлення загальної потреби:<br>🟢 Попросіть співробітника розширити перелік відкритих запитань для розкриття груп потреб зі списку.</h3>
         
-        <ul class="button">
-          <li class="button-section" style="margin-bottom: 2px;"><button class="btn" type="button"><a href="./PV5a.html" style="text-decoration: none; font-size: smaller;" class="text__work">Відкриті запитання</a></button></li>
-          <li class="button-section" style="margin-bottom: 2px;"><button class="btn" type="button"><a href="./PV5b.html" style="text-decoration: none; font-size: smaller;" class="text__work">Уточнюючі та закриті запитання</a></button></li>
-          <li class="button-section" style="margin-bottom: 2px;"><button class="btn" type="button"><a style="text-decoration: none; font-size: smaller;" class="text__work" href="./portfolio PV.html">Мій кабінет</a>
-                </button></li>
-        </ul>
+        <form id="trainingForm">
+          <div class="custom-dropdown">
+            <label>
+              <div id="dropdownToggle" class="dropdown-toggle">Оберіть продукти</div>
+              <div id="productDropdown" class="dropdown-menu hidden">
+                <!-- JS сюди вставить чекбокси -->
+              </div>
+            </label><br>
+          </div>
+
+          <!-- Прихований input, куди передаються значення -->
+          <input type="hidden" id="selectedProducts">
+
+          <ul class="button">
+            <li class="button-section"><button class="btn" type="submit" id="submitBtn">Надіслати завдання в кабінет</button></li>
+          <li class="button-section"><button class="btn" type="button" onclick="event.stopPropagation()"><a style="text-decoration: none; font-size: smaller;" class="text__work" href="./portfolio PV.html">До переліку</a></button></li>
+          <li class="button-section"><button class="btn" type="button"><a style="text-decoration: none; font-size: smaller;" class="text__work" href="./portfolio PV.html">Мій кабінет</a></button></li>
+                
+          </ul>
+        </form>
       </div>
     </section>
   </main>
-  
   <div id="footer-container"></div>
-  
   <script src="./js/menu.js"></script>
   <script src="theme-toggle.js"></script>
   <script src="tracking.js"></script>
-
-  <script src="user.js"></script>
-  
-  <script>
-    window.addEventListener('DOMContentLoaded', () => {
-      // Зчитуємо дані РМ та МП з localStorage
-      const rmName = localStorage.getItem("currentRmName") || "Олександр Волянюк";
-      const mpName = localStorage.getItem("currentMpName") || "Не вказано";
-
-      document.getElementById('displayRmName').textContent = rmName;
-      document.getElementById('displayMpName').textContent = mpName;
-    });
-  </script>
-
+  <script src="pvtask.js"></script>
   <script src="headfoot.js"></script>
   <script src="scroll.js"></script>
   <script src="scrbtn.js"></script>
-
 </body>
 </html>

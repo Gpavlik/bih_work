@@ -9,13 +9,9 @@
   <title>Виконання навчального завдання</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@700&family=Roboto:wght@400;500;700;900&display=swap"
-    rel="stylesheet" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/modern-normalize/1.1.0/modern-normalize.css"
-    integrity="sha512-Y0MM+V6ymRKN2zStTqzQ227DWhhp4Mzdo6gnlRnuaNCbc+YN/ZH0sBCLTM4M0oSy9c9VKiCvd4Jk44aCLrNS5Q=="
-    crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@700&family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/modern-normalize/1.1.0/modern-normalize.css" integrity="sha512-Y0MM+V6ymRKN2zStTqzQ227DWhhp4Mzdo6gnlRnuaNCbc+YN/ZH0sBCLTM4M0oSy9c9VKiCvd4Jk44aCLrNS5Q==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <link rel="stylesheet" href="./css/main.css" />
-  
 </head>
 <body>
   <div id="header-container"></div>
@@ -25,12 +21,15 @@
         <h2 style="margin-bottom: 20px; text-align: center;">Виконання навчального завдання</h2>
         
         <!-- Інформаційний блок про завдання -->
-        <div id="taskInfoBlock" style="background: #eef; padding: 20px; border-radius: 8px; margin-bottom: 25px;">
+        <div id="taskInfoBlock" style="background: #eef; padding: 20px; border-radius: 8px; margin-bottom: 25px; line-height: 1.6;">
           <p><strong>🎯 Навик (фокус):</strong> <span id="taskSkill">Завантаження...</span></p>
           <p><strong>👤 Призначив (РМ):</strong> <span id="taskRm">—</span></p>
           <p><strong>👤 Виконує (МП):</strong> <span id="taskMp">—</span></p>
           <p><strong>📅 Дата призначення:</strong> <span id="taskDate">—</span></p>
           <p><strong>💊 Обрані продукти / теми:</strong> <span id="taskProducts">—</span></p>
+          <p id="taskNoteContainer" style="display: none; margin-top: 10px; padding-top: 10px; border-top: 1px dashed #cbd5e1;">
+            <strong>📝 Примітка / Завдання від РМ:</strong> <br><span id="taskNote" style="font-style: italic; color: #334155;">—</span>
+          </p>
         </div>
 
         <!-- Форма для звіту співробітника -->
@@ -49,7 +48,7 @@
             <input type="url" id="mpLink" placeholder="https://docs.google.com/..." style="width: 100%; padding: 10px; border-radius: 4px; border: 1px solid #ccc; font-size: 1em; box-sizing: border-box;">
           </div>
 
-          <ul class="button">
+          <ul class="button" style="display: flex; gap: 15px; list-style: none; padding: 0;">
             <li class="button-section">
               <button class="btn" type="submit" id="sendReportBtn">📤 Надіслати на перевірку РМ та тренеру</button>
             </li>
@@ -63,31 +62,40 @@
       </div>
     </section>
   </main>
-
+  
   <div id="footer-container"></div>
-
   <script src="./js/menu.js"></script>
   <script src="theme-toggle.js"></script>
   <script src="tracking.js"></script>
-
-  <script src="user.js"></script>
-
   <script>
+    let currentAssignmentId = null;
+
     window.addEventListener('DOMContentLoaded', () => {
-      // Підтягуємо дані завдання та учасників з localStorage
+      // Зчитуємо assignmentId з URL або localStorage
+      const urlParams = new URLSearchParams(window.location.search);
+      currentAssignmentId = urlParams.get('assignmentId') || localStorage.getItem("currentAssignmentId");
+
+      // Підтягуємо дані з localStorage
       document.getElementById('taskSkill').textContent = localStorage.getItem("currentTaskSkill") || localStorage.getItem("currentSkill") || "Знання продуктів";
       document.getElementById('taskRm').textContent = localStorage.getItem("currentRmName") || "Олександр Волянюк";
       document.getElementById('taskMp').textContent = localStorage.getItem("currentMpName") || localStorage.getItem("allowedEmail") || "Медичний представник";
       document.getElementById('taskDate').textContent = localStorage.getItem("currentTaskDate") || new Date().toLocaleDateString('uk-UA');
       document.getElementById('taskProducts').textContent = localStorage.getItem("currentTaskProducts") || "Згідно з планом";
+
+      const noteText = localStorage.getItem("currentTaskNote");
+      if (noteText) {
+        document.getElementById('taskNote').textContent = noteText;
+        document.getElementById('taskNoteContainer').style.display = "block";
+      }
     });
 
-    document.getElementById('submitTaskForm').addEventListener('submit', (event) => {
+    document.getElementById('submitTaskForm').addEventListener('submit', async (event) => {
       event.preventDefault();
 
       const mpComment = document.getElementById('mpComment').value.trim();
       const mpLink = document.getElementById('mpLink').value.trim();
       const mpName = localStorage.getItem("currentMpName") || localStorage.getItem("allowedEmail") || "Медичний представник";
+      const userEmail = localStorage.getItem("allowedEmail") || "";
       const rmName = localStorage.getItem("currentRmName") || "Олександр Волянюк";
       const skillName = document.getElementById('taskSkill').textContent;
       const products = document.getElementById('taskProducts').textContent;
@@ -97,46 +105,44 @@
         return;
       }
 
-      // Формуємо пакет даних для відправки на бекенд (Google Apps Script)
+      const btn = document.getElementById('sendReportBtn');
+      btn.textContent = "⏳ Надсилається звіт...";
+      btn.disabled = true;
+
+      // Формуємо пакет даних для відправки на бекенд
       const reportData = {
         type: "taskReport",
+        assignmentId: currentAssignmentId || "", // Передаємо ID призначення
+        email: userEmail,
         mpName: mpName,
         rmName: rmName,
         skill: skillName,
         products: products,
         reportText: mpComment,
         reportLink: mpLink || "Відсутнє",
-        status: "Очікує перевірки",
+        status: "Потребує перевірки",
         dateSubmitted: new Date().toLocaleDateString('uk-UA')
       };
 
-      const btn = document.getElementById('sendReportBtn');
-      btn.textContent = "⏳ Надсилається звіт...";
-      btn.disabled = true;
+      const scriptURL = "https://script.google.com/macros/s/AKfycby87iUOv2tul_QrIBiuJ8JgcfCOl4WQ3igIuIDNWpZS4CN2y27RRtD752dyePFZRvGf8A/exec";
+      const params = new URLSearchParams(reportData).toString();
 
-      // URL вашого Google Apps Script бекенду
-      const scriptURL = "  https://script.google.com/macros/s/AKfycby87iUOv2tul_QrIBiuJ8JgcfCOl4WQ3igIuIDNWpZS4CN2y27RRtD752dyePFZRvGf8A/exec";
+      try {
+        await fetch(`${scriptURL}?${params}`, { method: "GET" });
 
-      fetch(scriptURL, {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(reportData)
-      })
-      .then(() => {
         alert("✅ Ваш звіт успішно надіслано Регіональному менеджеру та тренеру на перевірку!");
+        localStorage.removeItem("currentAssignmentId");
         window.location.href = "cabinet.html";
-      })
-      .catch((error) => {
+      } catch (error) {
         console.error("Помилка:", error);
         alert("❌ Сталася помилка при надсиланні. Спробуйте ще раз.");
         btn.textContent = "📤 Надіслати на перевірку РМ та тренеру";
         btn.disabled = false;
-      });
+      }
     });
-  </script><script src="headfoot.js"></script>
+  </script>
+  <script src="headfoot.js"></script>
   <script src="scroll.js"></script>
   <script src="scrbtn.js"></script>
-
 </body>
 </html>

@@ -53,15 +53,15 @@
           
           <!-- Профіль користувача -->
           <div class="cabinet-card" style="text-align: center; border-left: 4px solid #069606;">
-            <img id="userAvatarImg" class="user-avatar" src="" alt="Аватар користувача">
+            <img id="userAvatarImg" class="user-avatar" src="./images2/avatar/default.jpg" alt="Аватар користувача">
             <h3 style="justify-content: center;" id="userNameField">Користувач</h3>
             <p><strong>Email:</strong> <span id="userEmailField">завантаження...</span></p>
             <div style="text-align: left; margin-top: 15px;">
               <p><strong>Статус доступу:</strong> <span style="color: green; font-weight: 500;">Активний (Партнер)</span></p>
-              <p id="userGradeBadge"><strong>Грейд / Роль:</strong> Визначення...</p>
+              <p id="userGradeBadge"><strong>Грейд:</strong> Завантаження...</p>
               <p style="margin-top: 10px;"><strong style="color: black; font-weight: 700;">Ваші досягнення в навчальному модулі:</strong></p>
-              <p style="margin-top: 5px;"><strong>Пройдено сценаріїв візитів:</strong> <span id="visitedCount">0</span></p>
-              <p><strong>Статус тестування:</strong> <span id="testStatus" style="color: #757575;">Очікує на проходження</span></p>
+              <p style="margin-top: 5px;"><strong>Накопичено XP:</strong> <span id="userTotalXP" style="font-weight: bold; color: #27ae60;">0</span> XP</p>
+              <p><strong>Виконано модулів:</strong> <span id="completedModulesCount">0</span></p>
             </div>
           </div>
 
@@ -121,42 +121,8 @@
   <script>
     const DECANAT_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby87iUOv2tul_QrIBiuJ8JgcfCOl4WQ3igIuIDNWpZS4CN2y27RRtD752dyePFZRvGf8A/exec";
 
-    // 1. Розрахунок грейду МП за матрицею вагових коефіцієнтів (FEX)
-    function calculateMPGrade(pvAvg = 0, aiScore = 0, quizPercent = 0, hwAvg = 0) {
-      const pvPct = (pvAvg / 3.0) * 100;
-      const aiPct = (aiScore / 15.0) * 100;
-      const qPct  = quizPercent || 0;
-      const hwPct = (hwAvg / 5.0) * 100;
-
-      const fex = Math.round((pvPct * 0.40) + (aiPct * 0.25) + (qPct * 0.20) + (hwPct * 0.15));
-
-      let gradeKey = "j";
-      let gradeTitle = "🌱 Новачок";
-
-      if (fex >= 90 && pvAvg >= 2.8) {
-        gradeKey = "p";
-        gradeTitle = "🏆 Профі";
-      } else if (fex >= 75 && pvAvg >= 2.5) {
-        gradeKey = "e";
-        gradeTitle = "🔥 Експерт";
-      } else if (fex >= 60) {
-        gradeKey = "m";
-        gradeTitle = "⚙️ Досвідчений";
-      } else if (fex >= 40) {
-        gradeKey = "s";
-        gradeTitle = "📘 Спеціаліст";
-      } else {
-        gradeKey = "j";
-        gradeTitle = "🌱 Новачок";
-      }
-
-      return { fex, gradeKey, gradeTitle };
-    }
-
-    // 2. Визначення шляху до аватарки з урахуванням ролі та статі
-    function getUserAvatarPath(role, userFullName, fexData) {
-      if (role === "admin") return "./images2/avatar/ad.jpg";
-      if (role === "office") return "./images2/avatar/ad.jpg";
+    function getUserAvatarPath(role, userFullName, currentGrade) {
+      if (role === "admin" || role === "office") return "./images2/avatar/ad.jpg";
 
       let isFemale = false;
       if (userFullName) {
@@ -170,7 +136,13 @@
         return isFemale ? "./images2/avatar/frm.jpg" : "./images2/avatar/mrm.jpg";
       }
 
-      const gradeCode = fexData ? fexData.gradeKey : "j";
+      let gradeCode = "j";
+      const gLower = (currentGrade || "").toLowerCase();
+      if (gLower.includes("супер") || gLower.includes("5")) gradeCode = "p";
+      else if (gLower.includes("експерт") || gLower.includes("4")) gradeCode = "e";
+      else if (gLower.includes("досвідчений") || gLower.includes("3")) gradeCode = "m";
+      else if (gLower.includes("спеціаліст") || gLower.includes("2")) gradeCode = "s";
+
       return `./images2/avatar/${isFemale ? "f" : "m"}${gradeCode}.jpg`;
     }
 
@@ -222,6 +194,7 @@
         });
         const resJson = await response.json();
         if (resJson.status === "success") {
+          alert(`✅ Завдання оцінено! Статус: ${newStatus}`);
           location.reload();
         } else {
           alert("Помилка збереження на сервері.");
@@ -252,7 +225,7 @@
 
     function getDisplayStatus(item, parsed) {
       const todayStr = new Date().toISOString().split('T')[0];
-      if (parsed.deadlineDate && item.status !== "Виконано" && parsed.deadlineDate < todayStr) {
+      if (parsed.deadlineDate && item.status !== "Виконано" && item.status !== "Зараховано" && parsed.deadlineDate < todayStr) {
         return "Протерміновано";
       }
       return item.status;
@@ -274,40 +247,12 @@
       document.getElementById("userEmailField").textContent = allowedEmail;
       document.getElementById("userNameField").textContent = userFullName;
 
-      // Оформлення профілю та грейду
-      const avatarImg = document.getElementById("userAvatarImg");
-      const gradeBadgeEl = document.getElementById("userGradeBadge");
-
-      if (userRole === "mp") {
-        // За замовчуванням (або зчитані з сервера значення)
-        const pvAvg = 0;       
-        const aiScore = 0;     
-        const quizPercent = 0; 
-        const hwAvg = 0;       
-
-        const userGrade = calculateMPGrade(pvAvg, aiScore, quizPercent, hwAvg);
-
-        if (avatarImg) {
-          avatarImg.src = getUserAvatarPath(userRole, userFullName, userGrade);
-          avatarImg.onerror = () => { avatarImg.src = "./images2/avatar/default.jpg"; };
-        }
-        if (gradeBadgeEl) {
-          gradeBadgeEl.innerHTML = `<strong>Грейд:</strong> ${userGrade.gradeTitle} (${userGrade.fex}%)`;
-        }
-      } else {
-        if (avatarImg) {
-          avatarImg.src = getUserAvatarPath(userRole, userFullName, null);
-          avatarImg.onerror = () => { avatarImg.src = "./images2/avatar/default.jpg"; };
-        }
-        if (gradeBadgeEl) {
-          gradeBadgeEl.innerHTML = `<strong>Роль:</strong> ${userRole.toUpperCase()}`;
-        }
-      }
-
       const trainingNamesMap = {
         "trening1.html": "Visit structure (Базовий тренінг МП)",
         "trening2.html": "Decision-maker (Тренінг по роботі з ЛПР)",
-        "trening3.html": "Presentation (Тренінг з презентації продукту)"
+        "trening3.html": "Presentation (Тренінг з презентації продукту)",
+        "trening4.html": "Business emailing (Ділове листування)",
+        "trening5.html": "Handling objections (Робота з запереченнями)"
       };
 
       function renderCoursesList(coursesToRender) {
@@ -331,7 +276,7 @@
           else if (displayStatus === "Потребує перевірки") statusColor = "#8e44ad";
           else if (displayStatus === "Розпочато навчання") statusColor = "#3498db";
           else if (displayStatus === "Переглянуто") statusColor = "#16a085";
-          else if (displayStatus === "Виконано") statusColor = "#27ae60";
+          else if (displayStatus === "Виконано" || displayStatus === "Зараховано") statusColor = "#27ae60";
 
           let href = "";
           let inlineLinksHTML = "";
@@ -384,19 +329,17 @@
                   <div style="margin-bottom: 8px;">
                     <label style="font-size: 11px; font-weight: 500; color: #334155;">Оцінка за завдання (бали):</label>
                     <select id="grade_${item.assignmentId}" style="padding: 4px 6px; font-size: 12px; border: 1px solid #cbd5e1; border-radius: 4px; background: #fff; margin-left: 6px;">
-                      <option value="5" selected>5 — Вище очікувань</option>
-                      <option value="4">4 — Відмінно</option>
-                      <option value="3">3 — Добре</option>
-                      <option value="2">2 — Задовільно</option>
-                      <option value="1">1 — Нижче очікувань</option>
-                      <option value="0">0 — Незадовільно</option>
+                      <option value="5" selected>5 — Відмінно (150 XP)</option>
+                      <option value="4">4 — Добре (100 XP)</option>
+                      <option value="3">3 — Задовільно (80 XP)</option>
+                      <option value="2">2 — Потребує доопрацювання</option>
                     </select>
                   </div>
 
                   <textarea id="comment_${item.assignmentId}" placeholder="Коментар керівника..." style="width: 100%; height: 50px; padding: 8px; font-size: 12px; border: 1px solid #cbd5e1; border-radius: 4px; margin-bottom: 8px; resize: vertical; box-sizing: border-box;"></textarea>
                   
                   <div style="display: flex; gap: 6px; flex-wrap: wrap;">
-                    <button onclick="submitManagerReview('${item.assignmentId}', '${item.userEmail}', '${encodeURIComponent(rawUrl)}', 'Виконано')" style="background: #27ae60; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 500;">✅ Прийняти та оцінити</button>
+                    <button onclick="submitManagerReview('${item.assignmentId}', '${item.userEmail}', '${encodeURIComponent(rawUrl)}', 'Зараховано')" style="background: #27ae60; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 500;">✅ Прийняти та зарахувати XP</button>
                     <button onclick="submitManagerReview('${item.assignmentId}', '${item.userEmail}', '${encodeURIComponent(rawUrl)}', 'Доопрацювати')" style="background: #e74c3c; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 500;">🔄 На доопрацювання</button>
                   </div>
                 </div>
@@ -404,7 +347,7 @@
             } else if (item.status === "Доопрацювати") {
               managerActionsHTML = `
                 <div style="margin-top: 8px;">
-                  <button onclick="submitManagerReview('${item.assignmentId}', '${item.userEmail}', '${encodeURIComponent(rawUrl)}', 'Призначено')" style="background: #f39c12; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 500;">🔓 Дозволити повторне тестування</button>
+                  <button onclick="submitManagerReview('${item.assignmentId}', '${item.userEmail}', '${encodeURIComponent(rawUrl)}', 'Призначено')" style="background: #f39c12; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 500;">🔓 Дозволити повторну здачу</button>
                 </div>
               `;
             }
@@ -436,8 +379,8 @@
               let targetLower = (parsed.linkTarget || "").toLowerCase();
 
               if (titleLower.includes("стандарт") || titleLower.includes("запрошення") || targetLower.includes("portfolio standart.html")) {
-                if (currentStatus !== "Виконано") {
-                  await updateTaskStatusOnServer(item.assignmentId, item.userEmail, rawUrl, "Виконано");
+                if (currentStatus !== "Виконано" && currentStatus !== "Зараховано") {
+                  await updateTaskStatusOnServer(item.assignmentId, item.userEmail, rawUrl, "Зараховано");
                 }
               } else {
                 if (currentStatus === "Призначено") {
@@ -455,12 +398,41 @@
       try {
         const response = await fetch(`${DECANAT_SCRIPT_URL}?email=${encodeURIComponent(allowedEmail)}`);
         const result = await response.json();
+        
         if (result.status === "success") {
           originalCourses = result.courses || [];
           renderCoursesList(originalCourses);
+
+          // 🏆 Відображення накопичених XP та Грейду в профілі МП
+          const avatarImg = document.getElementById("userAvatarImg");
+          const gradeBadgeEl = document.getElementById("userGradeBadge");
+          const totalXpEl = document.getElementById("userTotalXP");
+          const completedModulesEl = document.getElementById("completedModulesCount");
+
+          if (totalXpEl) totalXpEl.textContent = result.totalXP || 0;
+          if (completedModulesEl) completedModulesEl.textContent = result.completedModules || 0;
+
+          if (userRole === "mp") {
+            const currentGrade = result.currentGrade || "1. Старт";
+            if (gradeBadgeEl) {
+              gradeBadgeEl.innerHTML = `<strong>Грейд:</strong> ${currentGrade}`;
+            }
+            if (avatarImg) {
+              avatarImg.src = getUserAvatarPath(userRole, userFullName, currentGrade);
+              avatarImg.onerror = () => { avatarImg.src = "./images2/avatar/default.jpg"; };
+            }
+          } else {
+            if (gradeBadgeEl) {
+              gradeBadgeEl.innerHTML = `<strong>Роль:</strong> ${userRole.toUpperCase()}`;
+            }
+            if (avatarImg) {
+              avatarImg.src = getUserAvatarPath(userRole, userFullName, null);
+              avatarImg.onerror = () => { avatarImg.src = "./images2/avatar/default.jpg"; };
+            }
+          }
         }
       } catch (error) {
-        document.getElementById("assignedCoursesList").innerHTML = `<p style="color: #e74c3c; font-size: 13px;">Помилка завантаження даних.</p>`;
+        document.getElementById("assignedCoursesList").innerHTML = `<p style="color: #e74c3c; font-size: 13px;">Помилка завантаження даних з сервера.</p>`;
       }
 
       const sortSelect = document.getElementById("sortTasksSelect");
@@ -468,7 +440,7 @@
         sortSelect.addEventListener("change", (e) => {
           const sortVal = e.target.value;
           let sorted = [...originalCourses];
-          const statusPriority = { "Протерміновано": 1, "Доопрацювати": 2, "Потребує перевірки": 3, "Розпочато навчання": 4, "Переглянуто": 5, "Призначено": 6, "Виконано": 7 };
+          const statusPriority = { "Протерміновано": 1, "Доопрацювати": 2, "Потребує перевірки": 3, "Розпочато навчання": 4, "Переглянуто": 5, "Призначено": 6, "Виконано": 7, "Зараховано": 8 };
           sorted.sort((a, b) => {
             let parsedA = parseCourseItem(a.courseUrl || "");
             let parsedB = parseCourseItem(b.courseUrl || "");

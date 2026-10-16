@@ -92,7 +92,7 @@
                   <option value="Південь">Південь</option>
                   <option value="Центр">Центр</option>
                 </select>
-                <button type="button" class="btn-select-filtered">Вибрати</button>
+                <button type="button" class="btn-select-filtered" onclick="applyFilter('targetUserEmailTrain', this)">Вибрати</button>
               </div>
               <select id="targetUserEmailTrain" multiple style="height: 120px;" required>
                 <option value="">⏳ Завантаження списку...</option>
@@ -136,7 +136,7 @@
                   <option value="Південь">Південь</option>
                   <option value="Центр">Центр</option>
                 </select>
-                <button type="button" class="btn-select-filtered">Вибрати</button>
+                <button type="button" class="btn-select-filtered" onclick="applyFilter('targetUserEmailProd', this)">Вибрати</button>
               </div>
               <select id="targetUserEmailProd" multiple style="height: 120px;" required>
                 <option value="">⏳ Завантаження списку...</option>
@@ -152,7 +152,7 @@
               <label for="deadlineProd">Дедлайн виконання:</label>
               <input type="date" id="deadlineProd" required>
             </div>
-            <button type="submit" class="btn-action" style="background: #2980b9;">📌 Призначити продукти</button>
+            <button type="submit" class="btn-action" style="background: #2980b9;">📌 Призначити продукты</button>
           </form>
         </div>
 
@@ -175,7 +175,7 @@
                   <option value="Південь">Південь</option>
                   <option value="Центр">Центр</option>
                 </select>
-                <button type="button" class="btn-select-filtered">Вибрати</button>
+                <button type="button" class="btn-select-filtered" onclick="applyFilter('targetUserEmailInvite', this)">Вибрати</button>
               </div>
               <select id="targetUserEmailInvite" multiple style="height: 120px;" required>
                 <option value="">⏳ Завантаження списку...</option>
@@ -184,8 +184,8 @@
             <div class="form-group">
               <label for="selectLiveTraining">Запланований тренінг / подія:</label>
               <select id="selectLiveTraining">
-                <option value="online_session_1">Cесія з практичного коучингу</option>
-                <option value="offline_workshop_1">Регіональний онлайн-воркшоп</option>
+                <option value="portfolio standart.html">Сесія з практичного коучингу</option>
+                <option value="portfolio standart.html">Регіональний онлайн-воркшоп</option>
               </select>
             </div>
             <button type="submit" class="btn-action" style="background: #8e44ad;">📨 Надіслати запрошення</button>
@@ -204,6 +204,23 @@
 
     window.appUsersMap = {};
 
+    function applyFilter(selectId, btnEl) {
+      const parent = btnEl.closest('.filter-bar');
+      const dirVal = parent.querySelector('.filter-dir').value;
+      const regVal = parent.querySelector('.filter-reg').value;
+      const targetSelect = document.getElementById(selectId);
+
+      Array.from(targetSelect.options).forEach(opt => {
+        const userInfo = window.appUsersMap[opt.value];
+        if (!userInfo) return;
+        
+        let matchDir = !dirVal || userInfo.direction === dirVal;
+        let matchReg = !regVal || userInfo.region === regVal;
+        
+        opt.selected = matchDir && matchReg;
+      });
+    }
+
     document.addEventListener("DOMContentLoaded", async () => {
       const allowedEmail = localStorage.getItem("allowedEmail");
       const userRole = (localStorage.getItem("userRole") || "").toLowerCase();
@@ -220,7 +237,6 @@
         return;
       }
 
-      // Елементи навігації та блоків
       const analyticsBtn = document.getElementById("analyticsBtn");
       const productEditorBtn = document.getElementById("productEditorBtn");
       const userEditorBtn = document.getElementById("userEditorBtn");
@@ -228,7 +244,6 @@
       const adminFormsContainer = document.getElementById("adminFormsContainer");
       const officeWelcomeCard = document.getElementById("officeWelcomeCard");
 
-      // РОЗПОДІЛ ПРАВ ВІДОБРАЖЕННЯ
       if (userRole === "admin" || allowedEmail.toLowerCase() === "admin") {
         if (analyticsBtn) analyticsBtn.style.display = "inline-block";
         if (productEditorBtn) productEditorBtn.style.display = "inline-block";
@@ -314,7 +329,7 @@
         console.error("Помилка завантаження користувачів:", err);
       }
 
-      // 3. Відправка форми призначення
+      // 3.1 Відправка форми "Призначити тренінг"
       const assignTrainingForm = document.getElementById("assignTrainingForm");
       if (assignTrainingForm) {
         assignTrainingForm.addEventListener("submit", async (e) => {
@@ -344,6 +359,76 @@
           }
         });
       }
+
+      // 3.2 Відправка форми "Призначити продукти"
+      const assignProductForm = document.getElementById("assignProductForm");
+      if (assignProductForm) {
+        assignProductForm.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const targetSelect = document.getElementById("targetUserEmailProd");
+          const selectedUsers = Array.from(targetSelect.selectedOptions).filter(opt => opt.value !== "");
+          const prodSelect = document.getElementById("selectProduct");
+          const selectedProds = Array.from(prodSelect.selectedOptions).filter(opt => opt.value !== "");
+          const deadline = document.getElementById("deadlineProd").value;
+
+          if (selectedUsers.length === 0 || selectedProds.length === 0) {
+            alert("Оберіть співробітників та хоча б один продукт!");
+            return;
+          }
+
+          const emails = selectedUsers.map(opt => opt.value);
+          const prodsList = selectedProds.map(opt => opt.value).join(",");
+          const textPayload = `💊 Опрацювати продукти | 📅 Дедлайн: ${deadline} | посилання:${prodsList}`;
+
+          try {
+            await Promise.all(emails.map(email => 
+              fetch(DECANAT_SCRIPT_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ action: "assignTraining", email: email, trainingUrl: textPayload })
+              })
+            ));
+            alert(`✅ Вивчення продуктів призначено (${emails.length} співробітникам)!`);
+            assignProductForm.reset();
+          } catch (error) {
+            alert("❌ Помилка при призначенні продуктів.");
+          }
+        });
+      }
+
+      // 3.3 Відправка форми "Запросити на тренінг"
+      const inviteTrainingForm = document.getElementById("inviteTrainingForm");
+      if (inviteTrainingForm) {
+        inviteTrainingForm.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const targetSelect = document.getElementById("targetUserEmailInvite");
+          const selectedUsers = Array.from(targetSelect.selectedOptions).filter(opt => opt.value !== "");
+          const liveTraining = document.getElementById("selectLiveTraining").value;
+
+          if (selectedUsers.length === 0) {
+            alert("Оберіть співробітників для запрошення!");
+            return;
+          }
+
+          const emails = selectedUsers.map(opt => opt.value);
+          const textPayload = `📅 Запрошення на вебінар/воркшоп | посилання:${liveTraining}`;
+
+          try {
+            await Promise.all(emails.map(email => 
+              fetch(DECANAT_SCRIPT_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ action: "assignTraining", email: email, trainingUrl: textPayload })
+              })
+            ));
+            alert(`✅ Запрошення успішно надіслано (${emails.length} співробітникам)!`);
+            inviteTrainingForm.reset();
+          } catch (error) {
+            alert("❌ Помилка при відправці запрошень.");
+          }
+        });
+      }
+
     });
   </script>
 

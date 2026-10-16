@@ -141,47 +141,50 @@ document.addEventListener("DOMContentLoaded", async () => {
     sendQuizResultsToBackend(); // <--- Відправляємо результати на бекенд
   }
 
-  async function sendQuizResultsToBackend() {
-    let score = 0;
-    const totalQ = quizState.questions.length;
-    if (totalQ === 0) return;
+async function sendQuizResultsToBackend() {
+  let score = 0;
+  const totalQ = quizState.questions.length;
+  if (totalQ === 0) return;
 
-    quizState.questions.forEach((q, idx) => {
-      if (quizState.answers[idx] === q.correct) score++;
+  quizState.questions.forEach((q, idx) => {
+    if (quizState.answers[idx] === q.correct) score++;
+  });
+  
+  const percent = Math.round((score / totalQ) * 100);
+  const email = localStorage.getItem("allowedEmail") || "guest";
+  const urlParams = new URLSearchParams(window.location.search);
+  const currentFilename = urlParams.get('id') || "unknown";
+  
+  // 🔒 Зчитуємо assignmentId з URL або localStorage
+  const currentAssignmentId = urlParams.get('assignmentId') || localStorage.getItem("currentAssignmentId") || "";
+
+  const details = quizState.questions.map((q, idx) => ({
+    question: q.q,
+    userAnswer: quizState.answers[idx] !== null && quizState.answers[idx] !== undefined ? q.options[quizState.answers[idx]] : "Час вийшов / Не обрано",
+    correctAnswer: q.options[q.correct],
+    isCorrect: quizState.answers[idx] === q.correct
+  }));
+
+  try {
+    await fetch(GAS_BACKEND_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({
+        mode: "quiz_result",
+        email: email,
+        assignmentId: currentAssignmentId, // 👈 Ключовий ID для бекенду
+        productFilename: currentFilename,
+        score: score,
+        totalQuestions: totalQ,
+        percentage: percent,
+        status: percent >= 90 ? "Складено" : "Не складено",
+        detailsJson: JSON.stringify(details)
+      })
     });
-    
-    const percent = Math.round((score / totalQ) * 100);
-    const email = localStorage.getItem("allowedEmail") || "guest";
-    const urlParams = new URLSearchParams(window.location.search);
-    const currentFilename = urlParams.get('id') || "unknown";
-
-    // Формуємо розширені деталі відповідей для JSON
-    const details = quizState.questions.map((q, idx) => ({
-      question: q.q,
-      userAnswer: quizState.answers[idx] !== null && quizState.answers[idx] !== undefined ? q.options[quizState.answers[idx]] : "Час вийшов / Не обрано",
-      correctAnswer: q.options[q.correct],
-      isCorrect: quizState.answers[idx] === q.correct
-    }));
-
-    try {
-      await fetch(GAS_BACKEND_URL, {
-        method: "POST",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify({
-          mode: "quiz_result",
-          email: email,
-          productFilename: currentFilename,
-          score: score,
-          totalQuestions: totalQ,
-          percentage: percent,
-          status: percent >= 90 ? "Складено" : "Не складено",
-          detailsJson: JSON.stringify(details)
-        })
-      });
-    } catch (e) {
-      console.error("Помилка відправки результатів тестування:", e);
-    }
+  } catch (e) {
+    console.error("Помилка відправки результатів тестування:", e);
   }
+}
 
   window.restartQuiz = function() {
     initQuiz(originalQuestionsRef);

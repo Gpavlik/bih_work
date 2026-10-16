@@ -368,7 +368,7 @@ async function endRoleplaySession() {
 
     const urlParams = new URLSearchParams(window.location.search);
     const currentFilename = urlParams.get('id') || "argisDuo.html";
-    
+    const currentAssignmentId = urlParams.get('assignmentId') || localStorage.getItem("currentAssignmentId") || "";
     // Беремо спеціальність та тему з полів форма
     const specialty = document.getElementById("doctorSpecialty")?.value || "Не вказано";
     const pathology = document.getElementById("doctorPathology")?.value || "Не вказано";
@@ -383,6 +383,7 @@ async function endRoleplaySession() {
           mode: "audit",
           specialty: specialty,
           pathology: pathology,
+          assignmentId: currentAssignmentId,
           email: localStorage.getItem("allowedEmail") || "unknown"
         })
       });

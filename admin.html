@@ -221,7 +221,6 @@
 
     window.appUsersMap = {};
 
-    // Основна функція фільтрації та СКОРОЧЕННЯ списку
     function applyFilter(selectId, btnEl) {
       const parent = btnEl ? btnEl.closest('.filter-bar') : document.getElementById(selectId).closest('.form-group').querySelector('.filter-bar');
       if (!parent) return;
@@ -239,16 +238,12 @@
         let matchReg = !regVal || userInfo.region === regVal;
         let match = matchDir && matchReg;
         
-        // Сховуємо невідповідні варіанти, скорочуючи список
         opt.hidden = !match;
         opt.style.display = match ? '' : 'none';
-        
-        // Автоматично виділяємо відповідні варіанти
         opt.selected = match;
       });
     }
 
-    // Прив'язка живого оновлення списку при зміні фільтра
     function setupFilterListeners() {
       document.querySelectorAll('.filter-bar').forEach(bar => {
         const dirSelect = bar.querySelector('.filter-dir');
@@ -308,7 +303,6 @@
         return;
       }
 
-      // Суворий редирект для МП
       if (userRole === "mp") {
         alert("У вас немає прав доступу до цієї сторінки.");
         window.location.href = "./cabinet.html";
@@ -406,13 +400,13 @@
               availableUsers.forEach(emp => {
                 const option = document.createElement("option");
                 option.value = emp.login;
-                option.textContent = `${emp.fullName} [${(emp.role || '').toUpperCase()}] (${emp.login})`;
+                // Тільки ПІБ та Роль (без логіну)
+                option.textContent = `${emp.fullName} [${(emp.role || '').toUpperCase()}]`;
                 select.appendChild(option);
               });
             }
           });
 
-          // Підключаємо живе слухання вибору напрямку/регіону
           setupFilterListeners();
         }
       } catch (err) {
@@ -450,7 +444,7 @@
         });
       }
 
-      // 3.2 Відправка форми "Призначити продукти"
+      // 3.2 Відправка форми "Призначити продукты"
       const assignProductForm = document.getElementById("assignProductForm");
       if (assignProductForm) {
         assignProductForm.addEventListener("submit", async (e) => {

@@ -17,8 +17,8 @@
     .admin-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; margin-bottom: 30px; background: #fff; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
     .admin-header h1 { margin: 0; font-size: 24px; color: #2c3e50; }
     
-    .admin-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 30px; }
-    .admin-card { background: #fff; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    .admin-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 30px; }
+    .admin-card { background: #fff; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border-radius: 6px; }
     .admin-card h3 { margin-top: 0; color: #007acc; font-size: 18px; border-bottom: 2px solid #eef; padding-bottom: 8px; }
 
     table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.9em; }
@@ -51,7 +51,7 @@
     <div class="admin-header">
       <div>
         <h1>🛠️ Панель управління та моніторингу L&D</h1>
-        <p style="margin: 5px 0 0 0; color: #64748b; font-size: 0.9em;">Керування активностями, призначення тренінгів та контроль завдань команди</p>
+        <p style="margin: 5px 0 0 0; color: #64748b; font-size: 0.9em;">Керування активностями, призначення тренінгів, продуктів та стандартів</p>
       </div>
       <div class="nav-links">
         <a href="./calc3 analis.html" style="display: none;" id="analyticsBtn" class="nav-btn" target="_blank">📊 Дашборд аналітики</a>
@@ -69,16 +69,16 @@
       <a href="./admin_products.html" class="nav-btn" style="background: #27ae60; color: white; padding: 12px 24px; font-size: 16px;" target="_blank">📦 Відкрити Редактор продуктів</a>
     </div>
 
-    <!-- ОСНОВНИЙ БЛОК ФОРМ (ДЛЯ РМ ТА АДМІНА) -->
+    <!-- ОСНОВНИЙ БЛОК ФОРМ (ДЛЯ АДМІНА ТА РМ) -->
     <div id="adminFormsContainer">
       <div class="admin-grid">
         
         <!-- 1. Призначення тренінгів -->
         <div class="admin-card">
-          <h3>🎯 Призначити самостійне проходження тренінгу</h3>
+          <h3>🎯 Призначити тренінг</h3>
           <form id="assignTrainingForm">
             <div class="form-group">
-              <label for="targetUserEmailTrain">Співробітники (фільтр або ручний вибір через Ctrl/Cmd):</label>
+              <label for="targetUserEmailTrain">Співробітники РМ / МП (фільтр або вибір):</label>
               <div class="filter-bar">
                 <select class="filter-dir">
                   <option value="">-- Всі напрямки --</option>
@@ -116,7 +116,7 @@
           <h3>💊 Призначити вивчення продуктів</h3>
           <form id="assignProductForm">
             <div class="form-group">
-              <label for="targetUserEmailProd">Співробітники (фільтр або ручний вибір через Ctrl/Cmd):</label>
+              <label for="targetUserEmailProd">Співробітники РМ / МП (фільтр або вибір):</label>
               <div class="filter-bar">
                 <select class="filter-dir">
                   <option value="">-- Всі напрямки --</option>
@@ -140,16 +140,51 @@
               <label for="deadlineProd">Дедлайн виконання:</label>
               <input type="date" id="deadlineProd" required>
             </div>
-            <button type="submit" class="btn-action" style="background: #2980b9;">📌 Призначити продукты</button>
+            <button type="submit" class="btn-action" style="background: #2980b9;">📌 Призначити продукти</button>
           </form>
         </div>
 
-        <!-- 3. Запросити на тренінг -->
+        <!-- 3. Призначення вивчення стандартів -->
         <div class="admin-card">
-          <h3>📅 Запросити на тренінг (Онлайн / Офлайн)</h3>
+          <h3>📜 Призначити вивчення стандартів</h3>
+          <form id="assignStandardForm">
+            <div class="form-group">
+              <label for="targetUserEmailStandard">Співробітники РМ / МП (фільтр або вибір):</label>
+              <div class="filter-bar">
+                <select class="filter-dir">
+                  <option value="">-- Всі напрямки --</option>
+                </select>
+                <select class="filter-reg">
+                  <option value="">-- Всі регіони --</option>
+                </select>
+                <button type="button" class="btn-select-filtered" onclick="applyFilter('targetUserEmailStandard', this)">Вибрати</button>
+              </div>
+              <select id="targetUserEmailStandard" multiple style="height: 120px;" required>
+                <option value="">⏳ Завантаження списку...</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="selectStandard">Оберіть стандарт / регламент:</label>
+              <select id="selectStandard">
+                <option value="portfolio standart.html">Стандарти візиту та комунікації</option>
+                <option value="portfolio standart.html">Стандарти промоції та етики</option>
+                <option value="portfolio standart.html">Стандарти звітності та CRM</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="deadlineStandard">Дедлайн виконання:</label>
+              <input type="date" id="deadlineStandard" required>
+            </div>
+            <button type="submit" class="btn-action" style="background: #d35400;">📌 Призначити стандарти</button>
+          </form>
+        </div>
+
+        <!-- 4. Запросити на тренінг -->
+        <div class="admin-card">
+          <h3>📅 Запросити на тренінг / вебінар</h3>
           <form id="inviteTrainingForm">
             <div class="form-group">
-              <label for="targetUserEmailInvite">Співробітники (фільтр або ручний вибір через Ctrl/Cmd):</label>
+              <label for="targetUserEmailInvite">Співробітники РМ / МП (фільтр або вибір):</label>
               <div class="filter-bar">
                 <select class="filter-dir">
                   <option value="">-- Всі напрямки --</option>
@@ -203,7 +238,6 @@
       });
     }
 
-    // Динамічне заповнення селектів напрямків та регіонів з бекенду
     function populateFilterDropdowns(users) {
       const directions = new Set();
       const regions = new Set();
@@ -247,6 +281,7 @@
         return;
       }
 
+      // Суворий редирект для МП
       if (userRole === "mp") {
         alert("У вас немає прав доступу до цієї сторінки.");
         window.location.href = "./cabinet.html";
@@ -260,6 +295,7 @@
       const adminFormsContainer = document.getElementById("adminFormsContainer");
       const officeWelcomeCard = document.getElementById("officeWelcomeCard");
 
+      // Розподіл прав доступу до елементів інтерфейсу
       if (userRole === "admin" || allowedEmail.toLowerCase() === "admin") {
         if (analyticsBtn) analyticsBtn.style.display = "inline-block";
         if (productEditorBtn) productEditorBtn.style.display = "inline-block";
@@ -280,7 +316,7 @@
         return;
       }
 
-      // 1. Завантаження продуктів
+      // 1. Завантаження каталогу продуктів
       try {
         const res = await fetch(`${PRODUCTS_SCRIPT_URL}?action=getCatalog`);
         const json = await res.json();
@@ -310,7 +346,13 @@
         if (jsonUsers.status === "success" && jsonUsers.users) {
           const allUsers = jsonUsers.users;
           
-          allUsers.forEach(u => {
+          // ФІЛЬТР: залишаємо ТІЛЬКИ співробітників з ролями RM та MP
+          const fieldTeamUsers = allUsers.filter(u => {
+            const r = (u.role || "").toLowerCase();
+            return r === "mp" || r === "rm";
+          });
+
+          fieldTeamUsers.forEach(u => {
             window.appUsersMap[u.login] = {
               direction: (u.direction || "").trim(),
               region: (u.region || "").trim(),
@@ -318,18 +360,18 @@
             };
           });
           
-          let availableUsers = allUsers;
+          let availableUsers = fieldTeamUsers;
           if (userRole === "rm") {
-            availableUsers = allUsers.filter(u => u.login === allowedEmail || u.manager === allowedEmail);
+            availableUsers = fieldTeamUsers.filter(u => u.login === allowedEmail || u.manager === allowedEmail);
           }
 
-          // Наповнення випадаючих списків напрямків і регіонів з реальних даних бекенду
           populateFilterDropdowns(availableUsers);
 
           const selectElements = [
             document.getElementById("targetUserEmailTrain"), 
             document.getElementById("targetUserEmailProd"),
-            document.getElementById("targetUserEmailInvite")
+            document.getElementById("targetUserEmailInvite"),
+            document.getElementById("targetUserEmailStandard")
           ];
 
           selectElements.forEach(select => {
@@ -338,7 +380,7 @@
               availableUsers.forEach(emp => {
                 const option = document.createElement("option");
                 option.value = emp.login;
-                option.textContent = `${emp.fullName} (${emp.login})`;
+                option.textContent = `${emp.fullName} [${(emp.role || '').toUpperCase()}] (${emp.login})`;
                 select.appendChild(option);
               });
             }
@@ -415,7 +457,41 @@
         });
       }
 
-      // 3.3 Відправка форми "Запросити на тренінг"
+      // 3.3 Відправка форми "Призначити стандарти"
+      const assignStandardForm = document.getElementById("assignStandardForm");
+      if (assignStandardForm) {
+        assignStandardForm.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const targetSelect = document.getElementById("targetUserEmailStandard");
+          const selectedUsers = Array.from(targetSelect.selectedOptions).filter(opt => opt.value !== "");
+          const standard = document.getElementById("selectStandard").value;
+          const deadline = document.getElementById("deadlineStandard").value;
+
+          if (selectedUsers.length === 0) {
+            alert("Оберіть хоча б одного співробітника!");
+            return;
+          }
+
+          const emails = selectedUsers.map(opt => opt.value);
+          const textPayload = `📜 Вивчення стандартів | 📅 Дедлайн: ${deadline} | посилання:${standard}`;
+
+          try {
+            await Promise.all(emails.map(email => 
+              fetch(DECANAT_SCRIPT_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ action: "assignTraining", email: email, trainingUrl: textPayload })
+              })
+            ));
+            alert(`✅ Вивчення стандартів успішно призначено (${emails.length} співробітникам)!`);
+            assignStandardForm.reset();
+          } catch (error) {
+            alert("❌ Помилка при призначенні стандартів.");
+          }
+        });
+      }
+
+      // 3.4 Відправка форми "Запросити на тренінг"
       const inviteTrainingForm = document.getElementById("inviteTrainingForm");
       if (inviteTrainingForm) {
         inviteTrainingForm.addEventListener("submit", async (e) => {

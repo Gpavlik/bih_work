@@ -82,15 +82,9 @@
               <div class="filter-bar">
                 <select class="filter-dir">
                   <option value="">-- Всі напрямки --</option>
-                  <option value="Уро-гінеко">Уро-гінеко</option>
-                  <option value="Гастро">Гастро</option>
                 </select>
                 <select class="filter-reg">
                   <option value="">-- Всі регіони --</option>
-                  <option value="Захід">Захід</option>
-                  <option value="Схід">Схід</option>
-                  <option value="Південь">Південь</option>
-                  <option value="Центр">Центр</option>
                 </select>
                 <button type="button" class="btn-select-filtered" onclick="applyFilter('targetUserEmailTrain', this)">Вибрати</button>
               </div>
@@ -126,15 +120,9 @@
               <div class="filter-bar">
                 <select class="filter-dir">
                   <option value="">-- Всі напрямки --</option>
-                  <option value="Уро-гінеко">Уро-гінеко</option>
-                  <option value="Гастро">Гастро</option>
                 </select>
                 <select class="filter-reg">
                   <option value="">-- Всі регіони --</option>
-                  <option value="Захід">Захід</option>
-                  <option value="Схід">Схід</option>
-                  <option value="Південь">Південь</option>
-                  <option value="Центр">Центр</option>
                 </select>
                 <button type="button" class="btn-select-filtered" onclick="applyFilter('targetUserEmailProd', this)">Вибрати</button>
               </div>
@@ -165,15 +153,9 @@
               <div class="filter-bar">
                 <select class="filter-dir">
                   <option value="">-- Всі напрямки --</option>
-                  <option value="Уро-гінеко">Уро-гінеко</option>
-                  <option value="Гастро">Гастро</option>
                 </select>
                 <select class="filter-reg">
                   <option value="">-- Всі регіони --</option>
-                  <option value="Захід">Захід</option>
-                  <option value="Схід">Схід</option>
-                  <option value="Південь">Південь</option>
-                  <option value="Центр">Центр</option>
                 </select>
                 <button type="button" class="btn-select-filtered" onclick="applyFilter('targetUserEmailInvite', this)">Вибрати</button>
               </div>
@@ -218,6 +200,40 @@
         let matchReg = !regVal || userInfo.region === regVal;
         
         opt.selected = matchDir && matchReg;
+      });
+    }
+
+    // Динамічне заповнення селектів напрямків та регіонів з бекенду
+    function populateFilterDropdowns(users) {
+      const directions = new Set();
+      const regions = new Set();
+
+      users.forEach(u => {
+        if (u.direction && u.direction.trim()) directions.add(u.direction.trim());
+        if (u.region && u.region.trim()) regions.add(u.region.trim());
+      });
+
+      const sortedDirections = Array.from(directions).sort((a, b) => a.localeCompare(b, 'uk'));
+      const sortedRegions = Array.from(regions).sort((a, b) => a.localeCompare(b, 'uk'));
+
+      document.querySelectorAll('.filter-dir').forEach(select => {
+        select.innerHTML = '<option value="">-- Всі напрямки --</option>';
+        sortedDirections.forEach(dir => {
+          const opt = document.createElement('option');
+          opt.value = dir;
+          opt.textContent = dir;
+          select.appendChild(opt);
+        });
+      });
+
+      document.querySelectorAll('.filter-reg').forEach(select => {
+        select.innerHTML = '<option value="">-- Всі регіони --</option>';
+        sortedRegions.forEach(reg => {
+          const opt = document.createElement('option');
+          opt.value = reg;
+          opt.textContent = reg;
+          select.appendChild(opt);
+        });
       });
     }
 
@@ -306,6 +322,9 @@
           if (userRole === "rm") {
             availableUsers = allUsers.filter(u => u.login === allowedEmail || u.manager === allowedEmail);
           }
+
+          // Наповнення випадаючих списків напрямків і регіонів з реальних даних бекенду
+          populateFilterDropdowns(availableUsers);
 
           const selectElements = [
             document.getElementById("targetUserEmailTrain"), 

@@ -221,20 +221,47 @@
 
     window.appUsersMap = {};
 
+    // Основна функція фільтрації та СКОРОЧЕННЯ списку
     function applyFilter(selectId, btnEl) {
-      const parent = btnEl.closest('.filter-bar');
+      const parent = btnEl ? btnEl.closest('.filter-bar') : document.getElementById(selectId).closest('.form-group').querySelector('.filter-bar');
+      if (!parent) return;
+
       const dirVal = parent.querySelector('.filter-dir').value;
       const regVal = parent.querySelector('.filter-reg').value;
       const targetSelect = document.getElementById(selectId);
 
       Array.from(targetSelect.options).forEach(opt => {
+        if (!opt.value) return;
         const userInfo = window.appUsersMap[opt.value];
         if (!userInfo) return;
         
         let matchDir = !dirVal || userInfo.direction === dirVal;
         let matchReg = !regVal || userInfo.region === regVal;
+        let match = matchDir && matchReg;
         
-        opt.selected = matchDir && matchReg;
+        // Сховуємо невідповідні варіанти, скорочуючи список
+        opt.hidden = !match;
+        opt.style.display = match ? '' : 'none';
+        
+        // Автоматично виділяємо відповідні варіанти
+        opt.selected = match;
+      });
+    }
+
+    // Прив'язка живого оновлення списку при зміні фільтра
+    function setupFilterListeners() {
+      document.querySelectorAll('.filter-bar').forEach(bar => {
+        const dirSelect = bar.querySelector('.filter-dir');
+        const regSelect = bar.querySelector('.filter-reg');
+        const targetSelect = bar.closest('.form-group').querySelector('select[multiple]');
+        
+        if (targetSelect) {
+          const selectId = targetSelect.id;
+          const btn = bar.querySelector('.btn-select-filtered');
+          
+          dirSelect.addEventListener('change', () => applyFilter(selectId, btn));
+          regSelect.addEventListener('change', () => applyFilter(selectId, btn));
+        }
       });
     }
 
@@ -295,7 +322,6 @@
       const adminFormsContainer = document.getElementById("adminFormsContainer");
       const officeWelcomeCard = document.getElementById("officeWelcomeCard");
 
-      // Розподіл прав доступу до елементів інтерфейсу
       if (userRole === "admin" || allowedEmail.toLowerCase() === "admin") {
         if (analyticsBtn) analyticsBtn.style.display = "inline-block";
         if (productEditorBtn) productEditorBtn.style.display = "inline-block";
@@ -346,7 +372,7 @@
         if (jsonUsers.status === "success" && jsonUsers.users) {
           const allUsers = jsonUsers.users;
           
-          // ФІЛЬТР: залишаємо ТІЛЬКИ співробітників з ролями RM та MP
+          // ФІЛЬТР: ТІЛЬКИ співробітники з ролями RM та MP
           const fieldTeamUsers = allUsers.filter(u => {
             const r = (u.role || "").toLowerCase();
             return r === "mp" || r === "rm";
@@ -385,6 +411,9 @@
               });
             }
           });
+
+          // Підключаємо живе слухання вибору напрямку/регіону
+          setupFilterListeners();
         }
       } catch (err) {
         console.error("Помилка завантаження користувачів:", err);
@@ -396,7 +425,7 @@
         assignTrainingForm.addEventListener("submit", async (e) => {
           e.preventDefault();
           const targetSelect = document.getElementById("targetUserEmailTrain");
-          const selectedOpts = Array.from(targetSelect.selectedOptions).filter(opt => opt.value !== "");
+          const selectedOpts = Array.from(targetSelect.selectedOptions).filter(opt => opt.value !== "" && !opt.hidden);
           const training = document.getElementById("selectTraining").value;
           const deadline = document.getElementById("deadlineTrain").value;
 
@@ -427,7 +456,7 @@
         assignProductForm.addEventListener("submit", async (e) => {
           e.preventDefault();
           const targetSelect = document.getElementById("targetUserEmailProd");
-          const selectedUsers = Array.from(targetSelect.selectedOptions).filter(opt => opt.value !== "");
+          const selectedUsers = Array.from(targetSelect.selectedOptions).filter(opt => opt.value !== "" && !opt.hidden);
           const prodSelect = document.getElementById("selectProduct");
           const selectedProds = Array.from(prodSelect.selectedOptions).filter(opt => opt.value !== "");
           const deadline = document.getElementById("deadlineProd").value;
@@ -463,7 +492,7 @@
         assignStandardForm.addEventListener("submit", async (e) => {
           e.preventDefault();
           const targetSelect = document.getElementById("targetUserEmailStandard");
-          const selectedUsers = Array.from(targetSelect.selectedOptions).filter(opt => opt.value !== "");
+          const selectedUsers = Array.from(targetSelect.selectedOptions).filter(opt => opt.value !== "" && !opt.hidden);
           const standard = document.getElementById("selectStandard").value;
           const deadline = document.getElementById("deadlineStandard").value;
 
@@ -497,7 +526,7 @@
         inviteTrainingForm.addEventListener("submit", async (e) => {
           e.preventDefault();
           const targetSelect = document.getElementById("targetUserEmailInvite");
-          const selectedUsers = Array.from(targetSelect.selectedOptions).filter(opt => opt.value !== "");
+          const selectedUsers = Array.from(targetSelect.selectedOptions).filter(opt => opt.value !== "" && !opt.hidden);
           const liveTraining = document.getElementById("selectLiveTraining").value;
 
           if (selectedUsers.length === 0) {

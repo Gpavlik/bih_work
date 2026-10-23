@@ -298,13 +298,17 @@
       }
     });
 
-    // Функції роботи з тестами (необмежена кількість варіантів та множинний вибір)
+    // Функції роботи з тестами (підтримка будь-яких ключів text/question та безпечне заповнення)
     function addQuestionCard(qData = {}) {
       const container = document.getElementById('questionsContainer');
       const index = container.children.length + 1;
 
       const card = document.createElement('div');
       card.className = 'question-card';
+
+      // Отримуємо текст питання, перевіряючи всі можливі ключі (text, question, q, title)
+      const questionText = qData.text || qData.question || qData.q || qData.title || '';
+      const explanationText = qData.explanation || qData.exp || qData.comment || '';
 
       card.innerHTML = `
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
@@ -313,7 +317,7 @@
         </div>
         <div style="margin-bottom: 8px;">
             <label>Текст запитання:</label>
-            <input type="text" class="q-text" value="${qData.text || ''}" style="width: 100%; padding: 6px;" required>
+            <input type="text" class="q-text" style="width: 100%; padding: 6px;" required>
         </div>
         <label style="margin-top: 8px; display: block; font-weight: 500;">Варіанти відповідей (позначте галочками правильні):</label>
         <div class="options-container" style="margin-bottom: 8px;">
@@ -322,9 +326,13 @@
         <button type="button" class="btn-add-option" style="background: #3b82f6; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 13px; margin-bottom: 10px;">+ Додати варіант відповіді</button>
         <div>
             <label>Обґрунтування (пояснення):</label>
-            <textarea class="q-explanation" style="width: 100%; height: 50px; padding: 6px;">${qData.explanation || ''}</textarea>
+            <textarea class="q-explanation" style="width: 100%; height: 50px; padding: 6px;"></textarea>
         </div>
       `;
+
+      // Призначення значень через .value запобігає розриву HTML-розмітки через лапки
+      card.querySelector('.q-text').value = questionText;
+      card.querySelector('.q-explanation').value = explanationText;
 
       const optionsContainer = card.querySelector('.options-container');
 
@@ -334,18 +342,19 @@
         row.className = 'option-row';
         row.innerHTML = `
             <span style="font-weight: bold; min-width: 20px;">${optIndex}.</span>
-            <input type="text" class="opt-text" value="${optText}" placeholder="Текст варіанту" style="flex: 1; padding: 5px;" required>
+            <input type="text" class="opt-text" placeholder="Текст варіанту" style="flex: 1; padding: 5px;" required>
             <label style="display: flex; align-items: center; gap: 4px; font-size: 13px; cursor: pointer; white-space: nowrap;">
                 <input type="checkbox" class="opt-correct" ${isCorrect ? 'checked' : ''}> Правильна
             </label>
             <button type="button" onclick="this.closest('.option-row').remove(); renumberOptions(this.closest('.question-card'));" style="background: #ef4444; color: white; border: none; padding: 2px 6px; cursor: pointer; border-radius: 3px; font-size: 12px;">✕</button>
         `;
+        row.querySelector('.opt-text').value = optText;
         optionsContainer.appendChild(row);
       };
 
       card.querySelector('.btn-add-option').addEventListener('click', () => appendOptionRow());
 
-      // Завантаження існуючих варіантів
+      // Завантаження існуючих варіантів відповідей
       if (qData.options && Array.isArray(qData.options)) {
         qData.options.forEach((optText, optIdx) => {
           let isCorrect = false;
@@ -357,7 +366,7 @@
           appendOptionRow(optText, isCorrect);
         });
       } else {
-        // Стандартно створюємо 3 пусті варіанти для зручності
+        // Стандартно створюємо 3 порожні варіанти
         appendOptionRow('', false);
         appendOptionRow('', false);
         appendOptionRow('', false);
@@ -392,15 +401,19 @@
         optionRows.forEach((row, idx) => {
           options.push(row.querySelector('.opt-text').value);
           if (row.querySelector('.opt-correct').checked) {
-            correctIndices.push(idx); // Зберігаємо індекс від 0 під капотом для коду
+            correctIndices.push(idx);
           }
         });
 
+        const qTextVal = card.querySelector('.q-text').value;
+        const qExpVal = card.querySelector('.q-explanation').value;
+
         questions.push({
-          text: card.querySelector('.q-text').value,
+          text: qTextVal,
+          question: qTextVal, // Дублюємо для сумісності з різними модулями
           options: options,
-          correct: correctIndices, // Масив правильних індексів
-          explanation: card.querySelector('.q-explanation').value
+          correct: correctIndices,
+          explanation: qExpVal
         });
       });
       return JSON.stringify(questions);
@@ -455,10 +468,10 @@
           document.getElementById("linkTest").value = data.linkTest || "";
           document.getElementById("linkCompetitor").value = data.linkCompetitor || "";
 
-          // Завантаження тестів з бази
+          // Гнучка розпаковка даних тестів
           if (data.testsData) {
             try {
-              let questionsArray = JSON.parse(data.testsData);
+              let questionsArray = typeof data.testsData === 'string' ? JSON.parse(data.testsData) : data.testsData;
               if (Array.isArray(questionsArray)) {
                 questionsArray.forEach(q => addQuestionCard(q));
               }
@@ -472,7 +485,7 @@
       }
     });
 
-    // Збереження даних (разом із тестами)
+    // Збереження даних
     document.getElementById("productEditForm").addEventListener("submit", async (e) => {
       e.preventDefault();
       
@@ -527,7 +540,7 @@
       };
 
       try {
-        await fetch(PRODUCTS_URL || PRODUCTS_SCRIPT_URL, {
+        await fetch(PRODUCTS_SCRIPT_URL, {
           method: "POST",
           mode: "no-cors",
           headers: { "Content-Type": "application/json" },

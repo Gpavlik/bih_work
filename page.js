@@ -48,7 +48,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     shuffledQuestions = shuffleArray(shuffledQuestions);
 
     shuffledQuestions.forEach(q => {
-      // Нормалізація ключів тексту запитання та обґрунтування
       q.q = q.q || q.text || q.question || '';
       q.explanation = q.explanation || q.exp || q.comment || 'Обґрунтування відсутнє.';
 
@@ -377,24 +376,37 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
 
     // ----------------------------------------------------
-    // ОБРОБКА МЕДІАМАТЕРІАЛІВ (ВІДЕО ТА ПРЕЗЕНТАЦІЇ)
+    // ГНУЧКА ОБРОБКА МЕДІАМАТЕРИАЛІВ (ВІДЕО ТА ПРЕЗЕНТАЦІЇ)
     // ----------------------------------------------------
     let parsedVideos = [];
-    if (data.videosData) {
+    const rawVideos = data.videosData || data.videosdata;
+    if (rawVideos) {
       try {
-        parsedVideos = typeof data.videosData === 'string' ? JSON.parse(data.videosData) : data.videosData;
+        parsedVideos = typeof rawVideos === 'string' ? JSON.parse(rawVideos) : rawVideos;
       } catch(e) { console.error("Помилка парсингу videosData:", e); }
-    } else if (data.linkVideo) {
-      parsedVideos = [{ title: 'Основне відео', url: data.linkVideo }];
+    }
+    
+    // Якщо масив порожній або відсутній — фолбек на одиночне посилання
+    if ((!Array.isArray(parsedVideos) || parsedVideos.length === 0) && (data.linkVideo || data.linkvideo)) {
+      const vUrl = data.linkVideo || data.linkvideo;
+      if (vUrl && vUrl.trim() !== "" && vUrl !== "#") {
+        parsedVideos = [{ title: 'Основне відео', url: vUrl }];
+      }
     }
 
     let parsedPresentations = [];
-    if (data.presentationsData) {
+    const rawPres = data.presentationsData || data.presentationsdata;
+    if (rawPres) {
       try {
-        parsedPresentations = typeof data.presentationsData === 'string' ? JSON.parse(data.presentationsData) : data.presentationsData;
+        parsedPresentations = typeof rawPres === 'string' ? JSON.parse(rawPres) : rawPres;
       } catch(e) { console.error("Помилка парсингу presentationsData:", e); }
-    } else if (data.linkPresentation) {
-      parsedPresentations = [{ title: 'Основна презентація', url: data.linkPresentation }];
+    }
+
+    if ((!Array.isArray(parsedPresentations) || parsedPresentations.length === 0) && (data.linkPresentation || data.linkpresentation)) {
+      const pUrl = data.linkPresentation || data.linkpresentation;
+      if (pUrl && pUrl.trim() !== "" && pUrl !== "#") {
+        parsedPresentations = [{ title: 'Основна презентація', url: pUrl }];
+      }
     }
 
     // Передаємо списки відео та презентацій для Бі-хелсі
@@ -416,16 +428,14 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
     };
     
-    setLink("campaign", data.linkCampaign);
-    setLink("instruction", data.linkInstruction);
-    setLink("competitor", data.linkCompetitor);
-    setLink("campaign_bottom", data.linkCampaign);
-    setLink("instruction_bottom", data.linkInstruction);
+    setLink("campaign", data.linkCampaign || data.linkcampaign);
+    setLink("instruction", data.linkInstruction || data.linkinstruction);
+    setLink("competitor", data.linkCompetitor || data.linkcompetitor);
 
     // ----------------------------------------------------
     // ІНІЦІАЛІЗАЦІЯ ТЕСТІВ
     // ----------------------------------------------------
-    let rawQuestions = data.testsData || data.questions;
+    let rawQuestions = data.testsData || data.testsdata || data.questions;
     let questionsArray = null;
 
     if (rawQuestions) {
@@ -456,7 +466,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     try {
       const products = JSON.parse(cachedData);
       const foundProduct = products.find(p => p.filename === productId);
-      if (foundProduct) {
+      // Перевіряємо, чи в кешованого продукту є масив відео, а не лише старе 1 відео
+      if (foundProduct && (foundProduct.videosData || foundProduct.videosdata)) {
         fillProductData(foundProduct);
         return;
       }
@@ -465,7 +476,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
-  // 2. Запит до сервера
+  // 2. Якщо в кеші застаріла інформація — робимо прямий запит до сервера
   const PRODUCTS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzr4EGyt0YuynW_lKK9Qtpghr5n_8s3E4ndvT1POv-KhHNBnh--6x9Dm2um8lOr7GW-/exec";    
 
   try {

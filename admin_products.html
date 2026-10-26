@@ -28,6 +28,7 @@
     
     .question-card { background: #f8fafc; border: 1px solid #cbd5e1; padding: 15px; margin-bottom: 15px; border-radius: 6px; }
     .option-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+    .media-row { display: flex; gap: 8px; margin-bottom: 8px; align-items: center; }
   </style>
 </head>
 <body>
@@ -35,7 +36,7 @@
   <div class="editor-container">
     <a href="./admin.html" class="nav-back">&larr; Назад до адмін-панелі</a>
     <h2>📦 Повний візуальний редактор сторінок продуктів</h2>
-    <p style="color: #64748b; margin-bottom: 15px;">Керуйте текстами всіх секцій препарату, зображеннями та тестуванням.</p>
+    <p style="color: #64748b; margin-bottom: 15px;">Керуйте текстами всіх секцій препарату, зображеннями, медіаматеріалами та тестуванням.</p>
 
     <button type="button" class="btn-create" id="openModalBtn">➕ Створити новий продукт</button>
 
@@ -122,10 +123,23 @@
         <label style="margin-top:5px;">Блок 5 (Текст):</label><textarea id="sec5Text"></textarea>
       </div>
 
-      <h3>Посилання для кнопок</h3>
+      <h3>Посилання для кнопок та медіаматеріали</h3>
       <div class="form-group"><label>Кампейн:</label><input type="text" id="linkCampaign"></div>
-      <div class="form-group"><label>Відео (Вебінар):</label><input type="text" id="linkVideo"></div>
-      <div class="form-group"><label>Презентації (На візит):</label><input type="text" id="linkPresentation"></div>
+
+      <!-- Динамічні відеоматеріали -->
+      <div class="form-group">
+        <label style="font-weight: bold; color: #2c3e50;">🎬 Відеоматеріали (вебінари, огляди, ролики):</label>
+        <div id="videosContainer" style="margin-top: 8px;"></div>
+        <button type="button" id="addVideoBtn" class="btn-create" style="background-color: #3b82f6; margin-top: 5px;">+ Додати відео</button>
+      </div>
+
+      <!-- Динамічні презентації -->
+      <div class="form-group">
+        <label style="font-weight: bold; color: #2c3e50;">📊 Презентації (для візитів, вебінарів, промо):</label>
+        <div id="presentationsContainer" style="margin-top: 8px;"></div>
+        <button type="button" id="addPresentationBtn" class="btn-create" style="background-color: #3b82f6; margin-top: 5px;">+ Додати презентацію</button>
+      </div>
+
       <div class="form-group"><label>Інструкція:</label><input type="text" id="linkInstruction"></div>
       <div class="form-group"><label>Тестування:</label><input type="text" id="linkTest"></div>
       <div class="form-group"><label>Конкурентне оточення:</label><input type="text" id="linkCompetitor"></div>
@@ -265,7 +279,7 @@
       document.getElementById("prodTitle").value = title;
       document.getElementById("prodFilename").value = translitName;
 
-      // Очищення полів форми та тестів
+      // Очищення полів форми, відео, презентацій та тестів
       document.getElementById("prodSubtitle").value = "";
       document.getElementById("prodDescShort").value = "";
       document.getElementById("descLong").value = "";
@@ -279,11 +293,11 @@
       document.getElementById("sec4Text").value = "";
       document.getElementById("sec5Text").value = "";
       document.getElementById("linkCampaign").value = "";
-      document.getElementById("linkVideo").value = "";
-      document.getElementById("linkPresentation").value = "";
       document.getElementById("linkInstruction").value = "";
       document.getElementById("linkTest").value = "";
       document.getElementById("linkCompetitor").value = "";
+      document.getElementById("videosContainer").innerHTML = "";
+      document.getElementById("presentationsContainer").innerHTML = "";
       document.getElementById("questionsContainer").innerHTML = "";
 
       modal.style.display = "none";
@@ -298,7 +312,73 @@
       }
     });
 
-    // Функції роботи з тестами (підтримка будь-яких ключів text/question та безпечне заповнення)
+    // ----------------------------------------------------
+    // ДИНАМІЧНІ РЯДКИ ВІДЕО ТА ПРЕЗЕНТАЦІЙ
+    // ----------------------------------------------------
+    function addVideoRow(vData = {}) {
+      const container = document.getElementById('videosContainer');
+      const row = document.createElement('div');
+      row.className = 'media-row media-row-video';
+      
+      row.innerHTML = `
+        <input type="text" class="vid-title" placeholder="Назва відео (напр. Огляд механізму дії)" style="flex: 1; padding: 6px;" required>
+        <input type="text" class="vid-url" placeholder="Посилання (YouTube / Drive)" style="flex: 1.5; padding: 6px;" required>
+        <button type="button" onclick="this.parentElement.remove()" style="background: #ef4444; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer;">✕</button>
+      `;
+      
+      row.querySelector('.vid-title').value = vData.title || '';
+      row.querySelector('.vid-url').value = vData.url || '';
+      container.appendChild(row);
+    }
+
+    function addPresentationRow(pData = {}) {
+      const container = document.getElementById('presentationsContainer');
+      const row = document.createElement('div');
+      row.className = 'media-row media-row-pres';
+      
+      row.innerHTML = `
+        <input type="text" class="pres-title" placeholder="Назва (напр. Презентація для візиту)" style="flex: 1; padding: 6px;" required>
+        <input type="text" class="pres-url" placeholder="Посилання на файл / Drive" style="flex: 1.5; padding: 6px;" required>
+        <button type="button" onclick="this.parentElement.remove()" style="background: #ef4444; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer;">✕</button>
+      `;
+      
+      row.querySelector('.pres-title').value = pData.title || '';
+      row.querySelector('.pres-url').value = pData.url || '';
+      container.appendChild(row);
+    }
+
+    document.getElementById('addVideoBtn').addEventListener('click', () => addVideoRow());
+    document.getElementById('addPresentationBtn').addEventListener('click', () => addPresentationRow());
+
+    function collectVideosData() {
+      const rows = document.querySelectorAll('#videosContainer .media-row-video');
+      let list = [];
+      rows.forEach(r => {
+        const title = r.querySelector('.vid-title').value.trim();
+        const url = r.querySelector('.vid-url').value.trim();
+        if (url) {
+          list.push({ title: title || 'Відеоогляд', url: url });
+        }
+      });
+      return JSON.stringify(list);
+    }
+
+    function collectPresentationsData() {
+      const rows = document.querySelectorAll('#presentationsContainer .media-row-pres');
+      let list = [];
+      rows.forEach(r => {
+        const title = r.querySelector('.pres-title').value.trim();
+        const url = r.querySelector('.pres-url').value.trim();
+        if (url) {
+          list.push({ title: title || 'Презентація', url: url });
+        }
+      });
+      return JSON.stringify(list);
+    }
+
+    // ----------------------------------------------------
+    // ФУНКЦІЇ РОБОТИ З ТЕСТАМИ
+    // ----------------------------------------------------
     function addQuestionCard(qData = {}) {
       const container = document.getElementById('questionsContainer');
       const index = container.children.length + 1;
@@ -306,7 +386,6 @@
       const card = document.createElement('div');
       card.className = 'question-card';
 
-      // Отримуємо текст питання, перевіряючи всі можливі ключі (text, question, q, title)
       const questionText = qData.text || qData.question || qData.q || qData.title || '';
       const explanationText = qData.explanation || qData.exp || qData.comment || '';
 
@@ -330,7 +409,6 @@
         </div>
       `;
 
-      // Призначення значень через .value запобігає розриву HTML-розмітки через лапки
       card.querySelector('.q-text').value = questionText;
       card.querySelector('.q-explanation').value = explanationText;
 
@@ -354,7 +432,6 @@
 
       card.querySelector('.btn-add-option').addEventListener('click', () => appendOptionRow());
 
-      // Завантаження існуючих варіантів відповідей
       if (qData.options && Array.isArray(qData.options)) {
         qData.options.forEach((optText, optIdx) => {
           let isCorrect = false;
@@ -366,7 +443,6 @@
           appendOptionRow(optText, isCorrect);
         });
       } else {
-        // Стандартно створюємо 3 порожні варіанти
         appendOptionRow('', false);
         appendOptionRow('', false);
         appendOptionRow('', false);
@@ -410,7 +486,7 @@
 
         questions.push({
           text: qTextVal,
-          question: qTextVal, // Дублюємо для сумісності з різними модулями
+          question: qTextVal,
           options: options,
           correct: correctIndices,
           explanation: qExpVal
@@ -419,11 +495,16 @@
       return JSON.stringify(questions);
     }
 
-    // Завантаження даних продукту (включно з тестами) при виборі зі списку
+    // ----------------------------------------------------
+    // ЗАВАНТАЖЕННЯ ДАНИХ ПРОДУКТУ ПРИ ВИБОРІ ЗІ СПИСКУ
+    // ----------------------------------------------------
     document.getElementById("fileSelect").addEventListener("change", async (e) => {
       const fileName = e.target.value;
-      const container = document.getElementById('questionsContainer');
-      container.innerHTML = ""; // Очищаємо попередні питання
+      
+      // Очищаємо контейнери перед завантаженням
+      document.getElementById('questionsContainer').innerHTML = "";
+      document.getElementById('videosContainer').innerHTML = "";
+      document.getElementById('presentationsContainer').innerHTML = "";
 
       if (!fileName) return;
 
@@ -462,13 +543,37 @@
           document.getElementById("sec5Text").value = data.sec5Text || "";
 
           document.getElementById("linkCampaign").value = data.linkCampaign || "";
-          document.getElementById("linkVideo").value = data.linkVideo || "";
-          document.getElementById("linkPresentation").value = data.linkPresentation || "";
           document.getElementById("linkInstruction").value = data.linkInstruction || "";
           document.getElementById("linkTest").value = data.linkTest || "";
           document.getElementById("linkCompetitor").value = data.linkCompetitor || "";
 
-          // Гнучка розпаковка даних тестів
+          // Розпаковка відеоматеріалів
+          if (data.videosData) {
+            try {
+              let vArr = typeof data.videosData === 'string' ? JSON.parse(data.videosData) : data.videosData;
+              if (Array.isArray(vArr) && vArr.length > 0) {
+                vArr.forEach(v => addVideoRow(v));
+              }
+            } catch(err) { console.error("Помилка розбору відео:", err); }
+          } else if (data.linkVideo) {
+            // Фолбек для старого одиночного посилання
+            addVideoRow({ title: 'Основне відео', url: data.linkVideo });
+          }
+
+          // Розпаковка презентацій
+          if (data.presentationsData) {
+            try {
+              let pArr = typeof data.presentationsData === 'string' ? JSON.parse(data.presentationsData) : data.presentationsData;
+              if (Array.isArray(pArr) && pArr.length > 0) {
+                pArr.forEach(p => addPresentationRow(p));
+              }
+            } catch(err) { console.error("Помилка розбору презентацій:", err); }
+          } else if (data.linkPresentation) {
+            // Фолбек для старого одиночного посилання
+            addPresentationRow({ title: 'Основна презентація', url: data.linkPresentation });
+          }
+
+          // Розпаковка даних тестів
           if (data.testsData) {
             try {
               let questionsArray = typeof data.testsData === 'string' ? JSON.parse(data.testsData) : data.testsData;
@@ -485,7 +590,9 @@
       }
     });
 
-    // Збереження даних
+    // ----------------------------------------------------
+    // ЗБЕРЕЖЕННЯ ДАНИХ У БАЗУ
+    // ----------------------------------------------------
     document.getElementById("productEditForm").addEventListener("submit", async (e) => {
       e.preventDefault();
       
@@ -494,6 +601,20 @@
       const subtitle = document.getElementById("prodSubtitle").value;
       const descShort = document.getElementById("prodDescShort").value;
       const imgMain = document.getElementById("imgMain").value;
+
+      const videosJson = collectVideosData();
+      const presentationsJson = collectPresentationsData();
+
+      // Отримуємо перше відео/презентацію для зворотної сумісності зі старим бекендом
+      const firstVideoUrl = (function() {
+        const row = document.querySelector('#videosContainer .vid-url');
+        return row ? row.value.trim() : '';
+      })();
+
+      const firstPresentationUrl = (function() {
+        const row = document.querySelector('#presentationsContainer .pres-url');
+        return row ? row.value.trim() : '';
+      })();
 
       const payload = {
         filename: filename,
@@ -515,8 +636,10 @@
         sec5Title: document.getElementById("sec5Title").value,
         sec5Text: document.getElementById("sec5Text").value,
         linkCampaign: document.getElementById("linkCampaign").value,
-        linkVideo: document.getElementById("linkVideo").value,
-        linkPresentation: document.getElementById("linkPresentation").value,
+        linkVideo: firstVideoUrl,
+        linkPresentation: firstPresentationUrl,
+        videosData: videosJson,
+        presentationsData: presentationsJson,
         linkInstruction: document.getElementById("linkInstruction").value,
         linkTest: document.getElementById("linkTest").value,
         linkCompetitor: document.getElementById("linkCompetitor").value,
@@ -546,7 +669,7 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload)
         });
-        alert("✅ Продукт та тести успішно збережено в базі!");
+        alert("✅ Продукт, медіаматеріали та тести успішно збережено в базі!");
       } catch (err) {
         alert("❌ Помилка при збереженні.");
       }

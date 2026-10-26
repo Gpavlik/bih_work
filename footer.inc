@@ -31,7 +31,7 @@
               <a class="social__link social__link--footer link" href="" target="_blank" rel="noopener noreferrer"
                 aria-label="твиттер иконка">
                 <svg class="social__icon social__icon--footer" width="20px" height="20px">
-                  <use href="./images/uoytube.svg"></use>
+                  <use href="./images/ico/linkedin 1.svg"></use>
                 </svg></a>
             </li>
             <li class="social__item social__item--footer">

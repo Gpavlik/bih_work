@@ -35,7 +35,7 @@
     .media-row { display: flex; gap: 8px; margin-bottom: 8px; align-items: center; }
 
     /* Стилізація контейнерів Quill */
-    .quill-editor-box { background: #fff; border-bottom-left-radius: 4px; border-bottom-right-radius: 4px; min-height: 120px; }
+    .quill-editor-box { background: #fff; border-bottom-left-radius: 4px; border-bottom-right-radius: 4px; min-height: 140px; }
     .ql-toolbar.ql-snow { background: #f8fafc; border-top-left-radius: 4px; border-top-right-radius: 4px; border-color: #cbd5e1 !important; }
     .ql-container.ql-snow { border-color: #cbd5e1 !important; font-family: 'Roboto', sans-serif; font-size: 14px; }
   </style>
@@ -196,6 +196,17 @@
     const PRODUCTS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzr4EGyt0YuynW_lKK9Qtpghr5n_8s3E4ndvT1POv-KhHNBnh--6x9Dm2um8lOr7GW-/exec";
 
     // ----------------------------------------------------
+    // ДОПОМІЖНА ФУНКЦІЯ: ГНУЧКИЙ ПОШУК КЛЮЧІВ (Незалежно від регістру)
+    // ----------------------------------------------------
+    function getProp(obj, prop) {
+      if (!obj) return "";
+      if (obj[prop] !== undefined && obj[prop] !== null) return obj[prop];
+      const lowerProp = prop.toLowerCase();
+      const foundKey = Object.keys(obj).find(k => k.toLowerCase() === lowerProp);
+      return (foundKey && obj[foundKey] !== null) ? obj[foundKey] : "";
+    }
+
+    // ----------------------------------------------------
     // ІНІЦІАЛІЗАЦІЯ QUILL РЕДАКТОРІВ
     // ----------------------------------------------------
     const quillToolbarOptions = [
@@ -214,9 +225,15 @@
       sec5Text: new Quill('#editor-sec5Text', { theme: 'snow', modules: { toolbar: quillToolbarOptions } })
     };
 
+    // БЕЗПЕЧНЕ ВСТАВЛЕННЯ HTML В QUILL (Зберігає <ul> <li> <strong>)
     function setQuillHTML(key, html) {
       if (quills[key]) {
-        quills[key].root.innerHTML = html || '';
+        if (!html || html.trim() === "") {
+          quills[key].setText('');
+        } else {
+          quills[key].setText('');
+          quills[key].clipboard.dangerouslyPasteHTML(0, html);
+        }
       }
     }
 
@@ -236,10 +253,12 @@
         if (result.status === "success") {
           select.innerHTML = '<option value="">-- Оберіть файл продукту --</option>';
           result.data.forEach(prod => {
-            if (prod.filename) {
+            const fName = getProp(prod, 'filename');
+            const titleVal = getProp(prod, 'title');
+            if (fName) {
               const opt = document.createElement("option");
-              opt.value = prod.filename;
-              opt.textContent = `${prod.title || 'Без назви'} (${prod.filename})`;
+              opt.value = fName;
+              opt.textContent = `${titleVal || 'Без назви'} (${fName})`;
               select.appendChild(opt);
             }
           });
@@ -326,7 +345,6 @@
       document.getElementById("prodTitle").value = title;
       document.getElementById("prodFilename").value = translitName;
 
-      // Очищення полів форми, відео, презентацій, Quill та тестів
       document.getElementById("prodSubtitle").value = "";
       document.getElementById("prodDescShort").value = "";
       
@@ -431,8 +449,8 @@
       const card = document.createElement('div');
       card.className = 'question-card';
 
-      const questionText = qData.text || qData.question || qData.q || qData.title || '';
-      const explanationText = qData.explanation || qData.exp || qData.comment || '';
+      const questionText = getProp(qData, 'text') || getProp(qData, 'question') || getProp(qData, 'q') || '';
+      const explanationText = getProp(qData, 'explanation') || getProp(qData, 'exp') || '';
 
       card.innerHTML = `
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
@@ -475,13 +493,16 @@
 
       card.querySelector('.btn-add-option').addEventListener('click', () => appendOptionRow());
 
-      if (qData.options && Array.isArray(qData.options)) {
-        qData.options.forEach((optText, optIdx) => {
+      const optsArray = getProp(qData, 'options');
+      const correctVal = getProp(qData, 'correct');
+
+      if (optsArray && Array.isArray(optsArray)) {
+        optsArray.forEach((optText, optIdx) => {
           let isCorrect = false;
-          if (Array.isArray(qData.correct)) {
-            isCorrect = qData.correct.includes(optIdx);
-          } else if (typeof qData.correct === 'number') {
-            isCorrect = (qData.correct === optIdx);
+          if (Array.isArray(correctVal)) {
+            isCorrect = correctVal.includes(optIdx);
+          } else if (typeof correctVal === 'number') {
+            isCorrect = (correctVal === optIdx);
           }
           appendOptionRow(optText, isCorrect);
         });
@@ -555,70 +576,83 @@
       try {
         const response = await fetch(`${PRODUCTS_SCRIPT_URL}?product=${fileName}`);
         const data = await response.json();
+        
         if (data.status === "success") {
-          document.getElementById("prodCategory").value = data.category || "gastro";
-          document.getElementById("prodTitle").value = data.title || "";
-          document.getElementById("prodSubtitle").value = data.subtitle || "";
-          document.getElementById("prodDescShort").value = data.descShort || "";
+          document.getElementById("prodCategory").value = getProp(data, "category") || "gastro";
+          document.getElementById("prodTitle").value = getProp(data, "title");
+          document.getElementById("prodSubtitle").value = getProp(data, "subtitle");
+          document.getElementById("prodDescShort").value = getProp(data, "descShort");
           
-          // Завантаження текстів у Quill
-          setQuillHTML("descLong", data.descLong || "");
-          setQuillHTML("sec1Text", data.sec1Text || "");
-          setQuillHTML("sec2Text", data.sec2Text || "");
-          setQuillHTML("sec3Text", data.sec3Text || "");
-          setQuillHTML("sec4Text", data.sec4Text || "");
-          setQuillHTML("sec5Text", data.sec5Text || "");
+          // Вставити текст у Quill з підтримкою списків
+          setQuillHTML("descLong", getProp(data, "descLong"));
+          setQuillHTML("sec1Text", getProp(data, "sec1Text"));
+          setQuillHTML("sec2Text", getProp(data, "sec2Text"));
+          setQuillHTML("sec3Text", getProp(data, "sec3Text"));
+          setQuillHTML("sec4Text", getProp(data, "sec4Text"));
+          setQuillHTML("sec5Text", getProp(data, "sec5Text"));
 
-          if (data.imgMain) {
-            document.getElementById("imgMain").value = data.imgMain;
+          const mainImg = getProp(data, "imgMain");
+          if (mainImg) {
+            document.getElementById("imgMain").value = mainImg;
             const p1 = document.getElementById("imgMainPreview");
-            p1.src = data.imgMain; p1.style.display = "block";
+            p1.src = mainImg; p1.style.display = "block";
+          } else {
+            document.getElementById("imgMain").value = "";
+            document.getElementById("imgMainPreview").style.display = "none";
           }
-          if (data.imgSec) {
-            document.getElementById("imgSec").value = data.imgSec;
+
+          const secImg = getProp(data, "imgSec");
+          if (secImg) {
+            document.getElementById("imgSec").value = secImg;
             const p2 = document.getElementById("imgSecPreview");
-            p2.src = data.imgSec; p2.style.display = "block";
+            p2.src = secImg; p2.style.display = "block";
+          } else {
+            document.getElementById("imgSec").value = "";
+            document.getElementById("imgSecPreview").style.display = "none";
           }
 
-          document.getElementById("sec1Title").value = data.sec1Title || "Склад та активні речовини";
-          document.getElementById("sec2Title").value = data.sec2Title || "Властивості компонентів";
-          document.getElementById("sec3Title").value = data.sec3Title || "Рекомендації до застосування";
-          document.getElementById("sec4Title").value = data.sec4Title || "Спосіб застосування та дози";
-          document.getElementById("sec5Title").value = data.sec5Title || "Протипоказання";
+          document.getElementById("sec1Title").value = getProp(data, "sec1Title") || "Склад та активні речовини";
+          document.getElementById("sec2Title").value = getProp(data, "sec2Title") || "Властивості компонентів";
+          document.getElementById("sec3Title").value = getProp(data, "sec3Title") || "Рекомендації до застосування";
+          document.getElementById("sec4Title").value = getProp(data, "sec4Title") || "Спосіб застосування та дози";
+          document.getElementById("sec5Title").value = getProp(data, "sec5Title") || "Протипоказання";
 
-          document.getElementById("linkCampaign").value = data.linkCampaign || "";
-          document.getElementById("linkInstruction").value = data.linkInstruction || "";
-          document.getElementById("linkTest").value = data.linkTest || "";
-          document.getElementById("linkCompetitor").value = data.linkCompetitor || "";
+          document.getElementById("linkCampaign").value = getProp(data, "linkCampaign");
+          document.getElementById("linkInstruction").value = getProp(data, "linkInstruction");
+          document.getElementById("linkTest").value = getProp(data, "linkTest");
+          document.getElementById("linkCompetitor").value = getProp(data, "linkCompetitor");
 
           // Розпаковка відеоматеріалів
-          if (data.videosData) {
+          const rawVideos = getProp(data, "videosData");
+          if (rawVideos) {
             try {
-              let vArr = typeof data.videosData === 'string' ? JSON.parse(data.videosData) : data.videosData;
+              let vArr = typeof rawVideos === 'string' ? JSON.parse(rawVideos) : rawVideos;
               if (Array.isArray(vArr) && vArr.length > 0) {
                 vArr.forEach(v => addVideoRow(v));
               }
             } catch(err) { console.error("Помилка розбору відео:", err); }
-          } else if (data.linkVideo) {
-            addVideoRow({ title: 'Основне відео', url: data.linkVideo });
+          } else if (getProp(data, "linkVideo")) {
+            addVideoRow({ title: 'Основне відео', url: getProp(data, "linkVideo") });
           }
 
           // Розпаковка презентацій
-          if (data.presentationsData) {
+          const rawPres = getProp(data, "presentationsData");
+          if (rawPres) {
             try {
-              let pArr = typeof data.presentationsData === 'string' ? JSON.parse(data.presentationsData) : data.presentationsData;
+              let pArr = typeof rawPres === 'string' ? JSON.parse(rawPres) : rawPres;
               if (Array.isArray(pArr) && pArr.length > 0) {
                 pArr.forEach(p => addPresentationRow(p));
               }
             } catch(err) { console.error("Помилка розбору презентацій:", err); }
-          } else if (data.linkPresentation) {
-            addPresentationRow({ title: 'Основна презентація', url: data.linkPresentation });
+          } else if (getProp(data, "linkPresentation")) {
+            addPresentationRow({ title: 'Основна презентація', url: getProp(data, "linkPresentation") });
           }
 
           // Розпаковка даних тестів
-          if (data.testsData) {
+          const rawTests = getProp(data, "testsData");
+          if (rawTests) {
             try {
-              let questionsArray = typeof data.testsData === 'string' ? JSON.parse(data.testsData) : data.testsData;
+              let questionsArray = typeof rawTests === 'string' ? JSON.parse(rawTests) : rawTests;
               if (Array.isArray(questionsArray)) {
                 questionsArray.forEach(q => addQuestionCard(q));
               }
@@ -628,7 +662,7 @@
           }
         }
       } catch (err) {
-        console.log("Новий товар або помилка завантаження.");
+        console.log("Новий товар або помилка завантаження.", err);
       }
     });
 
@@ -711,7 +745,7 @@
           body: JSON.stringify(payload)
         });
         
-        // Автоматично очищаємо кеш каталогу, щоб зміни відобразилися миттєво
+        // Очищення кешу для миттєвого оновлення
         localStorage.removeItem("catalogData");
 
         alert("✅ Продукт, медіаматеріали та тести успішно збережено в базі!");

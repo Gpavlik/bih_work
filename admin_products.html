@@ -45,7 +45,7 @@
   <div class="editor-container">
     <a href="./admin.html" class="nav-back">&larr; Назад до адмін-панелі</a>
     <h2>📦 Повний візуальний редактор сторінок продуктів</h2>
-    <p style="color: #64748b; margin-bottom: 15px;">Керуйте текстами всіх секцій препарату, зображеннями, медіаматеріалами та тестуванням.</p>
+    <p style="color: #64748b; margin-bottom: 15px;">Керуйте текстами всіх секцій препарату, зображеннями, медіаматеріалами, промо-JSON та тестуванням.</p>
 
     <button type="button" class="btn-create" id="openModalBtn">➕ Створити новий продукт</button>
 
@@ -158,6 +158,24 @@
       <div class="form-group"><label>Тестування:</label><input type="text" id="linkTest"></div>
       <div class="form-group"><label>Конкурентне оточення:</label><input type="text" id="linkCompetitor"></div>
 
+      <!-- Блок промо-матеріалів та візитів (JSON) -->
+      <h3>💼 Матеріали візитів, позиціонування та конкуренти (JSON)</h3>
+
+      <div class="form-group">
+        <label for="visitData">1. Сценарії візитів (visitData / visitproduct):</label>
+        <textarea id="visitData" style="height: 160px; font-family: monospace; font-size: 13px;" placeholder='{"product":"АРГІС ДУО", "specialists": [...], "scripts": [...]}'></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="productData">2. Позиціонування та механізм дії (productData / product):</label>
+        <textarea id="productData" style="height: 160px; font-family: monospace; font-size: 13px;" placeholder='{"nazva":"Аргіс Дуо", "pozytsionuvannya":"...", "sklad":"..."}'></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="competitorsData">3. Конкурентне оточення (competitorsData / competitors / visitproductcompetitors):</label>
+        <textarea id="competitorsData" style="height: 160px; font-family: monospace; font-size: 13px;" placeholder='{"konkurenty": [{"nazva":"Гексікон", "hpv":"..."}]}'></textarea>
+      </div>
+
       <!-- Блок керування тестами -->
       <h3>Управління тестами препарату</h3>
       <div id="questionsContainer"></div>
@@ -196,7 +214,7 @@
     const PRODUCTS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzr4EGyt0YuynW_lKK9Qtpghr5n_8s3E4ndvT1POv-KhHNBnh--6x9Dm2um8lOr7GW-/exec";
 
     // ----------------------------------------------------
-    // ДОПОМІЖНА ФУНКЦІЯ: ГНУЧКИЙ ПОШУК КЛЮЧІВ (Незалежно від регістру)
+    // ДОПОМІЖНІ ФУНКЦІЇ: ГНУЧКИЙ ПОШУК ТА ФОРМАТУВАННЯ JSON
     // ----------------------------------------------------
     function getProp(obj, prop) {
       if (!obj) return "";
@@ -204,6 +222,26 @@
       const lowerProp = prop.toLowerCase();
       const foundKey = Object.keys(obj).find(k => k.toLowerCase() === lowerProp);
       return (foundKey && obj[foundKey] !== null) ? obj[foundKey] : "";
+    }
+
+    function formatJsonString(val) {
+      if (!val) return '';
+      if (typeof val === 'object') return JSON.stringify(val, null, 2);
+      try {
+        return JSON.stringify(JSON.parse(val), null, 2);
+      } catch (e) {
+        return val;
+      }
+    }
+
+    function cleanJsonInput(id) {
+      const val = document.getElementById(id).value.trim();
+      if (!val) return "";
+      try {
+        return JSON.stringify(JSON.parse(val));
+      } catch (err) {
+        return val;
+      }
     }
 
     // ----------------------------------------------------
@@ -225,7 +263,6 @@
       sec5Text: new Quill('#editor-sec5Text', { theme: 'snow', modules: { toolbar: quillToolbarOptions } })
     };
 
-    // БЕЗПЕЧНЕ ВСТАВЛЕННЯ HTML В QUILL (Зберігає <ul> <li> <strong>)
     function setQuillHTML(key, html) {
       if (quills[key]) {
         if (!html || html.trim() === "") {
@@ -362,6 +399,10 @@
       document.getElementById("videosContainer").innerHTML = "";
       document.getElementById("presentationsContainer").innerHTML = "";
       document.getElementById("questionsContainer").innerHTML = "";
+
+      document.getElementById("visitData").value = "";
+      document.getElementById("productData").value = "";
+      document.getElementById("competitorsData").value = "";
 
       modal.style.display = "none";
       document.getElementById("newProdTitleInput").value = "";
@@ -622,6 +663,15 @@
           document.getElementById("linkTest").value = getProp(data, "linkTest");
           document.getElementById("linkCompetitor").value = getProp(data, "linkCompetitor");
 
+          // Розпаковка JSON візитів, позиціонування та конкурентів (з автоформатуванням)
+          const rawVisit = getProp(data, "visitData") || getProp(data, "visitproduct");
+          const rawProduct = getProp(data, "productData") || getProp(data, "product");
+          const rawCompetitors = getProp(data, "competitorsData") || getProp(data, "competitors") || getProp(data, "visitproductcompetitors");
+
+          document.getElementById("visitData").value = formatJsonString(rawVisit);
+          document.getElementById("productData").value = formatJsonString(rawProduct);
+          document.getElementById("competitorsData").value = formatJsonString(rawCompetitors);
+
           // Розпаковка відеоматеріалів
           const rawVideos = getProp(data, "videosData");
           if (rawVideos) {
@@ -691,6 +741,10 @@
         return row ? row.value.trim() : '';
       })();
 
+      const visitJson = cleanJsonInput("visitData");
+      const productJson = cleanJsonInput("productData");
+      const competitorsJson = cleanJsonInput("competitorsData");
+
       const payload = {
         filename: filename,
         category: document.getElementById("prodCategory").value,
@@ -719,6 +773,15 @@
         linkTest: document.getElementById("linkTest").value,
         linkCompetitor: document.getElementById("linkCompetitor").value,
         testsData: collectTestData(),
+
+        // Передаємо ключі з дублюванням під різні варіанти назв колонок у Google Таблиці
+        visitData: visitJson,
+        visitproduct: visitJson,
+        productData: productJson,
+        product: productJson,
+        competitorsData: competitorsJson,
+        competitors: competitorsJson,
+        visitproductcompetitors: competitorsJson,
         
         updatePortfolio: true,
         portfolioCardHtml: `
@@ -748,7 +811,7 @@
         // Очищення кешу для миттєвого оновлення
         localStorage.removeItem("catalogData");
 
-        alert("✅ Продукт, медіаматеріали та тести успішно збережено в базі!");
+        alert("✅ Продукт, медіаматеріали, промо-JSON та тести успішно збережено в базі!");
       } catch (err) {
         alert("❌ Помилка при збереженні.");
       }

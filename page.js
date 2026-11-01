@@ -22,6 +22,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     timerInterval: null
   };
 
+  let originalQuestionsRef = [];
+
   function shuffleArray(array) {
     let currentIndex = array.length, randomIndex;
     while (currentIndex !== 0) {
@@ -46,9 +48,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     shuffledQuestions = shuffleArray(shuffledQuestions);
 
     shuffledQuestions.forEach(q => {
-      let optionsWithTracker = q.options.map((opt, idx) => ({
+      q.q = q.q || q.text || q.question || '';
+      q.explanation = q.explanation || q.exp || q.comment || 'Обґрунтування відсутнє.';
+
+      let optionsWithTracker = (q.options || []).map((opt, idx) => ({
         text: opt,
-        isCorrect: idx === q.correct
+        isCorrect: Array.isArray(q.correct) ? q.correct.includes(idx) : idx === q.correct
       }));
       optionsWithTracker = shuffleArray(optionsWithTracker);
       q.options = optionsWithTracker.map(o => o.text);
@@ -83,7 +88,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     }, 1000);
   }
 
-  // Змінено з fnUpdateTimerUI на стандартну функцію updateTimerUI
   function updateTimerUI() {
     const timerEl = document.getElementById('quiz-timer');
     if (timerEl) {
@@ -114,7 +118,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   window.selectAnswer = function(index) {
     quizState.answers[quizState.currentQuestionIndex] = index;
     renderQuizContent();
-  }
+  };
 
   window.nextQuestion = function() {
     if (quizState.currentQuestionIndex < quizState.questions.length - 1) {
@@ -122,7 +126,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       startTimer();
       renderQuizContent();
     }
-  }
+  };
 
   window.prevQuestion = function() {
     if (quizState.currentQuestionIndex > 0) {
@@ -130,7 +134,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       startTimer();
       renderQuizContent();
     }
-  }
+  };
 
   const GAS_BACKEND_URL = "https://script.google.com/macros/s/AKfycbzprTkjIf_pvCqs4iiaMehYVdFlFfuS0e60gK0QXh7v8DOKpI9WByyDo3A3VoBXzKxWxw/exec";
 
@@ -138,61 +142,60 @@ document.addEventListener("DOMContentLoaded", async () => {
     clearInterval(quizState.timerInterval);
     quizState.isSubmitted = true;
     renderQuizResults();
-    sendQuizResultsToBackend(); // <--- Відправляємо результати на бекенд
-  }
+    sendQuizResultsToBackend();
+  };
 
-async function sendQuizResultsToBackend() {
-  let score = 0;
-  const totalQ = quizState.questions.length;
-  if (totalQ === 0) return;
+  async function sendQuizResultsToBackend() {
+    let score = 0;
+    const totalQ = quizState.questions.length;
+    if (totalQ === 0) return;
 
-  quizState.questions.forEach((q, idx) => {
-    if (quizState.answers[idx] === q.correct) score++;
-  });
-  
-  const percent = Math.round((score / totalQ) * 100);
-  const email = localStorage.getItem("allowedEmail") || "guest";
-  const urlParams = new URLSearchParams(window.location.search);
-  const currentFilename = urlParams.get('id') || "unknown";
-  
-  // 🔒 Зчитуємо assignmentId з URL або localStorage
-  const currentAssignmentId = urlParams.get('assignmentId') || localStorage.getItem("currentAssignmentId") || "";
-
-  const details = quizState.questions.map((q, idx) => ({
-    question: q.q,
-    userAnswer: quizState.answers[idx] !== null && quizState.answers[idx] !== undefined ? q.options[quizState.answers[idx]] : "Час вийшов / Не обрано",
-    correctAnswer: q.options[q.correct],
-    isCorrect: quizState.answers[idx] === q.correct
-  }));
-
-  try {
-    await fetch(GAS_BACKEND_URL, {
-      method: "POST",
-      headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify({
-        mode: "quiz_result",
-        email: email,
-        assignmentId: currentAssignmentId, // 👈 Ключовий ID для бекенду
-        productFilename: currentFilename,
-        score: score,
-        totalQuestions: totalQ,
-        percentage: percent,
-        status: percent >= 90 ? "Складено" : "Не складено",
-        detailsJson: JSON.stringify(details)
-      })
+    quizState.questions.forEach((q, idx) => {
+      if (quizState.answers[idx] === q.correct) score++;
     });
-  } catch (e) {
-    console.error("Помилка відправки результатів тестування:", e);
+    
+    const percent = Math.round((score / totalQ) * 100);
+    const email = localStorage.getItem("allowedEmail") || "guest";
+    const currentFilename = urlParams.get('id') || "unknown";
+    const currentAssignmentId = urlParams.get('assignmentId') || localStorage.getItem("currentAssignmentId") || "";
+
+    const details = quizState.questions.map((q, idx) => ({
+      question: q.q || q.text || q.question,
+      userAnswer: quizState.answers[idx] !== null && quizState.answers[idx] !== undefined ? q.options[quizState.answers[idx]] : "Час вийшов / Не обрано",
+      correctAnswer: q.options[q.correct],
+      isCorrect: quizState.answers[idx] === q.correct
+    }));
+
+    try {
+      await fetch(GAS_BACKEND_URL, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({
+          mode: "quiz_result",
+          email: email,
+          assignmentId: currentAssignmentId,
+          productFilename: currentFilename,
+          score: score,
+          totalQuestions: totalQ,
+          percentage: percent,
+          status: percent >= 90 ? "Складено" : "Не складено",
+          detailsJson: JSON.stringify(details)
+        })
+      });
+
+      if (typeof window.handleTestCompletion === "function") {
+        window.handleTestCompletion(percent);
+      }
+    } catch (e) {
+      console.error("Помилка відправки результатів тестування:", e);
+    }
   }
-}
 
   window.restartQuiz = function() {
     initQuiz(originalQuestionsRef);
-  }
+  };
 
-  let originalQuestionsRef = [];
-
-function renderQuizContent() {
+  function renderQuizContent() {
     const wrapper = document.getElementById('quiz-main-wrapper');
     if (!wrapper) return;
 
@@ -208,8 +211,8 @@ function renderQuizContent() {
     let html = `
       <div class="bg-white border border-slate-200 border-l-4 border-l-[#069606] p-5 mb-6 shadow-sm text-left">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
-              <div class="flex items-center space-x-3">
-            <span class="text-xs font-semibold text-slate-500 uppercase" style="color: #069606;">Час:</span>
+          <div class="flex items-center space-x-3">
+            <span class="text-xs font-semibold uppercase" style="color: #069606;">Час:</span>
             <div id="quiz-timer" class="text-base font-mono font-bold text-slate-700 bg-slate-100 px-3 py-1 border border-slate-200">01:00</div>
           </div>
         </div>
@@ -223,7 +226,6 @@ function renderQuizContent() {
       </div>
 
       <div class="bg-white border border-slate-200 border-l-4 border-l-[#069606] p-6 sm:p-8 shadow-sm text-left">
-        <!-- Текст запитання кольору #069606 -->
         <h4 class="text-base sm:text-lg font-bold mb-6 leading-relaxed" style="color: #069606;">${currentQIndex + 1}. ${currentQ.q}</h4>
         <div class="space-y-3 mb-8">
     `;
@@ -285,7 +287,6 @@ function renderQuizContent() {
       const userAnswer = quizState.answers[idx];
       const isCorrect = userAnswer === q.correct;
       
-      // Чіткі кольори через інлайн-стилі для гарантованого відображення
       const borderColor = isCorrect ? '#10b981' : '#f43f5e';
       const cardBg = isCorrect ? 'rgba(16, 185, 129, 0.04)' : 'rgba(244, 63, 94, 0.04)';
       const badgeBg = isCorrect ? '#d1fae5' : '#ffe4e6';
@@ -303,7 +304,7 @@ function renderQuizContent() {
           </div>
           <div class="space-y-1.5 mb-3 text-xs sm:text-sm">
             <p style="color: ${textColor}; font-weight: 600;">
-              <span class="text-slate-500 font-normal">Ваша відповідь:</span> ${userAnswer !== null ? q.options[userAnswer] : 'Час вийшов (Не обрано)'}
+              <span class="text-slate-500 font-normal">Ваша відповідь:</span> ${userAnswer !== null && userAnswer !== undefined ? q.options[userAnswer] : 'Час вийшов (Не обрано)'}
             </p>
             ${!isCorrect ? `<p style="color: #059669; font-weight: 600;"><span class="text-slate-500 font-normal">Правильна відповідь:</span> ${q.options[q.correct]}</p>` : ''}
           </div>
@@ -318,10 +319,12 @@ function renderQuizContent() {
     wrapper.innerHTML = html;
     if (window.lucide) lucide.createIcons();
   }
-  // Функція заповнення полів продукту
+
+  // Заповнення полів продукту
   function fillProductData(data) {
     if (data.title) {
-      document.querySelector("h2.title").textContent = data.title;
+      const titleEl = document.querySelector("h2.title");
+      if (titleEl) titleEl.textContent = data.title;
       const h3Title = document.querySelector(".product-info h3");
       if (h3Title) h3Title.textContent = data.title;
       document.title = data.title; 
@@ -372,6 +375,46 @@ function renderQuizContent() {
       }
     });
 
+    // ----------------------------------------------------
+    // ГНУЧКА ОБРОБКА МЕДІАМАТЕРИАЛІВ (ВІДЕО ТА ПРЕЗЕНТАЦІЇ)
+    // ----------------------------------------------------
+    let parsedVideos = [];
+    const rawVideos = data.videosData || data.videosdata;
+    if (rawVideos) {
+      try {
+        parsedVideos = typeof rawVideos === 'string' ? JSON.parse(rawVideos) : rawVideos;
+      } catch(e) { console.error("Помилка парсингу videosData:", e); }
+    }
+    
+    // Якщо масив порожній або відсутній — фолбек на одиночне посилання
+    if ((!Array.isArray(parsedVideos) || parsedVideos.length === 0) && (data.linkVideo || data.linkvideo)) {
+      const vUrl = data.linkVideo || data.linkvideo;
+      if (vUrl && vUrl.trim() !== "" && vUrl !== "#") {
+        parsedVideos = [{ title: 'Основне відео', url: vUrl }];
+      }
+    }
+
+    let parsedPresentations = [];
+    const rawPres = data.presentationsData || data.presentationsdata;
+    if (rawPres) {
+      try {
+        parsedPresentations = typeof rawPres === 'string' ? JSON.parse(rawPres) : rawPres;
+      } catch(e) { console.error("Помилка парсингу presentationsData:", e); }
+    }
+
+    if ((!Array.isArray(parsedPresentations) || parsedPresentations.length === 0) && (data.linkPresentation || data.linkpresentation)) {
+      const pUrl = data.linkPresentation || data.linkpresentation;
+      if (pUrl && pUrl.trim() !== "" && pUrl !== "#") {
+        parsedPresentations = [{ title: 'Основна презентація', url: pUrl }];
+      }
+    }
+
+    // Передаємо списки відео та презентацій для Бі-хелсі
+    if (typeof window.updateMediaBadges === "function") {
+      window.updateMediaBadges(parsedVideos, parsedPresentations);
+    }
+
+    // Допоміжна функція встановлення посилань
     const setLink = (id, url) => {
       const btn = document.getElementById(id);
       if (btn) {
@@ -385,17 +428,26 @@ function renderQuizContent() {
       }
     };
     
-    setLink("campaign", data.linkCampaign);
-    setLink("video", data.linkVideo);
-    setLink("presentation", data.linkPresentation);
-    setLink("instruction", data.linkInstruction);
-    setLink("competitor", data.linkCompetitor);
-    setLink("campaign_bottom", data.linkCampaign);
-    setLink("instruction_bottom", data.linkInstruction);
+    setLink("campaign", data.linkCampaign || data.linkcampaign);
+    setLink("instruction", data.linkInstruction || data.linkinstruction);
+    setLink("competitor", data.linkCompetitor || data.linkcompetitor);
 
-    // Ініціалізація тестів із даних продукту (якщо вони приходять з АПІ)
-    if (data.questions && Array.isArray(data.questions)) {
-      originalQuestionsRef = data.questions;
+    // ----------------------------------------------------
+    // ІНІЦІАЛІЗАЦІЯ ТЕСТІВ
+    // ----------------------------------------------------
+    let rawQuestions = data.testsData || data.testsdata || data.questions;
+    let questionsArray = null;
+
+    if (rawQuestions) {
+      try {
+        questionsArray = typeof rawQuestions === 'string' ? JSON.parse(rawQuestions) : rawQuestions;
+      } catch(e) {
+        console.error("Помилка розбору тестових даних:", e);
+      }
+    }
+
+    if (questionsArray && Array.isArray(questionsArray) && questionsArray.length > 0) {
+      originalQuestionsRef = questionsArray;
       initQuiz(originalQuestionsRef);
     } else {
       document.getElementById('quiz-main-wrapper').innerHTML = `
@@ -408,13 +460,14 @@ function renderQuizContent() {
     hideLoader();
   }
 
-  // 1. Кеш
+  // 1. Читання з кешу
   const cachedData = localStorage.getItem("catalogData");
   if (cachedData) {
     try {
       const products = JSON.parse(cachedData);
       const foundProduct = products.find(p => p.filename === productId);
-      if (foundProduct) {
+      // Перевіряємо, чи в кешованого продукту є масив відео, а не лише старе 1 відео
+      if (foundProduct && (foundProduct.videosData || foundProduct.videosdata)) {
         fillProductData(foundProduct);
         return;
       }
@@ -423,7 +476,7 @@ function renderQuizContent() {
     }
   }
 
-  // 2. Запит до сервера
+  // 2. Якщо в кеші застаріла інформація — робимо прямий запит до сервера
   const PRODUCTS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzr4EGyt0YuynW_lKK9Qtpghr5n_8s3E4ndvT1POv-KhHNBnh--6x9Dm2um8lOr7GW-/exec";    
 
   try {
@@ -440,36 +493,36 @@ function renderQuizContent() {
     hideLoader();
   }
 });
+
 // Логіка модального вікна тесту
-  const quizModal = document.getElementById('quiz-modal');
-  const closeQuizBtn = document.getElementById('close-quiz-modal');
-  const testBtnTop = document.getElementById('test');
-  const testBtnBottom = document.getElementById('test_bottom');
+const quizModal = document.getElementById('quiz-modal');
+const closeQuizBtn = document.getElementById('close-quiz-modal');
+const testBtnTop = document.getElementById('test');
+const testBtnBottom = document.getElementById('test_bottom');
 
-  const openQuizModal = (e) => {
-    e.preventDefault();
-    if (quizModal) {
-      quizModal.classList.add('active');
-      document.body.style.overflow = 'hidden'; // блокуємо скрол сторінки під модалкою
-    }
-  };
-
-  const closeQuizModal = () => {
-    if (quizModal) {
-      quizModal.classList.remove('active');
-      document.body.style.overflow = ''; // повертаємо скрол
-    }
-  };
-
-  if (testBtnTop) testBtnTop.addEventListener('click', openQuizModal);
-  if (testBtnBottom) testBtnBottom.addEventListener('click', openQuizModal);
-  if (closeQuizBtn) closeQuizBtn.addEventListener('click', closeQuizModal);
-
-  // Закриття по кліку на темний фон навколо модалки
+const openQuizModal = (e) => {
+  if (e) e.preventDefault();
   if (quizModal) {
-    quizModal.addEventListener('click', (e) => {
-      if (e.target === quizModal) {
-        closeQuizModal();
-      }
-    });
+    quizModal.classList.add('active');
+    document.body.style.overflow = 'hidden';
   }
+};
+
+const closeQuizModal = () => {
+  if (quizModal) {
+    quizModal.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+};
+
+if (testBtnTop) testBtnTop.addEventListener('click', openQuizModal);
+if (testBtnBottom) testBtnBottom.addEventListener('click', openQuizModal);
+if (closeQuizBtn) closeQuizBtn.addEventListener('click', closeQuizModal);
+
+if (quizModal) {
+  quizModal.addEventListener('click', (e) => {
+    if (e.target === quizModal) {
+      closeQuizModal();
+    }
+  });
+}

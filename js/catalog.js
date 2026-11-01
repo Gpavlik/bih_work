@@ -103,6 +103,16 @@ document.addEventListener("DOMContentLoaded", async () => {
         ul.appendChild(li);
         count++;
 
+        // Безпечний розбір тесту з комірки
+        let parsedQuestions = [];
+        if (rowData["testsdata"]) {
+          try {
+            parsedQuestions = typeof rowData["testsdata"] === 'string' ? JSON.parse(rowData["testsdata"]) : rowData["testsdata"];
+          } catch(e) {
+            console.error(`Помилка розбору тесту для ${filename}:`, e);
+          }
+        }
+
         catalogProductsForCache.push({
           filename, category: spoilerId, title, subtitle, descShort, imgMain,
           descLong: rowData["desclong"] || "",
@@ -115,11 +125,13 @@ document.addEventListener("DOMContentLoaded", async () => {
           linkCampaign: rowData["linkcampaign"] || "", 
           linkVideo: rowData["linkvideo"] || "",
           linkPresentation: rowData["linkpresentation"] || "", 
+          videosData: rowData["videosdata"] || "",
+          presentationsData: rowData["presentationsdata"] || "",
           linkInstruction: rowData["linkinstruction"] || "",
           linkTest: rowData["linktest"] || "", 
           linkCompetitor: rowData["linkcompetitor"] || "",
-          // Додаємо парсинг тестів із таблиці
-          questions: rowData["testsdata"] ? JSON.parse(rowData["testsdata"]) : []
+          testsData: rowData["testsdata"] || "",
+          questions: parsedQuestions
         });
       });
 

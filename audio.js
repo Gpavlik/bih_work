@@ -1,6 +1,42 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const DECANAT_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby87iUOv2tul_QrIBiuJ8JgcfCOl4WQ3igIuIDNWpZS4CN2y27RRtD752dyePFZRvGf8A/exec";
+  // ====================================================
+  // 1. БЛОК ВІДТВОРЕННЯ ФОНОВОЇ МУЗИКИ
+  // ====================================================
+  const bgAudio = document.getElementById("bg-audio");
 
+  if (bgAudio) {
+    // Встановлюємо комфортну гучність (30%)
+    bgAudio.volume = 0.3;
+
+    const playAudio = () => {
+      bgAudio.play().then(() => {
+        // Музика успішно запустилася — знімаємо обробники подій
+        removeInteractionListeners();
+      }).catch(() => {
+        // Якщо браузер заблокував автовідтворення без кліку
+        console.log("Браузер очікує взаємодії користувача для запуску аудіо.");
+      });
+    };
+
+    const removeInteractionListeners = () => {
+      document.removeEventListener("click", playAudio);
+      document.removeEventListener("keydown", playAudio);
+      document.removeEventListener("touchstart", playAudio);
+    };
+
+    // Спроба автоматичного запуску одразу при завантаженні
+    playAudio();
+
+    // Якщо автовідтворення заблоковано — запустити при першому кліку або торканні екрана
+    document.addEventListener("click", playAudio);
+    document.addEventListener("keydown", playAudio);
+    document.addEventListener("touchstart", playAudio);
+  }
+
+  // ====================================================
+  // 2. БЛОК АВТОРИЗАЦІЇ ТА ВХОДУ (Збережена логіка)
+  // ====================================================
+  const DECANAT_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby87iUOv2tul_QrIBiuJ8JgcfCOl4WQ3igIuIDNWpZS4CN2y27RRtD752dyePFZRvGf8A/exec";
   const loginForm = document.getElementById("loginForm");
   
   if (loginForm) {

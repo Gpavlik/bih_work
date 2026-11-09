@@ -183,6 +183,25 @@
       text-decoration: none; font-size: 12px; font-weight: bold; white-space: nowrap;
     }
     .media-card-btn:hover { background: #219653; }
+    .video-tooltip {
+  position: fixed;
+  display: none;
+  width: 360px; /* Збільшена ширина під декілька абзаців */
+  max-height: 320px;
+  overflow-y: auto;
+  padding: 14px 16px;
+  background: #1e293b;
+  color: #f8fafc;
+  font-size: 13px;
+  line-height: 1.5;
+  border-radius: 10px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+  border: 1px solid #334155;
+  z-index: 30000;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+  white-space: pre-line; /* КРИТИЧНО: зберігає абзаци та переноси рядків */
+}
   </style>
 </head>
 <body>
@@ -461,7 +480,7 @@
 </div>
 
 <!-- ============================================== -->
-<!-- 4. НОВА МОДАЛКА: МЕДІАТЕКА (Списку відео/презентацій) -->
+<!-- 4. МОДАЛКА: МЕДІАТЕКА (З ВІДОБРАЖЕННЯМ ТУЛТИПІВ ОПИСУ) -->
 <!-- ============================================== -->
 <div id="mediaListModal" class="bihelsi-modal-overlay">
   <div class="bihelsi-modal-content" style="max-width: 520px;">
@@ -484,6 +503,31 @@
 </div>
 
 <script>
+  let videoTooltip = null;
+  document.addEventListener('DOMContentLoaded', () => {
+    videoTooltip = document.createElement('div');
+    videoTooltip.id = 'videoTooltip';
+    videoTooltip.className = 'video-tooltip';
+    document.body.appendChild(videoTooltip);
+  });
+
+  function formatDriveUrl(url) {
+    if (!url) return '';
+    let formatted = url.trim();
+
+    if (formatted.includes('drive.google.com/file/d/')) {
+      formatted = formatted.replace(/\/file\/d\/([^\/]+)\/(view|edit).*/, '/file/d/$1/preview');
+      if (!formatted.includes('/preview')) {
+        formatted = formatted.replace(/\/file\/d\/([^\/]+)\/?$/, '/file/d/$1/preview');
+      }
+    }
+
+    if (formatted.includes('docs.google.com/presentation/d/')) {
+      formatted = formatted.replace(/\/presentation\/d\/([^\/]+)\/(edit|view).*/, '/presentation/d/$1/present');
+    }
+
+    return formatted;
+  }
   // Логіка керування відкриттям медіатеки
   function openMediaListModal(type) {
     // Закриваємо меню маскота
@@ -525,20 +569,50 @@
         <span class="media-card-title">${item.title}</span>
         <a href="${item.url}" target="_blank" class="media-card-btn">Відкрити ↗</a>
       `;
+       // Додаємо стеження за курсором для ШІ-опису відео
+      if (type === 'video' && item.description) {
+        row.addEventListener('mouseenter', () => {
+          if (videoTooltip) {
+            videoTooltip.textContent = item.description;
+            videoTooltip.style.display = 'block';
+          }
+        });
+
+        row.addEventListener('mousemove', (e) => {
+          if (videoTooltip) {
+            videoTooltip.style.left = (e.clientX + 15) + 'px';
+            videoTooltip.style.top = (e.clientY + 15) + 'px';
+          }
+        });
+
+        row.addEventListener('mouseleave', () => {
+          if (videoTooltip) {
+            videoTooltip.style.display = 'none';
+          }
+        });
+      }
+
       listEl.appendChild(row);
     });
 
     modal.classList.add('active');
   }
 
-  function closeMediaListModal() {
+   function closeMediaListModal() {
     document.getElementById('mediaListModal').classList.remove('active');
+    if (videoTooltip) videoTooltip.style.display = 'none';
   }
 
-  // Оновлення лічильників матеріалів (викликається після завантаження продукту)
   window.updateMediaBadges = function(videos, presentations) {
-    window.currentProductMedia.videos = videos || [];
-    window.currentProductMedia.presentations = presentations || [];
+    window.currentProductMedia.videos = (videos || []).map(v => ({
+      ...v,
+      url: formatDriveUrl(v.url),
+      description: v.description || v.desc || ''
+    }));
+    window.currentProductMedia.presentations = (presentations || []).map(p => ({
+      ...p,
+      url: formatDriveUrl(p.url)
+    }));
 
     const vidBadge = document.getElementById('badgeVideoCount');
     const presBadge = document.getElementById('badgePresCount');
